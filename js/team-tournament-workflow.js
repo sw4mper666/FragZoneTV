@@ -63,6 +63,28 @@ export async function mountFragZoneTeams({client,root}) {
  const admin=el('section');root.append(admin);
  async function loadAdmin(){
  admin.replaceChildren();
+ const allTeams=el('section');allTeams.append(el('h3','Управление командами'));
+ const {data:teams,error:teamsError}=await client.from('fztv_teams').select('id,name,tag,status,logo_url').order('created_at',{ascending:false});
+ if(teamsError){allTeams.append(el('p','Ошибка загрузки команд: '+teamsError.message));}
+ else {
+ allTeams.append(el('p','Всего команд: '+(teams||[]).length));
+ for(const team of teams||[]){
+ const line=el('div');line.className='rank-team';line.style.cssText='display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:10px';
+ if(team.logo_url){const img=el('img');img.src=team.logo_url;img.alt='';img.width=40;img.height=40;img.style.cssText='width:40px;height:40px;object-fit:cover;border-radius:8px';line.append(img);}
+ const info=el('span',team.name+' ['+team.tag+'] — '+team.status);info.style.flex='1';line.append(info);
+ const remove=el('button','Удалить команду');remove.type='button';remove.className='toolbtn';remove.style.color='#ff6975';
+ remove.onclick=async()=>{
+ if(!window.confirm('Удалить команду «'+team.name+'» навсегда? Игроки и заявки команды на турниры также будут удалены.'))return;
+ remove.disabled=true;msg.textContent='Удаление команды…';
+ const {data,error}=await client.from('fztv_teams').delete().eq('id',team.id).select('id');
+ if(error){msg.textContent='Ошибка удаления: '+error.message;remove.disabled=false;return;}
+ if(!data?.length){msg.textContent='Удаление не подтверждено. Проверь права администратора.';remove.disabled=false;return;}
+ msg.textContent='Команда «'+team.name+'» удалена';await loadAdmin();
+ };
+ line.append(remove);allTeams.append(line);
+ }
+ }
+ admin.append(allTeams);
  for(const spec of [
  {table:'fztv_teams',title:'Новые команды',label:r=>r.name+' ['+r.tag+']'},
  {table:'fztv_tournament_applications',title:'Заявки на турниры',label:r=>r.team_id+' → '+r.tournament_id}
