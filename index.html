@@ -104,6 +104,8 @@ select,textarea{background:#0b111a;color:#fff;border:1px solid #34445a;border-ra
 .fztv-player-tabs{display:flex;justify-content:flex-end;gap:4px;margin:0 0 12px}.fztv-player-tabs a{padding:10px 18px;border:1px solid #344559;border-radius:5px;color:#aebccc;background:#1a2533;font-weight:800}.fztv-player-tabs a.active{background:#5795d1;color:white}.fztv-player-card{border:1px solid #344457;background:#121e2b;border-radius:8px;overflow:hidden}.fztv-player-hero{display:grid;grid-template-columns:240px 1fr;min-height:350px}.fztv-player-photo{background:#253747;min-height:320px;position:relative}.fztv-player-photo img{width:100%;height:100%;object-fit:cover;object-position:center top}.fztv-player-photo .placeholder{display:grid;place-items:center;height:100%;font-size:65px;color:#8b9bb0}.fztv-player-main{padding:24px;background:linear-gradient(160deg,#293544,#101c29)}.fztv-player-main h1{font-size:clamp(25px,4vw,40px);text-transform:uppercase;letter-spacing:1px}.fztv-player-sub{color:#aebed0;margin:8px 0 20px}.fztv-player-facts{background:#101d2b;border-radius:7px;padding:5px 18px}.fztv-player-fact{display:flex;justify-content:space-between;gap:12px;padding:13px 0;border-bottom:1px solid #293a4d}.fztv-player-fact:last-child{border:0}.fztv-player-fact span{color:#93a6bb}.fztv-player-fact strong{text-align:right}.fztv-trophies{padding:20px;background:#162438;min-height:85px}.fztv-stat-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;padding:20px}.fztv-stat{padding:18px 10px;text-align:center;border-bottom:2px solid #3b5673}.fztv-stat strong{display:block;font-size:32px;color:#eaf3ff}.fztv-stat small{color:#9eb0c4}.fztv-stat-empty{text-align:center;color:#aab8c8;padding:24px}.fztv-progress{padding:18px 22px;border-top:1px solid #2a3b4e}.fztv-progress h3{margin-bottom:15px}.fztv-progress-line{display:flex;justify-content:space-between;margin:12px 0 5px}.fztv-progress-bar{height:6px;background:#344357;border-radius:8px;overflow:hidden}.fztv-progress-bar i{display:block;height:100%;background:#589ce0}@media(max-width:700px){.fztv-player-hero{grid-template-columns:1fr}.fztv-player-photo{height:250px;min-height:0}.fztv-player-photo img{object-fit:contain}.fztv-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .tw-logo:has(svg[aria-label="Taykans"]){display:flex;align-items:center;justify-content:center;padding:0;overflow:hidden}.tw-logo svg[aria-label="Taykans"]{width:100%;height:100%;display:block}.rank-logo svg[aria-label="Taykans"]{width:100%;height:100%;display:block;object-fit:contain}
 .tw-roster a.tw-player{display:block;cursor:pointer;position:relative;z-index:1}.tw-roster a.tw-player:hover{transform:translateY(-3px);filter:brightness(1.12)}.tw-roster a.tw-player:focus-visible{outline:2px solid #6aafff;outline-offset:3px}
+
+.fz-manager{background:#111c2a;border:1px solid #293e54;border-radius:10px;padding:22px;margin:18px 0;color:#eaf1fb}.fz-manager h2{margin:0 0 15px}.fz-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.fz-form label{display:flex;flex-direction:column;gap:6px;font-size:12px;color:#9cacc1;font-weight:700}.fz-form input,.fz-form textarea,.fz-form select,.fz-filter{width:100%;padding:12px;background:#09121d;border:1px solid #34495e;border-radius:5px;color:#eaf1fb;font:inherit}.fz-form textarea{min-height:80px}.fz-wide{grid-column:1/-1}.fz-action{background:#3983ef;border:0;border-radius:5px;color:#fff;font-weight:800;padding:11px 18px;cursor:pointer}.fz-action.secondary{background:#27394e}.fz-action.danger{background:#8e3340}.fz-actions{display:flex;gap:9px;flex-wrap:wrap;margin:14px 0}.fz-table{width:100%;border-collapse:collapse;font-size:13px}.fz-table th,.fz-table td{padding:12px;border-bottom:1px solid #2b3b4e;text-align:left}.fz-table th{background:#1c2a3b;color:#8eb4df}.fz-table a{color:#ff6973;font-weight:700}.fz-table-wrap{overflow:auto}.fz-tag{font-size:11px;background:#26394c;padding:4px 7px;border-radius:5px}.fz-notice{padding:12px;background:#1b2a3a;border-radius:6px;color:#c4d5e8;margin:12px 0}@media(max-width:680px){.fz-form{grid-template-columns:1fr}.fz-wide{grid-column:1}.fz-manager{padding:13px}}
 </style>
 
 <style id="woods-redesign">
@@ -213,7 +215,564 @@ function fztvPlayerProfile(){
  const tabs=`<div class="fztv-player-tabs"><a class="${tab==='main'?'active':''}" href="${fztvPlayerLink(name)}">Основной</a><a class="${tab==='stats'?'active':''}" href="${fztvPlayerLink(name)}/stats">Статистика</a></div>`;
  const photoHtml=`<img src="${photo}" alt="${escapeAuth(name)}">`;
  if(tab==='stats')return `<div class="crumb"><a href="#/players">Игроки</a> / ${escapeAuth(name)} / Статистика</div>${tabs}<section class="fztv-player-card"><div class="fztv-player-hero"><div class="fztv-player-photo">${photoHtml}</div><div class="fztv-player-main"><h1>${escapeAuth(name)}</h1><p class="fztv-player-sub">Team Woods · Counter-Strike 2</p><div class="fztv-stat-grid">${metrics.map(([k,v])=>`<div class="fztv-stat"><strong>${v}</strong><small>${k}</small></div>`).join('')}</div>${!matches?'<div class="fztv-stat-empty">Статистика пока пуста. Показатели появятся после внесения результатов матчей.</div>':''}</div></div>${matches?`<div class="fztv-progress"><h3>Показатели за ${matches} матч(ей)</h3>${[['Победы',wins,matches],['Хедшоты',headshots,kills],['K/D (условная шкала)',Math.min(200,kills/Math.max(1,deaths)*100),200]].map(([label,a,b])=>`<div class="fztv-progress-line"><span>${label}</span><strong>${b?Math.round(100*a/b):0}%</strong></div><div class="fztv-progress-bar"><i style="width:${b?Math.min(100,100*a/b):0}%"></i></div>`).join('')}</div>`:''}</section>`;
- return `<div class="crumb"><a href="#/players">Игроки</a> / ${escapeAuth(name)}</div>${tabs}<section class="fztv-player-card"><div class="fztv-player-hero"><div class="fztv-player-photo">${photoHtml}</div><div class="fztv-player-main"><h1>${escapeAuth(name)}</h1><div class="fztv-player-sub">Counter-Strike 2 · Игрок FragZoneTV</div><div class="fztv-player-facts">${[['Возраст','—'],['Текущая команда','Team Woods'],['Роль',({sw4mper:'Hybrid',loytaber:'AWP',skrizzi:'Rifler',xblackerx:'IGL',bosskpec:'Entry fragger'})[slug]||'—'],['Страна','—'],['Репутация','Игрок'],['Призовые','—'],['Лучшая позиция','—']].map(([k,v])=>`<div class="fztv-player-fact"><span>${k}</span><strong>${v}</strong></div>`).join('')}</div></div></div><div class="fztv-trophies"><h3>Трофеи</h3><p style="color:#91a3b9;margin-top:12px">Трофеев пока нет</p></div></section>`;
+ return `<div class="crumb"><a href="#/players">Игроки</a> / ${escapeAuth(name)}</div>${tabs}<section class="fztv-player-card"><div class="fztv-player-hero"><div class="fztv-player-photo">${photoHtml}</div><div class="fztv-player-main"><h1>${escapeAuth(name)}</h1><div class="fztv-player-sub">Counter-Strike 2 · Игрок FragZoneTV</div><div class="fztv-player-facts">${[['Возраст','—'],['Текущая команда','Team Woods'],['Роль',({sw4mper:'Hybrid',loytaber:'AWP',skrizzi:'Rifler',xblackerx:'IGL',bosskpec:'Entry fragger'})[slug]||'—'],['Страна','—'],['Репутация','Игрок'],['Призовые','0 ,['Лучшая позиция','—']].map(([k,v])=>`<div class="fztv-player-fact"><span>${k}</span><strong>${v}</strong></div>`).join('')}</div></div></div><div class="fztv-trophies"><h3>Трофеи</h3><p style="color:#91a3b9;margin-top:12px">Трофеев пока нет</p></div></section>`;
+}
+
+let fzTeams=[],fzPlayers=[],fzPlayerSearch='',fzPlayerTeamFilter='all',fzPlayerRoleFilter='all',fzPlayerSort='nick';
+function fzEsc(x){return escapeAuth(x)}
+function fzOwned(t){return !!sessionUser&&(isAdmin()||t.owner_id===sessionUser.id)}
+function fzImg(u){if(!u)return '';try{const p=new URL(u);return p.protocol==='https:'?p.href:''}catch{return ''}}
+function fzTeamLink(t){return '#/team/'+encodeURIComponent(t.id)}
+function fzPlayerLink(p){return '#/player/db-'+p.id}
+async function fzLoad(){
+ const [t,p]=await Promise.all([sb.from('fztv_teams').select('*').order('created_at',{ascending:false}),sb.from('fztv_team_players').select('*').order('created_at',{ascending:true})]);
+ if(t.error||p.error){console.warn('Team data',t.error,p.error);return}
+ fzTeams=t.data||[];fzPlayers=p.data||[];render();
+}
+function fzTeamForm(t){
+ const v=(key)=>fzEsc(t?.[key]||'');
+ return `<section class="fz-manager"><h2>${t?'Редактирование команды':'Регистрация команды'}</h2><div class="fz-notice">Новая команда появится в рейтинге только после одобрения администратором. Создатель сможет управлять своим составом.</div>
+ <form id="fzTeamForm" class="fz-form" data-id="${t?.id||''}">
+ <label>Название команды<input name="name" required maxlength="70" minlength="2" value="${v('name')}" placeholder="Название команды"></label>
+ <label>Тег (2–5 символов)<input name="tag" required maxlength="5" minlength="2" value="${v('tag')}" placeholder="TAG"></label>
+ <label>Страна<input name="country" value="${v('country')}" placeholder="Россия"></label>
+ <label>Ссылка на логотип (HTTPS)<input name="logo_url" type="url" value="${v('logo_url')}" placeholder="https://..."></label>
+ <label>Основной цвет<input type="color" name="color_primary" value="${v('color_primary')||'#24384d'}"></label>
+ <label>Второй цвет<input type="color" name="color_secondary" value="${v('color_secondary')||'#111a28'}"></label>
+ <label>Тренер<input name="coach" value="${v('coach')}"></label><label>Президент<input name="president" value="${v('president')}"></label>
+ <label class="fz-wide">Описание<textarea name="description" maxlength="1000" placeholder="О команде">${v('description')}</textarea></label>
+ <div class="fz-wide fz-actions"><button class="fz-action" type="submit">${t?'Сохранить изменения':'Отправить на модерацию'}</button><a class="fz-action secondary" href="#/my-teams">Отмена</a></div></form></section>`;
+}
+function fzTeamPage(){
+ const id=decodeURIComponent(location.hash.split('/')[2]||'');const t=fzTeams.find(x=>x.id===id);
+ if(!t)return '<section class="fz-manager">Команда не найдена или ещё не одобрена.</section>';
+ const roster=fzPlayers.filter(p=>p.team_id===t.id);
+ return `<div class="crumb"><a href="#/ranking">Рейтинг</a> / ${fzEsc(t.name)}</div><section class="fz-manager" style="border-top:4px solid ${/^#[0-9a-f]{6}$/i.test(t.color_primary)?t.color_primary:'#24384d'}"><div style="display:flex;align-items:center;gap:18px">${fzImg(t.logo_url)?`<img src="${fzImg(t.logo_url)}" alt="" style="width:90px;height:90px;object-fit:contain">`:'<div style="font-size:28px;font-weight:900">🎮</div>'}<div><h1>${fzEsc(t.name)}</h1><p>${fzEsc(t.tag)} · ${fzEsc(t.country||'Страна не указана')}</p><small>${t.status==='pending'?'⏳ На модерации':t.status==='rejected'?'Отклонена':'Команда FragZoneTV'}</small></div></div><p style="margin-top:15px">${fzEsc(t.description)}</p>
+ ${fzOwned(t)?`<div class="fz-actions"><a class="fz-action" href="#/team-edit/${t.id}">Редактировать команду</a><a class="fz-action secondary" href="#/player-edit/new/${t.id}">+ Добавить игрока</a></div>`:''}
+ <h2 style="margin-top:20px">Состав (${roster.length})</h2><div class="fz-table-wrap"><table class="fz-table"><thead><tr><th>Игрок</th><th>Роль</th><th>Призовые</th><th></th></tr></thead><tbody>${roster.map(p=>`<tr><td><a href="${fzPlayerLink(p)}">${fzEsc(p.nickname)}</a></td><td>${fzEsc(p.primary_role)}</td><td>${Number(p.prize_usd||0).toFixed(0)} $</td><td>${fzOwned(t)?`<a href="#/player-edit/${p.id}">Изменить</a>`:''}</td></tr>`).join('')||'<tr><td colspan="4">Игроки пока не добавлены</td></tr>'}</tbody></table></div></section>`;
+}
+function fzMyTeams(){
+ if(!sessionUser)return '<section class="fz-manager">Чтобы зарегистрировать команду, <a href="#/auth">войдите или зарегистрируйтесь</a>.</section>';
+ const mine=fzTeams.filter(t=>t.owner_id===sessionUser.id);
+ return `<div class="page-title"><h1>Мои команды</h1></div><div class="fz-actions"><a class="fz-action" href="#/team-new">+ Зарегистрировать команду</a></div><section class="fz-manager"><h2>Мои заявки и команды</h2>${mine.map(t=>`<div class="fz-actions" style="align-items:center;border-bottom:1px solid #2b3b4e;padding:12px"><a href="${fzTeamLink(t)}">${fzEsc(t.name)}</a><span class="fz-tag">${t.status==='approved'?'Одобрена':t.status==='pending'?'На модерации':'Отклонена'}</span><a href="#/team-edit/${t.id}">Редактировать</a>${t.status==='rejected'?'<span>'+fzEsc(t.moderation_note)+'</span>':''}</div>`).join('')||'<p>Команд пока нет.</p>'}</section>`;
+}
+function fzPlayerForm(p,teamId){
+ const t=fzTeams.find(x=>x.id===(p?.team_id||teamId));if(!t||!fzOwned(t))return '<section class="fz-manager">Нет прав редактировать этого игрока.</section>';
+ const v=k=>fzEsc(p?.[k]||'');
+ const roles=['AWP','Rifler','IGL','Entry fragger','Support','Lurker','Anchor','Hybrid'];
+ const select=(k,empty)=>`<select name="${k}">${empty?'<option value="">— нет —</option>':''}${roles.map(r=>`<option value="${r}" ${p?.[k]===r?'selected':''}>${r}</option>`).join('')}</select>`;
+ return `<section class="fz-manager"><h2>${p?'Редактирование игрока':'Добавление игрока'} · ${fzEsc(t.name)}</h2><form id="fzPlayerForm" class="fz-form" data-id="${p?.id||''}" data-team="${t.id}">
+ <label>Никнейм<input name="nickname" required minlength="2" maxlength="40" value="${v('nickname')}"></label>
+ <label>Страна<input name="country" value="${v('country')}"></label>
+ <label>Имя<input name="first_name" value="${v('first_name')}"></label><label>Фамилия<input name="last_name" value="${v('last_name')}"></label>
+ <label>Дата рождения<input name="birth_date" type="date" value="${v('birth_date')}"></label>
+ <label>Уровень FACEIT<select name="faceit_level"><option value="">Не указан</option>${Array.from({length:10},(_,i)=>`<option value="${i+1}" ${p?.faceit_level===i+1?'selected':''}>${i+1}</option>`).join('')}</select></label>
+ <label>Основная роль${select('primary_role',false)}</label><label>Вторая роль${select('secondary_role',true)}</label>
+ <label class="fz-wide">Steam (ссылка на профиль)<input name="steam_url" type="url" placeholder="https://steamcommunity.com/id/..." value="${v('steam_url')}"></label>
+ <label>Telegram<input name="telegram" value="${v('telegram')}"></label><label>Discord<input name="discord" value="${v('discord')}"></label>
+ <label class="fz-wide">Фото игрока (ссылка HTTPS)<input name="photo_url" type="url" value="${v('photo_url')}"></label>
+ ${isAdmin()?`<label>Призовые, $<input type="number" min="0" step="0.01" name="prize_usd" value="${Number(p?.prize_usd||0)}"></label>`:''}
+ <div class="fz-wide fz-actions"><button class="fz-action" type="submit">Сохранить игрока</button><a class="fz-action secondary" href="${fzTeamLink(t)}">Отмена</a>${p?'<button class="fz-action danger" type="button" id="fzDeletePlayer">Удалить игрока</button>':''}</div></form></section>`;
+}
+function fzDbPlayerPage(){
+ const id=location.hash.split('/')[2]?.replace(/^db-/,'');const p=fzPlayers.find(x=>x.id===id);
+ if(!p)return '<section class="fz-manager">Игрок не найден</section>';
+ const t=fzTeams.find(x=>x.id===p.team_id),tab=location.hash.split('/')[3]==='stats'?'stats':'main';
+ const stats=playerMatchStats.filter(x=>x.player_slug===('db-'+p.id));
+ const sum=k=>stats.reduce((n,x)=>n+Number(x[k]||0),0),m=stats.length,k=sum('kills'),d=sum('deaths'),a=sum('assists'),wins=stats.filter(x=>x.won===true).length;
+ const fields=tab==='stats'?[['Матчи',m],['K/D',m?(d?(k/d).toFixed(2):'—'):'—'],['Убийства',m?k:'—'],['Смерти',m?d:'—'],['Ассисты',m?a:'—'],['Винрейт',m?Math.round(wins/m*100)+'%':'—']]:[['Имя',p.first_name+' '+p.last_name],['Страна',p.country||'—'],['Команда',t?.name||'—'],['Роль',p.primary_role],['Вторая роль',p.secondary_role||'—'],['Призовые',Number(p.prize_usd||0).toFixed(0)+' const order=['sw4mper','Loytaber','Skrizzi','xBlackerx','BOSSKPEC'];const roster=order.map(name=>teamWoodsRoster.find(([p])=>p.toLowerCase()===name.toLowerCase())).filter(Boolean);return `<div class="crumb"><a href="#/home">Главная</a>　/　Игроки</div><div class="page-title"><div><h1>Игроки</h1><p>Состав команды Team Woods · Counter-Strike 2</p></div><a class="back" href="#/team/woods">← Team Woods</a></div><section class="panel"><div class="ranking-head">🇷🇺 TEAM WOODS · ОСНОВНОЙ СОСТАВ</div><div class="tw-roster" style="padding:18px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px">${roster.map(([player,photo])=>`<a class="tw-player" href="${fztvPlayerLink(player)}/stats" style="min-width:0;color:inherit;text-decoration:none"><img src="${photo}" alt="${player}"><b>${player==='bosskpec'?'BOSSKPEC':player}</b><small style="display:block;color:var(--muted);margin-top:5px">🇷🇺 Россия · Team Woods</small></a>`).join('')}</div><div class="detail-empty">Статистика игроков появится после добавления результатов матчей.</div></section>`}
+let authMode='register';
+const SUPABASE_URL='https://svcbxbovsjslfduogjyt.supabase.co';
+const SUPABASE_KEY='sb_publishable_5y0mlwG1w-DVMjmMIphMhw_DpZ7fZaB';
+const ADMIN_EMAILS=['bogdanbudnikov737@gmail.com','vanausakov15@gmail.com'];
+const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let playerMatchStats=[];
+let sessionUser=null, profile=null, adminVerified=false, ownerVerified=false, staffRoles={}, usersCache=[], matchesCache=[], newsCache=[], contentLoaded=false;
+function currentUser(){return sessionUser&&profile?{...profile,id:sessionUser.id,email:sessionUser.email,login:profile.login||sessionUser.user_metadata?.login||sessionUser.email?.split('@')[0]}:null}
+function isAdmin(){return adminVerified}
+function isFztvAdmin(){return adminVerified}
+function escapeAuth(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function fmtDate(v){return v?new Date(v).toLocaleString('ru-RU'):'—'}
+async function loadContent(){
+  const [m,maps,n,ps]=await Promise.all([
+    sb.from('fztv_site_matches').select('*').order('starts_at',{ascending:false}),
+    sb.from('fztv_match_maps').select('*').order('map_order',{ascending:true}),
+    sb.from('fztv_news').select('*').order('created_at',{ascending:false}),
+    sb.from('fztv_player_match_stats').select('*')
+  ]);
+  if(m.error||maps.error||n.error)console.warn('FZTV content:',m.error||maps.error||n.error);
+  matchesCache=(m.data||[]).map(match=>{
+    const matchMaps=(maps.data||[]).filter(x=>x.match_id===match.id)
+      .map(x=>({name:x.map_name,a:x.score_a,b:x.score_b}));
+    const mapWinsA=matchMaps.filter(x=>x.a!=null&&x.b!=null&&x.a>x.b).length;
+    const mapWinsB=matchMaps.filter(x=>x.a!=null&&x.b!=null&&x.b>x.a).length;
+    const score=String(match.result_overall||'').match(/(\d+)\s*[:–-]\s*(\d+)/);
+    return {...match,event_name:match.title||'FragZoneTV',maps:matchMaps,
+      score_a:score?Number(score[1]):mapWinsA,score_b:score?Number(score[2]):mapWinsB};
+  });
+  newsCache=n.data||[];
+  playerMatchStats=ps.data||[];
+  if(ps.error)console.warn('Player stats:',ps.error);
+  contentLoaded=true;render();fzLoad();
+}
+async function refreshAuth(){
+  const {data:{user},error}=await sb.auth.getUser();
+  sessionUser=error?null:user;profile=null;adminVerified=false;ownerVerified=false;
+  if(sessionUser){
+    const p=await sb.from('profiles').select('id,login,email,role,points,created_at')
+      .eq('id',sessionUser.id).maybeSingle();
+    profile=p.data||{login:sessionUser.user_metadata?.login||sessionUser.email?.split('@')[0]};
+    const ban=await sb.rpc('fztv_my_ban');
+    if(ban.error)console.warn('Cannot check account ban:',ban.error);
+    if(ban.data){
+      await sb.auth.signOut();sessionUser=null;profile=null;
+      alert('Аккаунт заблокирован. Причина: '+(ban.data.reason||'не указана'));
+    }else{
+      const adm=await sb.rpc('fztv_is_admin');
+      if(adm.error)console.warn('Admin role check:',adm.error);
+      adminVerified=adm.data===true;
+      if(adminVerified){
+        const own=await sb.rpc('fztv_is_owner');
+        ownerVerified=own.data===true;
+      }
+    }
+  }
+  render();
+  if(adminVerified && location.hash.startsWith('#/admin')){
+    loadUsers().catch(e=>console.error('Пользователи:',e));
+  }
+}
+function authPage(){const u=currentUser();if(u)return `<div class="auth-wrap"><section class="auth-card"><h1>Личный кабинет</h1><h2>${escapeAuth(u.login)}</h2><p>${escapeAuth(u.email)}</p><p>Баллы: ${escapeAuth(u.points||0)}</p><button class="auth-logout" id="authLogout">Выйти</button>${isAdmin()?'<p><a class="back" href="#/admin">Админ-панель</a></p>':''}</section></div>`;return `<div class="auth-wrap"><section class="auth-card"><div class="eyebrow">FRAGZONETV · SUPABASE</div><h1>${authMode==='login'?'Вход':'Регистрация'}</h1><div class="auth-tabs"><button type="button" data-auth-mode="login" class="${authMode==='login'?'active':''}">Вход</button><button type="button" data-auth-mode="register" class="${authMode==='register'?'active':''}">Регистрация</button></div><form id="authForm" class="auth-form">${authMode==='register'?'<label>Никнейм<input name="login" minlength="3" maxlength="24" required></label>':''}<label>Email<input name="email" type="email" required></label><label>Пароль<input name="password" type="password" minlength="6" required></label><button type="submit" class="auth-submit">${authMode==='login'?'ВОЙТИ':'ЗАРЕГИСТРИРОВАТЬСЯ'}</button><div id="authMessage" class="auth-message" role="status"></div></form><p class="auth-note">Аккаунт хранится в общей базе Supabase. Если включено подтверждение почты, открой письмо перед первым входом.</p></section></div>`}
+function matchCard(m){let maps=Array.isArray(m.maps)?m.maps:[];return `<article class="panel" style="padding:18px;margin:12px 0"><small style="color:var(--muted)">${escapeAuth(fmtDate(m.starts_at))} · ${escapeAuth(m.status)}</small><h2>${escapeAuth(m.team_a)} <span style="color:var(--red)">${m.score_a??0} : ${m.score_b??0}</span> ${escapeAuth(m.team_b)}</h2><p style="color:var(--muted)">${escapeAuth(m.event_name||'FragZoneTV')}</p>${maps.length?`<div style="display:flex;flex-wrap:wrap;gap:8px">${maps.map(x=>`<span class="toolbtn">${escapeAuth(x.name)}: ${Number(x.a)||0}–${Number(x.b)||0}</span>`).join('')}</div>`:''}</article>`}
+function matches(){return `<div class="page-title"><h1>Матчи CS2</h1></div>${matchesCache.length?matchesCache.map(matchCard).join(''):'<section class="panel detail-empty">Матчи ещё не опубликованы</section>'}`}
+function newsPage(){return `<div class="page-title"><h1>Новости FragZoneTV</h1></div>${newsCache.length?newsCache.map(n=>`<article class="panel" style="padding:22px;margin:12px 0"><small>${escapeAuth(fmtDate(n.created_at))}</small><h2>${escapeAuth(n.title)}</h2><p style="white-space:pre-wrap;line-height:1.6">${escapeAuth(n.content||n.body)}</p></article>`).join(''):'<section class="panel detail-empty">Новостей пока нет</section>'}`}
+function adminPage(){if(!isAdmin())return '<section class="panel detail-empty">Нет доступа к админ-панели. <a href="#/auth" style="color:#ff6875">Войти в аккаунт</a></section>';return `<div class="page-title"><h1>Админ-панель FragZoneTV</h1></div><section class="panel" style="padding:18px"><h2>Пользователи (${usersCache.length})</h2><button class="toolbtn" id="refreshUsers">Обновить список</button><div id="usersList">${usersCache.map(u=>`<div class="rank-team" style="flex-wrap:wrap;gap:12px"><div style="flex:1;min-width:190px"><b>${escapeAuth(u.login||'Игрок')}</b><small style="display:block">${escapeAuth(u.email)} · ${escapeAuth(fmtDate(u.created_at))}</small><small>${u.ban?'🔴 Заблокирован: '+escapeAuth(u.ban.reason):'🟢 Активен'}</small></div>${staffRoles[u.id]!=='owner'?`<button class="toolbtn" data-user-ban="${u.id}">${u.ban?'Разблокировать':'Заблокировать'}</button>`:''}${ownerVerified&&staffRoles[u.id]!=='owner'?`<button class="toolbtn" data-user-admin="${u.id}">${staffRoles[u.id]==='admin'?'Снять админа':'Выдать админку'}</button>`:''}<small>${staffRoles[u.id]==='owner'?'👑 Владелец':staffRoles[u.id]==='admin'?'🛡 Администратор':'Игрок'}</small></div>`).join('')||'<p>Пока нет данных. Нажми «Обновить список».</p>'}</div></section><section class="panel" style="padding:18px;margin-top:16px"><h2>Добавить или изменить матч</h2><form id="matchEditor" class="auth-form"><label>Матч для редактирования<select name="id" id="matchSelect"><option value="">Новый матч</option>${matchesCache.map(m=>`<option value="${m.id}">${escapeAuth(m.team_a)} — ${escapeAuth(m.team_b)}</option>`).join('')}</select></label><label>Команда 1<select name="team_a" required><option>Team Woods</option><option>Woods Academy</option><option>s73</option><option>Vayron</option><option>Другая команда</option></select></label><label>Название команды 1 (если другая)<input name="custom_a"></label><label>Команда 2<select name="team_b" required><option>s73</option><option>Team Woods</option><option>Woods Academy</option><option>Vayron</option><option>Другая команда</option></select></label><label>Название команды 2 (если другая)<input name="custom_b"></label><label>Турнир<input name="event_name" placeholder="FZTV CUP"></label><label>Дата и время<input name="starts_at" type="datetime-local" required></label><label>Статус<select name="status"><option value="upcoming">Предстоящий</option><option value="live">LIVE</option><option value="finished">Завершён</option></select></label><label>Счёт по картам команды 1<input name="score_a" type="number" min="0" max="9" value="0"></label><label>Счёт по картам команды 2<input name="score_b" type="number" min="0" max="9" value="0"></label><label>Карты (каждая строка: Mirage,13,9)<textarea name="maps" rows="4" placeholder="Mirage,13,9&#10;Dust2,11,13"></textarea></label><button class="auth-submit">Сохранить матч</button><button type="button" class="toolbtn" id="deleteMatch">Удалить выбранный матч</button><p id="matchMessage"></p></form></section><section class="panel" style="padding:18px;margin-top:16px"><h2>Публикация новостей</h2><form id="newsEditor" class="auth-form"><label>Редактировать новость<select name="id" id="newsSelect"><option value="">Новая новость</option>${newsCache.map(n=>`<option value="${n.id}">${escapeAuth(n.title)}</option>`).join('')}</select></label><label>Заголовок<input name="title" maxlength="180" required></label><label>Текст<textarea name="body" rows="7" required></textarea></label><button class="auth-submit">Опубликовать / сохранить</button><button type="button" class="toolbtn" id="deleteNews">Удалить выбранную новость</button><p id="newsMessage"></p></form></section>`}
+async function loadUsers(){const [result,roles]=await Promise.all([sb.rpc('fztv_admin_list_users'),sb.rpc('fztv_staff_list')]);if(result.error)throw result.error;if(roles.error)throw roles.error;staffRoles=Object.fromEntries((roles.data||[]).map(r=>[r.user_id,r.role]));usersCache=result.data||[];render()}
+async function adminWrite(table,payload,id){
+  if(table==='fztv_site_matches'){
+    const {maps=[],score_a=0,score_b=0,event_name='',...fields}=payload;
+    const record={...fields,title:event_name,result_overall:String(score_a)+':'+String(score_b)};
+    const q=id?sb.from(table).update(record).eq('id',id):sb.from(table).insert(record);
+    const {data,error}=await q.select('id').single();
+    if(error)throw error;
+    const matchId=data.id;
+    if(id){
+      const del=await sb.from('fztv_match_maps').delete().eq('match_id',matchId);
+      if(del.error)throw del.error;
+    }
+    if(maps.length){
+      const insert=await sb.from('fztv_match_maps').insert(maps.map((x,i)=>({
+        match_id:matchId,map_name:x.name,map_order:i+1,score_a:x.a,score_b:x.b
+      })));
+      if(insert.error)throw insert.error;
+    }
+  }else{
+    if(table==='fztv_news'){
+      payload={...payload,content:payload.body,published:true};
+      delete payload.body;
+    }
+    const q=id?sb.from(table).update(payload).eq('id',id):sb.from(table).insert(payload);
+    const {error}=await q;
+    if(error)throw error;
+  }
+  await loadContent();
+}
+function bindFztv(){document.querySelectorAll('[data-auth-mode]').forEach(b=>b.onclick=()=>{authMode=b.dataset.authMode;render()});document.getElementById('authLogout')?.addEventListener('click',async()=>{await sb.auth.signOut();await refreshAuth()});const af=document.getElementById('authForm');if(af)af.onsubmit=async e=>{e.preventDefault();const fd=new FormData(af),msg=document.getElementById('authMessage'),btn=af.querySelector('[type=submit]');btn.disabled=true;try{const email=String(fd.get('email')).trim(),password=String(fd.get('password'));if(authMode==='register'){const login=String(fd.get('login')).trim();const {data,error}=await sb.auth.signUp({email,password,options:{data:{login}}});if(error)throw error;msg.textContent=data.session?'Регистрация выполнена.':'Проверь почту и подтверди регистрацию, затем войди.';if(data.session)await refreshAuth()}else{const {error}=await sb.auth.signInWithPassword({email,password});if(error)throw error;const {data:ban}=await sb.rpc('fztv_my_ban');if(ban){await sb.auth.signOut();throw Error('Аккаунт заблокирован: '+ban.reason)}await refreshAuth()}}catch(err){msg.textContent=err.message}finally{btn.disabled=false}};
+ document.getElementById('refreshUsers')?.addEventListener('click',()=>loadUsers().catch(e=>alert(e.message)));
+ document.querySelectorAll('[data-user-admin]').forEach(b=>b.onclick=async()=>{const u=usersCache.find(x=>x.id===b.dataset.userAdmin);if(!u)return;const grant=staffRoles[u.id]!=='admin';if(!confirm((grant?'Выдать админ-панель':'Забрать админ-панель')+' пользователю '+(u.login||u.email)+'?'))return;try{const {error}=await sb.rpc('fztv_owner_set_admin',{target_user:u.id,grant_admin:grant});if(error)throw error;await loadUsers();alert(grant?'Права администратора выданы':'Права администратора отозваны')}catch(e){alert(e.message)}});
+ document.querySelectorAll('[data-user-ban]').forEach(b=>b.onclick=async()=>{const u=usersCache.find(x=>x.id===b.dataset.userBan);try{if(u.ban){if(!confirm('Снять блокировку?'))return;const {error}=await sb.rpc('fztv_admin_remove_ban',{target_user:u.id});if(error)throw error}else{const reason=prompt('Причина блокировки:','Нарушение правил');if(reason===null)return;const days=Number(prompt('Дней: 1, 7, 30 или 0 (навсегда)','7'));if(![0,1,7,30].includes(days))throw Error('Неверный срок');const {error}=await sb.rpc('fztv_admin_set_ban',{target_user:u.id,ban_reason:reason,duration_days:days});if(error)throw error}await loadUsers()}catch(e){alert(e.message)}});
+ const mf=document.getElementById('matchEditor');if(mf){document.getElementById('matchSelect').onchange=e=>{const m=matchesCache.find(x=>x.id===e.target.value);mf.reset();mf.elements.id.value=m?.id||'';if(!m)return;for(const k of ['team_a','team_b','event_name','status','score_a','score_b']){if(mf.elements[k]){if((k==='team_a'||k==='team_b')&&![...mf.elements[k].options].some(o=>o.value===m[k])){mf.elements[k].value='Другая команда';mf.elements[k==='team_a'?'custom_a':'custom_b'].value=m[k]}else mf.elements[k].value=m[k]??''}}mf.elements.starts_at.value=m.starts_at?.slice(0,16)||'';mf.elements.maps.value=(m.maps||[]).map(x=>[x.name,x.a,x.b].join(',')).join('\n')};mf.onsubmit=async e=>{e.preventDefault();const f=new FormData(mf);try{const maps=String(f.get('maps')||'').split(/\n/).map(x=>x.trim()).filter(Boolean).map(line=>{const [name,a,b]=line.split(',').map(x=>x.trim());if(!name||!/^\d+$/.test(a)||!/^\d+$/.test(b))throw Error('Формат карты: Mirage,13,9');return {name,a:Number(a),b:Number(b)}});const val=k=>String(f.get(k)||'').trim();const payload={team_a:val('team_a')==='Другая команда'?val('custom_a'):val('team_a'),team_b:val('team_b')==='Другая команда'?val('custom_b'):val('team_b'),event_name:val('event_name'),starts_at:new Date(val('starts_at')).toISOString(),status:val('status'),score_a:Number(val('score_a')),score_b:Number(val('score_b')),maps};if(!payload.team_a||!payload.team_b)throw Error('Укажи обе команды');await adminWrite('fztv_matches',payload,val('id')||null);alert('Матч сохранён');location.hash='#/matches'}catch(err){document.getElementById('matchMessage').textContent=err.message}};document.getElementById('deleteMatch').onclick=async()=>{const id=mf.elements.id.value;if(!id||!confirm('Удалить матч?'))return;const {error}=await sb.from('fztv_site_matches').delete().eq('id',id);if(error)alert(error.message);else{await loadContent();location.hash='#/admin'}}}
+ const nf=document.getElementById('newsEditor');if(nf){document.getElementById('newsSelect').onchange=e=>{const n=newsCache.find(x=>x.id===e.target.value);nf.elements.title.value=n?.title||'';nf.elements.body.value=n?.content||n?.body||''};nf.onsubmit=async e=>{e.preventDefault();const f=new FormData(nf);try{await adminWrite('fztv_news',{title:String(f.get('title')).trim(),body:String(f.get('body')).trim()},String(f.get('id')||'')||null);alert('Новость опубликована');location.hash='#/news'}catch(err){document.getElementById('newsMessage').textContent=err.message}};document.getElementById('deleteNews').onclick=async()=>{const id=nf.elements.id.value;if(!id||!confirm('Удалить новость?'))return;const {error}=await sb.from('fztv_news').delete().eq('id',id);if(error)alert(error.message);else{await loadContent();location.hash='#/admin'}}}
+}
+function render(){const route=(location.hash||'#/home').replace(/^#\/?/,'').split('/')[0];let html;if(route==='home')html=home()+`<div class="page-title"><h2>Последние матчи</h2></div>${matchesCache.slice(0,3).map(matchCard).join('')}`;else if(route==='auth')html=authPage();else if(route==='admin')html=adminPage()+fzModeration();else if(route==='matches'||route==='match')html=matches();else if(route==='news')html=newsPage();else if(route==='bank')html=bankPage();else if(route==='ranking')html=ranking().replace('</section>',fzTeams.filter(t=>t.status==='approved').map(t=>`<a class="rank-team" href="${fzTeamLink(t)}"><div class="rank-place">—</div><div class="rank-logo">${fzImg(t.logo_url)?`<img src="${fzImg(t.logo_url)}" alt="">`:fzEsc(t.tag)}</div><div class="rank-main"><strong>${fzEsc(t.name)}</strong><small>${fzEsc(t.country)} · CS2</small></div><div class="rank-players">${fzPlayers.filter(p=>p.team_id===t.id).length} игроков</div><div class="rank-arrow">FZ 0</div></a>`).join('')+'</section>');else if(route==='team')html=location.hash.toLowerCase().includes('/taykans')?taykansDetail():location.hash.toLowerCase().includes('/woods')?teamDetail():fzTeamPage();else if(route==='my-teams')html=fzMyTeams();else if(route==='team-new')html=sessionUser?fzTeamForm(null):fzMyTeams();else if(route==='team-edit'){const t=fzTeams.find(x=>x.id===location.hash.split('/')[2]);html=t&&fzOwned(t)?fzTeamForm(t):'<div class="fz-manager">Нет доступа</div>';}else if(route==='player-edit'){const parts=location.hash.split('/'),p=fzPlayers.find(x=>x.id===parts[2]);html=fzPlayerForm(p,parts[3]);}else if(route==='tournaments')html=tournamentCalendar();else if(route==='tournament'){const parts=location.hash.split('/');html=tournamentDetail(decodeURIComponent(parts[2]||'Турнир'),decodeURIComponent(parts[3]||'Дата уточняется'))}else if(route==='players')html=fzPlayersTable();else if(route==='player')html=location.hash.includes('/db-')?fzDbPlayerPage():fztvPlayerProfile();else if(route==='rules')html=rulesPage();else if(route==='stats')html=statsPage();else html=home();app.innerHTML=html;document.querySelectorAll('#nav a').forEach(a=>a.classList.toggle('active',a.dataset.route===route));const top=document.querySelector('.auth-top-link');if(top)top.textContent=currentUser()?.login||'Войти / Регистрация';const admin=document.getElementById('adminTopLink');if(admin)admin.style.display=isAdmin()?'inline-flex':'none';bindFztv();fzBind();if(typeof bindBank==='function')bindBank();document.querySelectorAll('[data-filter]').forEach(b=>b.addEventListener('click',()=>{currentFilter=b.dataset.filter;render()}));document.querySelectorAll('[data-tournament]').forEach(b=>b.addEventListener('click',(event)=>{event.preventDefault();event.stopPropagation();location.hash='#/tournament/'+b.dataset.tournament+'/'+encodeURIComponent(b.dataset.date)}));const more=document.getElementById('novMore');if(more)more.onclick=()=>{showNovMore=!showNovMore;render()};const col=document.getElementById('collapse');if(col)col.onclick=()=>{collapsed=!collapsed;render()};const earlier=document.getElementById('earlier');if(earlier)earlier.onclick=()=>document.getElementById('calendar')?.scrollIntoView({behavior:'smooth',block:'start'})}
+window.addEventListener('hashchange',render);
+sb.auth.onAuthStateChange(()=>{setTimeout(refreshAuth,0)});
+render();refreshAuth();loadContent();
+</script>
+</body></html>]];
+ const base=fzPlayerLink(p);
+ return `<div class="fztv-player-tabs"><a href="${base}" class="${tab==='main'?'active':''}">Основной</a><a href="${base}/stats" class="${tab==='stats'?'active':''}">Статистика</a></div><section class="fztv-player-card"><div class="fztv-player-hero"><div class="fztv-player-photo">${fzImg(p.photo_url)?`<img src="${fzImg(p.photo_url)}" alt="">`:'<div class="placeholder">🎮</div>'}</div><div class="fztv-player-main"><h1>${fzEsc(p.nickname)}</h1><p class="fztv-player-sub">${fzEsc(t?.name||'FragZoneTV')} · Counter-Strike 2</p><div class="fztv-player-facts">${fields.map(([k,v])=>`<div class="fztv-player-fact"><span>${k}</span><strong>${fzEsc(v)}</strong></div>`).join('')}</div>${tab==='stats'&&!m?'<div class="fz-notice">Статистика появится после внесения индивидуальных результатов матчей.</div>':''}${tab==='main'&&fzImg(p.steam_url)?`<p style="margin-top:14px"><a href="${fzImg(p.steam_url)}" target="_blank" rel="noopener noreferrer">Профиль Steam ↗</a></p>`:''}</div></div><div class="fztv-trophies"><h3>Трофеи</h3><p>Трофеев пока нет</p></div></section>`;
+}
+function fzPlayersTable(){
+ const legacy=['sw4mper','Loytaber','Skrizzi','xBlackerx','BOSSKPEC'].map(name=>({nickname:name,team:'Team Woods',team_id:'legacy',primary_role:({sw4mper:'Hybrid',loytaber:'AWP',skrizzi:'Rifler',xblackerx:'IGL',bosskpec:'Entry fragger'})[name.toLowerCase()]||'Rifler',country:'',id:'legacy-'+name,prize_usd:0}));
+ const items=[...legacy,...fzPlayers.filter(p=>fzTeams.some(t=>t.id===p.team_id&&t.status==='approved')).map(p=>({...p,team:fzTeams.find(t=>t.id===p.team_id)?.name||''}))];
+ let filtered=items.filter(p=>(fzPlayerTeamFilter==='all'||p.team_id===fzPlayerTeamFilter)&&(fzPlayerRoleFilter==='all'||p.primary_role===fzPlayerRoleFilter)&&((p.nickname+' '+(p.first_name||'')+' '+(p.last_name||'')).toLowerCase().includes(fzPlayerSearch.toLowerCase())));
+ filtered.sort((a,b)=>a.nickname.localeCompare(b.nickname,'ru'));
+ return `<div class="page-title"><h1>Игроки FragZoneTV</h1></div><div class="fz-actions"><a href="#/my-teams" class="fz-action">+ Мои команды / добавить игрока</a></div><section class="fz-manager"><div class="fz-actions"><input class="fz-filter" style="flex:2;min-width:160px" id="fzSearch" placeholder="Поиск по нику или имени" value="${fzEsc(fzPlayerSearch)}"><select class="fz-filter" style="flex:1" id="fzTeamFilter"><option value="all">Все команды</option><option value="legacy" ${fzPlayerTeamFilter==='legacy'?'selected':''}>Team Woods</option>${fzTeams.filter(t=>t.status==='approved').map(t=>`<option value="${t.id}" ${fzPlayerTeamFilter===t.id?'selected':''}>${fzEsc(t.name)}</option>`).join('')}</select><select class="fz-filter" style="flex:1" id="fzRoleFilter"><option value="all">Все роли</option>${['AWP','Rifler','IGL','Entry fragger','Support','Lurker','Anchor','Hybrid'].map(r=>`<option value="${r}" ${fzPlayerRoleFilter===r?'selected':''}>${r}</option>`).join('')}</select></div><div class="fz-notice">Рейтинг по индивидуальным показателям появится после внесения статистики матчей. Пока игроки показаны по алфавиту, без вымышленных оценок.</div><div class="fz-table-wrap"><table class="fz-table"><thead><tr><th>Ник</th><th>Рейтинг</th><th>Имя</th><th>Команда</th><th>Роль</th><th>Призовые</th><th>Страна</th></tr></thead><tbody>${filtered.map(p=>`<tr><td><a href="${p.team_id==='legacy'?fztvPlayerLink(p.nickname)+'/stats':fzPlayerLink(p)+'/stats'}">${fzEsc(p.nickname)}</a></td><td>—</td><td>${fzEsc([p.first_name,p.last_name].filter(Boolean).join(' ')||'—')}</td><td>${fzEsc(p.team)}</td><td><span class="fz-tag">${fzEsc(p.primary_role)}</span></td><td>0 $</td><td>${fzEsc(p.country||'—')}</td></tr>`).join('')||'<tr><td colspan="7">Игроков не найдено</td></tr>'}</tbody></table></div></section>`;
+}
+function fzModeration(){
+ if(!isAdmin())return '';
+ return `<section class="fz-manager"><h2>Модерация команд</h2>${fzTeams.filter(t=>t.status==='pending').map(t=>`<div class="fz-actions" style="align-items:center;border-bottom:1px solid #314257"><b>${fzEsc(t.name)} [${fzEsc(t.tag)}]</b><span>${fzEsc(t.country)}</span><a href="${fzTeamLink(t)}">Открыть</a><button class="fz-action" data-fz-approve="${t.id}">Одобрить</button><button class="fz-action danger" data-fz-reject="${t.id}">Отклонить</button></div>`).join('')||'<p>Новых заявок нет.</p>'}<h3 style="margin-top:20px">Все команды</h3>${fzTeams.map(t=>`<div class="fz-actions" style="align-items:center"><a href="${fzTeamLink(t)}">${fzEsc(t.name)}</a><span class="fz-tag">${fzEsc(t.status)}</span><a href="#/team-edit/${t.id}">Редактировать</a><a href="#/player-edit/new/${t.id}">Добавить игрока</a></div>`).join('')}</section>`;
+}
+function fzBind(){
+ document.getElementById('fzSearch')?.addEventListener('input',e=>{fzPlayerSearch=e.target.value;render();document.getElementById('fzSearch')?.focus()});
+ document.getElementById('fzTeamFilter')?.addEventListener('change',e=>{fzPlayerTeamFilter=e.target.value;render()});
+ document.getElementById('fzRoleFilter')?.addEventListener('change',e=>{fzPlayerRoleFilter=e.target.value;render()});
+ document.getElementById('fzTeamForm')?.addEventListener('submit',async e=>{
+  e.preventDefault();const f=e.currentTarget,fd=new FormData(f),id=f.dataset.id;
+  const fields=Object.fromEntries(['name','tag','country','description','logo_url','color_primary','color_secondary','coach','president'].map(k=>[k,String(fd.get(k)||'').trim()]));
+  if(fields.logo_url&&!fzImg(fields.logo_url))return alert('Для логотипа нужна ссылка HTTPS');
+  const t=id?fzTeams.find(x=>x.id===id):null;if(id&&!fzOwned(t))return alert('Нет прав');
+  const q=id?sb.from('fztv_teams').update(fields).eq('id',id):sb.from('fztv_teams').insert({...fields,owner_id:sessionUser?.id,status:'pending'});
+  const {error}=await q;if(error)return alert(error.message);
+  await fzLoad();location.hash='#/my-teams';alert(id?'Команда обновлена':'Заявка отправлена на модерацию');
+ });
+ document.getElementById('fzPlayerForm')?.addEventListener('submit',async e=>{
+  e.preventDefault();const f=e.currentTarget,fd=new FormData(f),id=f.dataset.id,team_id=f.dataset.team;
+  const t=fzTeams.find(x=>x.id===team_id);if(!fzOwned(t))return alert('Нет прав');
+  const fields=Object.fromEntries(['nickname','first_name','last_name','country','birth_date','primary_role','secondary_role','faceit_level','steam_url','telegram','discord','photo_url'].map(k=>[k,String(fd.get(k)||'').trim()]));
+  fields.birth_date=fields.birth_date||null;fields.faceit_level=fields.faceit_level?Number(fields.faceit_level):null;
+  for(const key of ['steam_url','photo_url'])if(fields[key]&&!fzImg(fields[key]))return alert('Ссылки должны начинаться с https://');
+  if(isAdmin()&&fd.has('prize_usd'))fields.prize_usd=Number(fd.get('prize_usd')||0);
+  const q=id?sb.from('fztv_team_players').update(fields).eq('id',id):sb.from('fztv_team_players').insert({...fields,team_id});
+  const {error}=await q;if(error)return alert(error.message);
+  await fzLoad();location.hash=fzTeamLink(t);
+ });
+ document.getElementById('fzDeletePlayer')?.addEventListener('click',async()=>{
+  const f=document.getElementById('fzPlayerForm');if(!f||!confirm('Удалить игрока из команды?'))return;
+  const {error}=await sb.from('fztv_team_players').delete().eq('id',f.dataset.id);if(error)return alert(error.message);
+  await fzLoad();location.hash='#/team/'+f.dataset.team;
+ });
+ document.querySelectorAll('[data-fz-approve],[data-fz-reject]').forEach(b=>b.addEventListener('click',async()=>{
+  if(!isAdmin())return;const approve=b.hasAttribute('data-fz-approve'),id=b.dataset.fzApprove||b.dataset.fzReject;
+  const note=approve?'':prompt('Причина отклонения:');if(!approve&&note===null)return;
+  const {error}=await sb.from('fztv_teams').update({status:approve?'approved':'rejected',moderation_note:note||''}).eq('id',id);
+  if(error)return alert(error.message);await fzLoad();
+ }));
+}
+function playersPage(){const order=['sw4mper','Loytaber','Skrizzi','xBlackerx','BOSSKPEC'];const roster=order.map(name=>teamWoodsRoster.find(([p])=>p.toLowerCase()===name.toLowerCase())).filter(Boolean);return `<div class="crumb"><a href="#/home">Главная</a>　/　Игроки</div><div class="page-title"><div><h1>Игроки</h1><p>Состав команды Team Woods · Counter-Strike 2</p></div><a class="back" href="#/team/woods">← Team Woods</a></div><section class="panel"><div class="ranking-head">🇷🇺 TEAM WOODS · ОСНОВНОЙ СОСТАВ</div><div class="tw-roster" style="padding:18px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px">${roster.map(([player,photo])=>`<a class="tw-player" href="${fztvPlayerLink(player)}/stats" style="min-width:0;color:inherit;text-decoration:none"><img src="${photo}" alt="${player}"><b>${player==='bosskpec'?'BOSSKPEC':player}</b><small style="display:block;color:var(--muted);margin-top:5px">🇷🇺 Россия · Team Woods</small></a>`).join('')}</div><div class="detail-empty">Статистика игроков появится после добавления результатов матчей.</div></section>`}
+let authMode='register';
+const SUPABASE_URL='https://svcbxbovsjslfduogjyt.supabase.co';
+const SUPABASE_KEY='sb_publishable_5y0mlwG1w-DVMjmMIphMhw_DpZ7fZaB';
+const ADMIN_EMAILS=['bogdanbudnikov737@gmail.com','vanausakov15@gmail.com'];
+const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let playerMatchStats=[];
+let sessionUser=null, profile=null, adminVerified=false, ownerVerified=false, staffRoles={}, usersCache=[], matchesCache=[], newsCache=[], contentLoaded=false;
+function currentUser(){return sessionUser&&profile?{...profile,id:sessionUser.id,email:sessionUser.email,login:profile.login||sessionUser.user_metadata?.login||sessionUser.email?.split('@')[0]}:null}
+function isAdmin(){return adminVerified}
+function isFztvAdmin(){return adminVerified}
+function escapeAuth(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function fmtDate(v){return v?new Date(v).toLocaleString('ru-RU'):'—'}
+async function loadContent(){
+  const [m,maps,n,ps]=await Promise.all([
+    sb.from('fztv_site_matches').select('*').order('starts_at',{ascending:false}),
+    sb.from('fztv_match_maps').select('*').order('map_order',{ascending:true}),
+    sb.from('fztv_news').select('*').order('created_at',{ascending:false}),
+    sb.from('fztv_player_match_stats').select('*')
+  ]);
+  if(m.error||maps.error||n.error)console.warn('FZTV content:',m.error||maps.error||n.error);
+  matchesCache=(m.data||[]).map(match=>{
+    const matchMaps=(maps.data||[]).filter(x=>x.match_id===match.id)
+      .map(x=>({name:x.map_name,a:x.score_a,b:x.score_b}));
+    const mapWinsA=matchMaps.filter(x=>x.a!=null&&x.b!=null&&x.a>x.b).length;
+    const mapWinsB=matchMaps.filter(x=>x.a!=null&&x.b!=null&&x.b>x.a).length;
+    const score=String(match.result_overall||'').match(/(\d+)\s*[:–-]\s*(\d+)/);
+    return {...match,event_name:match.title||'FragZoneTV',maps:matchMaps,
+      score_a:score?Number(score[1]):mapWinsA,score_b:score?Number(score[2]):mapWinsB};
+  });
+  newsCache=n.data||[];
+  playerMatchStats=ps.data||[];
+  if(ps.error)console.warn('Player stats:',ps.error);
+  contentLoaded=true;render();
+}
+async function refreshAuth(){
+  const {data:{user},error}=await sb.auth.getUser();
+  sessionUser=error?null:user;profile=null;adminVerified=false;ownerVerified=false;
+  if(sessionUser){
+    const p=await sb.from('profiles').select('id,login,email,role,points,created_at')
+      .eq('id',sessionUser.id).maybeSingle();
+    profile=p.data||{login:sessionUser.user_metadata?.login||sessionUser.email?.split('@')[0]};
+    const ban=await sb.rpc('fztv_my_ban');
+    if(ban.error)console.warn('Cannot check account ban:',ban.error);
+    if(ban.data){
+      await sb.auth.signOut();sessionUser=null;profile=null;
+      alert('Аккаунт заблокирован. Причина: '+(ban.data.reason||'не указана'));
+    }else{
+      const adm=await sb.rpc('fztv_is_admin');
+      if(adm.error)console.warn('Admin role check:',adm.error);
+      adminVerified=adm.data===true;
+      if(adminVerified){
+        const own=await sb.rpc('fztv_is_owner');
+        ownerVerified=own.data===true;
+      }
+    }
+  }
+  render();
+  if(adminVerified && location.hash.startsWith('#/admin')){
+    loadUsers().catch(e=>console.error('Пользователи:',e));
+  }
+}
+function authPage(){const u=currentUser();if(u)return `<div class="auth-wrap"><section class="auth-card"><h1>Личный кабинет</h1><h2>${escapeAuth(u.login)}</h2><p>${escapeAuth(u.email)}</p><p>Баллы: ${escapeAuth(u.points||0)}</p><button class="auth-logout" id="authLogout">Выйти</button>${isAdmin()?'<p><a class="back" href="#/admin">Админ-панель</a></p>':''}</section></div>`;return `<div class="auth-wrap"><section class="auth-card"><div class="eyebrow">FRAGZONETV · SUPABASE</div><h1>${authMode==='login'?'Вход':'Регистрация'}</h1><div class="auth-tabs"><button type="button" data-auth-mode="login" class="${authMode==='login'?'active':''}">Вход</button><button type="button" data-auth-mode="register" class="${authMode==='register'?'active':''}">Регистрация</button></div><form id="authForm" class="auth-form">${authMode==='register'?'<label>Никнейм<input name="login" minlength="3" maxlength="24" required></label>':''}<label>Email<input name="email" type="email" required></label><label>Пароль<input name="password" type="password" minlength="6" required></label><button type="submit" class="auth-submit">${authMode==='login'?'ВОЙТИ':'ЗАРЕГИСТРИРОВАТЬСЯ'}</button><div id="authMessage" class="auth-message" role="status"></div></form><p class="auth-note">Аккаунт хранится в общей базе Supabase. Если включено подтверждение почты, открой письмо перед первым входом.</p></section></div>`}
+function matchCard(m){let maps=Array.isArray(m.maps)?m.maps:[];return `<article class="panel" style="padding:18px;margin:12px 0"><small style="color:var(--muted)">${escapeAuth(fmtDate(m.starts_at))} · ${escapeAuth(m.status)}</small><h2>${escapeAuth(m.team_a)} <span style="color:var(--red)">${m.score_a??0} : ${m.score_b??0}</span> ${escapeAuth(m.team_b)}</h2><p style="color:var(--muted)">${escapeAuth(m.event_name||'FragZoneTV')}</p>${maps.length?`<div style="display:flex;flex-wrap:wrap;gap:8px">${maps.map(x=>`<span class="toolbtn">${escapeAuth(x.name)}: ${Number(x.a)||0}–${Number(x.b)||0}</span>`).join('')}</div>`:''}</article>`}
+function matches(){return `<div class="page-title"><h1>Матчи CS2</h1></div>${matchesCache.length?matchesCache.map(matchCard).join(''):'<section class="panel detail-empty">Матчи ещё не опубликованы</section>'}`}
+function newsPage(){return `<div class="page-title"><h1>Новости FragZoneTV</h1></div>${newsCache.length?newsCache.map(n=>`<article class="panel" style="padding:22px;margin:12px 0"><small>${escapeAuth(fmtDate(n.created_at))}</small><h2>${escapeAuth(n.title)}</h2><p style="white-space:pre-wrap;line-height:1.6">${escapeAuth(n.content||n.body)}</p></article>`).join(''):'<section class="panel detail-empty">Новостей пока нет</section>'}`}
+function adminPage(){if(!isAdmin())return '<section class="panel detail-empty">Нет доступа к админ-панели. <a href="#/auth" style="color:#ff6875">Войти в аккаунт</a></section>';return `<div class="page-title"><h1>Админ-панель FragZoneTV</h1></div><section class="panel" style="padding:18px"><h2>Пользователи (${usersCache.length})</h2><button class="toolbtn" id="refreshUsers">Обновить список</button><div id="usersList">${usersCache.map(u=>`<div class="rank-team" style="flex-wrap:wrap;gap:12px"><div style="flex:1;min-width:190px"><b>${escapeAuth(u.login||'Игрок')}</b><small style="display:block">${escapeAuth(u.email)} · ${escapeAuth(fmtDate(u.created_at))}</small><small>${u.ban?'🔴 Заблокирован: '+escapeAuth(u.ban.reason):'🟢 Активен'}</small></div>${staffRoles[u.id]!=='owner'?`<button class="toolbtn" data-user-ban="${u.id}">${u.ban?'Разблокировать':'Заблокировать'}</button>`:''}${ownerVerified&&staffRoles[u.id]!=='owner'?`<button class="toolbtn" data-user-admin="${u.id}">${staffRoles[u.id]==='admin'?'Снять админа':'Выдать админку'}</button>`:''}<small>${staffRoles[u.id]==='owner'?'👑 Владелец':staffRoles[u.id]==='admin'?'🛡 Администратор':'Игрок'}</small></div>`).join('')||'<p>Пока нет данных. Нажми «Обновить список».</p>'}</div></section><section class="panel" style="padding:18px;margin-top:16px"><h2>Добавить или изменить матч</h2><form id="matchEditor" class="auth-form"><label>Матч для редактирования<select name="id" id="matchSelect"><option value="">Новый матч</option>${matchesCache.map(m=>`<option value="${m.id}">${escapeAuth(m.team_a)} — ${escapeAuth(m.team_b)}</option>`).join('')}</select></label><label>Команда 1<select name="team_a" required><option>Team Woods</option><option>Woods Academy</option><option>s73</option><option>Vayron</option><option>Другая команда</option></select></label><label>Название команды 1 (если другая)<input name="custom_a"></label><label>Команда 2<select name="team_b" required><option>s73</option><option>Team Woods</option><option>Woods Academy</option><option>Vayron</option><option>Другая команда</option></select></label><label>Название команды 2 (если другая)<input name="custom_b"></label><label>Турнир<input name="event_name" placeholder="FZTV CUP"></label><label>Дата и время<input name="starts_at" type="datetime-local" required></label><label>Статус<select name="status"><option value="upcoming">Предстоящий</option><option value="live">LIVE</option><option value="finished">Завершён</option></select></label><label>Счёт по картам команды 1<input name="score_a" type="number" min="0" max="9" value="0"></label><label>Счёт по картам команды 2<input name="score_b" type="number" min="0" max="9" value="0"></label><label>Карты (каждая строка: Mirage,13,9)<textarea name="maps" rows="4" placeholder="Mirage,13,9&#10;Dust2,11,13"></textarea></label><button class="auth-submit">Сохранить матч</button><button type="button" class="toolbtn" id="deleteMatch">Удалить выбранный матч</button><p id="matchMessage"></p></form></section><section class="panel" style="padding:18px;margin-top:16px"><h2>Публикация новостей</h2><form id="newsEditor" class="auth-form"><label>Редактировать новость<select name="id" id="newsSelect"><option value="">Новая новость</option>${newsCache.map(n=>`<option value="${n.id}">${escapeAuth(n.title)}</option>`).join('')}</select></label><label>Заголовок<input name="title" maxlength="180" required></label><label>Текст<textarea name="body" rows="7" required></textarea></label><button class="auth-submit">Опубликовать / сохранить</button><button type="button" class="toolbtn" id="deleteNews">Удалить выбранную новость</button><p id="newsMessage"></p></form></section>`}
+async function loadUsers(){const [result,roles]=await Promise.all([sb.rpc('fztv_admin_list_users'),sb.rpc('fztv_staff_list')]);if(result.error)throw result.error;if(roles.error)throw roles.error;staffRoles=Object.fromEntries((roles.data||[]).map(r=>[r.user_id,r.role]));usersCache=result.data||[];render()}
+async function adminWrite(table,payload,id){
+  if(table==='fztv_site_matches'){
+    const {maps=[],score_a=0,score_b=0,event_name='',...fields}=payload;
+    const record={...fields,title:event_name,result_overall:String(score_a)+':'+String(score_b)};
+    const q=id?sb.from(table).update(record).eq('id',id):sb.from(table).insert(record);
+    const {data,error}=await q.select('id').single();
+    if(error)throw error;
+    const matchId=data.id;
+    if(id){
+      const del=await sb.from('fztv_match_maps').delete().eq('match_id',matchId);
+      if(del.error)throw del.error;
+    }
+    if(maps.length){
+      const insert=await sb.from('fztv_match_maps').insert(maps.map((x,i)=>({
+        match_id:matchId,map_name:x.name,map_order:i+1,score_a:x.a,score_b:x.b
+      })));
+      if(insert.error)throw insert.error;
+    }
+  }else{
+    if(table==='fztv_news'){
+      payload={...payload,content:payload.body,published:true};
+      delete payload.body;
+    }
+    const q=id?sb.from(table).update(payload).eq('id',id):sb.from(table).insert(payload);
+    const {error}=await q;
+    if(error)throw error;
+  }
+  await loadContent();
+}
+function bindFztv(){document.querySelectorAll('[data-auth-mode]').forEach(b=>b.onclick=()=>{authMode=b.dataset.authMode;render()});document.getElementById('authLogout')?.addEventListener('click',async()=>{await sb.auth.signOut();await refreshAuth()});const af=document.getElementById('authForm');if(af)af.onsubmit=async e=>{e.preventDefault();const fd=new FormData(af),msg=document.getElementById('authMessage'),btn=af.querySelector('[type=submit]');btn.disabled=true;try{const email=String(fd.get('email')).trim(),password=String(fd.get('password'));if(authMode==='register'){const login=String(fd.get('login')).trim();const {data,error}=await sb.auth.signUp({email,password,options:{data:{login}}});if(error)throw error;msg.textContent=data.session?'Регистрация выполнена.':'Проверь почту и подтверди регистрацию, затем войди.';if(data.session)await refreshAuth()}else{const {error}=await sb.auth.signInWithPassword({email,password});if(error)throw error;const {data:ban}=await sb.rpc('fztv_my_ban');if(ban){await sb.auth.signOut();throw Error('Аккаунт заблокирован: '+ban.reason)}await refreshAuth()}}catch(err){msg.textContent=err.message}finally{btn.disabled=false}};
+ document.getElementById('refreshUsers')?.addEventListener('click',()=>loadUsers().catch(e=>alert(e.message)));
+ document.querySelectorAll('[data-user-admin]').forEach(b=>b.onclick=async()=>{const u=usersCache.find(x=>x.id===b.dataset.userAdmin);if(!u)return;const grant=staffRoles[u.id]!=='admin';if(!confirm((grant?'Выдать админ-панель':'Забрать админ-панель')+' пользователю '+(u.login||u.email)+'?'))return;try{const {error}=await sb.rpc('fztv_owner_set_admin',{target_user:u.id,grant_admin:grant});if(error)throw error;await loadUsers();alert(grant?'Права администратора выданы':'Права администратора отозваны')}catch(e){alert(e.message)}});
+ document.querySelectorAll('[data-user-ban]').forEach(b=>b.onclick=async()=>{const u=usersCache.find(x=>x.id===b.dataset.userBan);try{if(u.ban){if(!confirm('Снять блокировку?'))return;const {error}=await sb.rpc('fztv_admin_remove_ban',{target_user:u.id});if(error)throw error}else{const reason=prompt('Причина блокировки:','Нарушение правил');if(reason===null)return;const days=Number(prompt('Дней: 1, 7, 30 или 0 (навсегда)','7'));if(![0,1,7,30].includes(days))throw Error('Неверный срок');const {error}=await sb.rpc('fztv_admin_set_ban',{target_user:u.id,ban_reason:reason,duration_days:days});if(error)throw error}await loadUsers()}catch(e){alert(e.message)}});
+ const mf=document.getElementById('matchEditor');if(mf){document.getElementById('matchSelect').onchange=e=>{const m=matchesCache.find(x=>x.id===e.target.value);mf.reset();mf.elements.id.value=m?.id||'';if(!m)return;for(const k of ['team_a','team_b','event_name','status','score_a','score_b']){if(mf.elements[k]){if((k==='team_a'||k==='team_b')&&![...mf.elements[k].options].some(o=>o.value===m[k])){mf.elements[k].value='Другая команда';mf.elements[k==='team_a'?'custom_a':'custom_b'].value=m[k]}else mf.elements[k].value=m[k]??''}}mf.elements.starts_at.value=m.starts_at?.slice(0,16)||'';mf.elements.maps.value=(m.maps||[]).map(x=>[x.name,x.a,x.b].join(',')).join('\n')};mf.onsubmit=async e=>{e.preventDefault();const f=new FormData(mf);try{const maps=String(f.get('maps')||'').split(/\n/).map(x=>x.trim()).filter(Boolean).map(line=>{const [name,a,b]=line.split(',').map(x=>x.trim());if(!name||!/^\d+$/.test(a)||!/^\d+$/.test(b))throw Error('Формат карты: Mirage,13,9');return {name,a:Number(a),b:Number(b)}});const val=k=>String(f.get(k)||'').trim();const payload={team_a:val('team_a')==='Другая команда'?val('custom_a'):val('team_a'),team_b:val('team_b')==='Другая команда'?val('custom_b'):val('team_b'),event_name:val('event_name'),starts_at:new Date(val('starts_at')).toISOString(),status:val('status'),score_a:Number(val('score_a')),score_b:Number(val('score_b')),maps};if(!payload.team_a||!payload.team_b)throw Error('Укажи обе команды');await adminWrite('fztv_matches',payload,val('id')||null);alert('Матч сохранён');location.hash='#/matches'}catch(err){document.getElementById('matchMessage').textContent=err.message}};document.getElementById('deleteMatch').onclick=async()=>{const id=mf.elements.id.value;if(!id||!confirm('Удалить матч?'))return;const {error}=await sb.from('fztv_site_matches').delete().eq('id',id);if(error)alert(error.message);else{await loadContent();location.hash='#/admin'}}}
+ const nf=document.getElementById('newsEditor');if(nf){document.getElementById('newsSelect').onchange=e=>{const n=newsCache.find(x=>x.id===e.target.value);nf.elements.title.value=n?.title||'';nf.elements.body.value=n?.content||n?.body||''};nf.onsubmit=async e=>{e.preventDefault();const f=new FormData(nf);try{await adminWrite('fztv_news',{title:String(f.get('title')).trim(),body:String(f.get('body')).trim()},String(f.get('id')||'')||null);alert('Новость опубликована');location.hash='#/news'}catch(err){document.getElementById('newsMessage').textContent=err.message}};document.getElementById('deleteNews').onclick=async()=>{const id=nf.elements.id.value;if(!id||!confirm('Удалить новость?'))return;const {error}=await sb.from('fztv_news').delete().eq('id',id);if(error)alert(error.message);else{await loadContent();location.hash='#/admin'}}}
+}
+function render(){const route=(location.hash||'#/home').replace(/^#\/?/,'').split('/')[0];let html;if(route==='home')html=home()+`<div class="page-title"><h2>Последние матчи</h2></div>${matchesCache.slice(0,3).map(matchCard).join('')}`;else if(route==='auth')html=authPage();else if(route==='admin')html=adminPage();else if(route==='matches'||route==='match')html=matches();else if(route==='news')html=newsPage();else if(route==='bank')html=bankPage();else if(route==='ranking')html=ranking();else if(route==='team')html=location.hash.toLowerCase().includes('/taykans')?taykansDetail():teamDetail();else if(route==='tournaments')html=tournamentCalendar();else if(route==='tournament'){const parts=location.hash.split('/');html=tournamentDetail(decodeURIComponent(parts[2]||'Турнир'),decodeURIComponent(parts[3]||'Дата уточняется'))}else if(route==='players')html=playersPage();else if(route==='player')html=fztvPlayerProfile();else if(route==='rules')html=rulesPage();else if(route==='stats')html=statsPage();else html=home();app.innerHTML=html;document.querySelectorAll('#nav a').forEach(a=>a.classList.toggle('active',a.dataset.route===route));const top=document.querySelector('.auth-top-link');if(top)top.textContent=currentUser()?.login||'Войти / Регистрация';const admin=document.getElementById('adminTopLink');if(admin)admin.style.display=isAdmin()?'inline-flex':'none';bindFztv();if(typeof bindBank==='function')bindBank();document.querySelectorAll('[data-filter]').forEach(b=>b.addEventListener('click',()=>{currentFilter=b.dataset.filter;render()}));document.querySelectorAll('[data-tournament]').forEach(b=>b.addEventListener('click',(event)=>{event.preventDefault();event.stopPropagation();location.hash='#/tournament/'+b.dataset.tournament+'/'+encodeURIComponent(b.dataset.date)}));const more=document.getElementById('novMore');if(more)more.onclick=()=>{showNovMore=!showNovMore;render()};const col=document.getElementById('collapse');if(col)col.onclick=()=>{collapsed=!collapsed;render()};const earlier=document.getElementById('earlier');if(earlier)earlier.onclick=()=>document.getElementById('calendar')?.scrollIntoView({behavior:'smooth',block:'start'})}
+window.addEventListener('hashchange',render);
+sb.auth.onAuthStateChange(()=>{setTimeout(refreshAuth,0)});
+render();refreshAuth();loadContent();
+</script>
+</body></html>],['Лучшая позиция','—']].map(([k,v])=>`<div class="fztv-player-fact"><span>${k}</span><strong>${v}</strong></div>`).join('')}</div></div></div><div class="fztv-trophies"><h3>Трофеи</h3><p style="color:#91a3b9;margin-top:12px">Трофеев пока нет</p></div></section>`;
+}
+
+let fzTeams=[],fzPlayers=[],fzPlayerSearch='',fzPlayerTeamFilter='all',fzPlayerRoleFilter='all',fzPlayerSort='nick';
+function fzEsc(x){return escapeAuth(x)}
+function fzOwned(t){return !!sessionUser&&(isAdmin()||t.owner_id===sessionUser.id)}
+function fzImg(u){if(!u)return '';try{const p=new URL(u);return p.protocol==='https:'?p.href:''}catch{return ''}}
+function fzTeamLink(t){return '#/team/'+encodeURIComponent(t.id)}
+function fzPlayerLink(p){return '#/player/db-'+p.id}
+async function fzLoad(){
+ const [t,p]=await Promise.all([sb.from('fztv_teams').select('*').order('created_at',{ascending:false}),sb.from('fztv_team_players').select('*').order('created_at',{ascending:true})]);
+ if(t.error||p.error){console.warn('Team data',t.error,p.error);return}
+ fzTeams=t.data||[];fzPlayers=p.data||[];render();
+}
+function fzTeamForm(t){
+ const v=(key)=>fzEsc(t?.[key]||'');
+ return `<section class="fz-manager"><h2>${t?'Редактирование команды':'Регистрация команды'}</h2><div class="fz-notice">Новая команда появится в рейтинге только после одобрения администратором. Создатель сможет управлять своим составом.</div>
+ <form id="fzTeamForm" class="fz-form" data-id="${t?.id||''}">
+ <label>Название команды<input name="name" required maxlength="70" minlength="2" value="${v('name')}" placeholder="Название команды"></label>
+ <label>Тег (2–5 символов)<input name="tag" required maxlength="5" minlength="2" value="${v('tag')}" placeholder="TAG"></label>
+ <label>Страна<input name="country" value="${v('country')}" placeholder="Россия"></label>
+ <label>Ссылка на логотип (HTTPS)<input name="logo_url" type="url" value="${v('logo_url')}" placeholder="https://..."></label>
+ <label>Основной цвет<input type="color" name="color_primary" value="${v('color_primary')||'#24384d'}"></label>
+ <label>Второй цвет<input type="color" name="color_secondary" value="${v('color_secondary')||'#111a28'}"></label>
+ <label>Тренер<input name="coach" value="${v('coach')}"></label><label>Президент<input name="president" value="${v('president')}"></label>
+ <label class="fz-wide">Описание<textarea name="description" maxlength="1000" placeholder="О команде">${v('description')}</textarea></label>
+ <div class="fz-wide fz-actions"><button class="fz-action" type="submit">${t?'Сохранить изменения':'Отправить на модерацию'}</button><a class="fz-action secondary" href="#/my-teams">Отмена</a></div></form></section>`;
+}
+function fzTeamPage(){
+ const id=decodeURIComponent(location.hash.split('/')[2]||'');const t=fzTeams.find(x=>x.id===id);
+ if(!t)return '<section class="fz-manager">Команда не найдена или ещё не одобрена.</section>';
+ const roster=fzPlayers.filter(p=>p.team_id===t.id);
+ return `<div class="crumb"><a href="#/ranking">Рейтинг</a> / ${fzEsc(t.name)}</div><section class="fz-manager" style="border-top:4px solid ${/^#[0-9a-f]{6}$/i.test(t.color_primary)?t.color_primary:'#24384d'}"><div style="display:flex;align-items:center;gap:18px">${fzImg(t.logo_url)?`<img src="${fzImg(t.logo_url)}" alt="" style="width:90px;height:90px;object-fit:contain">`:'<div style="font-size:28px;font-weight:900">🎮</div>'}<div><h1>${fzEsc(t.name)}</h1><p>${fzEsc(t.tag)} · ${fzEsc(t.country||'Страна не указана')}</p><small>${t.status==='pending'?'⏳ На модерации':t.status==='rejected'?'Отклонена':'Команда FragZoneTV'}</small></div></div><p style="margin-top:15px">${fzEsc(t.description)}</p>
+ ${fzOwned(t)?`<div class="fz-actions"><a class="fz-action" href="#/team-edit/${t.id}">Редактировать команду</a><a class="fz-action secondary" href="#/player-edit/new/${t.id}">+ Добавить игрока</a></div>`:''}
+ <h2 style="margin-top:20px">Состав (${roster.length})</h2><div class="fz-table-wrap"><table class="fz-table"><thead><tr><th>Игрок</th><th>Роль</th><th>Призовые</th><th></th></tr></thead><tbody>${roster.map(p=>`<tr><td><a href="${fzPlayerLink(p)}">${fzEsc(p.nickname)}</a></td><td>${fzEsc(p.primary_role)}</td><td>${Number(p.prize_usd||0).toFixed(0)} $</td><td>${fzOwned(t)?`<a href="#/player-edit/${p.id}">Изменить</a>`:''}</td></tr>`).join('')||'<tr><td colspan="4">Игроки пока не добавлены</td></tr>'}</tbody></table></div></section>`;
+}
+function fzMyTeams(){
+ if(!sessionUser)return '<section class="fz-manager">Чтобы зарегистрировать команду, <a href="#/auth">войдите или зарегистрируйтесь</a>.</section>';
+ const mine=fzTeams.filter(t=>t.owner_id===sessionUser.id);
+ return `<div class="page-title"><h1>Мои команды</h1></div><div class="fz-actions"><a class="fz-action" href="#/team-new">+ Зарегистрировать команду</a></div><section class="fz-manager"><h2>Мои заявки и команды</h2>${mine.map(t=>`<div class="fz-actions" style="align-items:center;border-bottom:1px solid #2b3b4e;padding:12px"><a href="${fzTeamLink(t)}">${fzEsc(t.name)}</a><span class="fz-tag">${t.status==='approved'?'Одобрена':t.status==='pending'?'На модерации':'Отклонена'}</span><a href="#/team-edit/${t.id}">Редактировать</a>${t.status==='rejected'?'<span>'+fzEsc(t.moderation_note)+'</span>':''}</div>`).join('')||'<p>Команд пока нет.</p>'}</section>`;
+}
+function fzPlayerForm(p,teamId){
+ const t=fzTeams.find(x=>x.id===(p?.team_id||teamId));if(!t||!fzOwned(t))return '<section class="fz-manager">Нет прав редактировать этого игрока.</section>';
+ const v=k=>fzEsc(p?.[k]||'');
+ const roles=['AWP','Rifler','IGL','Entry fragger','Support','Lurker','Anchor','Hybrid'];
+ const select=(k,empty)=>`<select name="${k}">${empty?'<option value="">— нет —</option>':''}${roles.map(r=>`<option value="${r}" ${p?.[k]===r?'selected':''}>${r}</option>`).join('')}</select>`;
+ return `<section class="fz-manager"><h2>${p?'Редактирование игрока':'Добавление игрока'} · ${fzEsc(t.name)}</h2><form id="fzPlayerForm" class="fz-form" data-id="${p?.id||''}" data-team="${t.id}">
+ <label>Никнейм<input name="nickname" required minlength="2" maxlength="40" value="${v('nickname')}"></label>
+ <label>Страна<input name="country" value="${v('country')}"></label>
+ <label>Имя<input name="first_name" value="${v('first_name')}"></label><label>Фамилия<input name="last_name" value="${v('last_name')}"></label>
+ <label>Дата рождения<input name="birth_date" type="date" value="${v('birth_date')}"></label>
+ <label>Уровень FACEIT<select name="faceit_level"><option value="">Не указан</option>${Array.from({length:10},(_,i)=>`<option value="${i+1}" ${p?.faceit_level===i+1?'selected':''}>${i+1}</option>`).join('')}</select></label>
+ <label>Основная роль${select('primary_role',false)}</label><label>Вторая роль${select('secondary_role',true)}</label>
+ <label class="fz-wide">Steam (ссылка на профиль)<input name="steam_url" type="url" placeholder="https://steamcommunity.com/id/..." value="${v('steam_url')}"></label>
+ <label>Telegram<input name="telegram" value="${v('telegram')}"></label><label>Discord<input name="discord" value="${v('discord')}"></label>
+ <label class="fz-wide">Фото игрока (ссылка HTTPS)<input name="photo_url" type="url" value="${v('photo_url')}"></label>
+ ${isAdmin()?`<label>Призовые, $<input type="number" min="0" step="0.01" name="prize_usd" value="${Number(p?.prize_usd||0)}"></label>`:''}
+ <div class="fz-wide fz-actions"><button class="fz-action" type="submit">Сохранить игрока</button><a class="fz-action secondary" href="${fzTeamLink(t)}">Отмена</a>${p?'<button class="fz-action danger" type="button" id="fzDeletePlayer">Удалить игрока</button>':''}</div></form></section>`;
+}
+function fzDbPlayerPage(){
+ const id=location.hash.split('/')[2]?.replace(/^db-/,'');const p=fzPlayers.find(x=>x.id===id);
+ if(!p)return '<section class="fz-manager">Игрок не найден</section>';
+ const t=fzTeams.find(x=>x.id===p.team_id),tab=location.hash.split('/')[3]==='stats'?'stats':'main';
+ const stats=playerMatchStats.filter(x=>x.player_slug===('db-'+p.id));
+ const sum=k=>stats.reduce((n,x)=>n+Number(x[k]||0),0),m=stats.length,k=sum('kills'),d=sum('deaths'),a=sum('assists'),wins=stats.filter(x=>x.won===true).length;
+ const fields=tab==='stats'?[['Матчи',m],['K/D',m?(d?(k/d).toFixed(2):'—'):'—'],['Убийства',m?k:'—'],['Смерти',m?d:'—'],['Ассисты',m?a:'—'],['Винрейт',m?Math.round(wins/m*100)+'%':'—']]:[['Имя',p.first_name+' '+p.last_name],['Страна',p.country||'—'],['Команда',t?.name||'—'],['Роль',p.primary_role],['Вторая роль',p.secondary_role||'—'],['Призовые',Number(p.prize_usd||0).toFixed(0)+' const order=['sw4mper','Loytaber','Skrizzi','xBlackerx','BOSSKPEC'];const roster=order.map(name=>teamWoodsRoster.find(([p])=>p.toLowerCase()===name.toLowerCase())).filter(Boolean);return `<div class="crumb"><a href="#/home">Главная</a>　/　Игроки</div><div class="page-title"><div><h1>Игроки</h1><p>Состав команды Team Woods · Counter-Strike 2</p></div><a class="back" href="#/team/woods">← Team Woods</a></div><section class="panel"><div class="ranking-head">🇷🇺 TEAM WOODS · ОСНОВНОЙ СОСТАВ</div><div class="tw-roster" style="padding:18px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px">${roster.map(([player,photo])=>`<a class="tw-player" href="${fztvPlayerLink(player)}/stats" style="min-width:0;color:inherit;text-decoration:none"><img src="${photo}" alt="${player}"><b>${player==='bosskpec'?'BOSSKPEC':player}</b><small style="display:block;color:var(--muted);margin-top:5px">🇷🇺 Россия · Team Woods</small></a>`).join('')}</div><div class="detail-empty">Статистика игроков появится после добавления результатов матчей.</div></section>`}
+let authMode='register';
+const SUPABASE_URL='https://svcbxbovsjslfduogjyt.supabase.co';
+const SUPABASE_KEY='sb_publishable_5y0mlwG1w-DVMjmMIphMhw_DpZ7fZaB';
+const ADMIN_EMAILS=['bogdanbudnikov737@gmail.com','vanausakov15@gmail.com'];
+const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let playerMatchStats=[];
+let sessionUser=null, profile=null, adminVerified=false, ownerVerified=false, staffRoles={}, usersCache=[], matchesCache=[], newsCache=[], contentLoaded=false;
+function currentUser(){return sessionUser&&profile?{...profile,id:sessionUser.id,email:sessionUser.email,login:profile.login||sessionUser.user_metadata?.login||sessionUser.email?.split('@')[0]}:null}
+function isAdmin(){return adminVerified}
+function isFztvAdmin(){return adminVerified}
+function escapeAuth(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function fmtDate(v){return v?new Date(v).toLocaleString('ru-RU'):'—'}
+async function loadContent(){
+  const [m,maps,n,ps]=await Promise.all([
+    sb.from('fztv_site_matches').select('*').order('starts_at',{ascending:false}),
+    sb.from('fztv_match_maps').select('*').order('map_order',{ascending:true}),
+    sb.from('fztv_news').select('*').order('created_at',{ascending:false}),
+    sb.from('fztv_player_match_stats').select('*')
+  ]);
+  if(m.error||maps.error||n.error)console.warn('FZTV content:',m.error||maps.error||n.error);
+  matchesCache=(m.data||[]).map(match=>{
+    const matchMaps=(maps.data||[]).filter(x=>x.match_id===match.id)
+      .map(x=>({name:x.map_name,a:x.score_a,b:x.score_b}));
+    const mapWinsA=matchMaps.filter(x=>x.a!=null&&x.b!=null&&x.a>x.b).length;
+    const mapWinsB=matchMaps.filter(x=>x.a!=null&&x.b!=null&&x.b>x.a).length;
+    const score=String(match.result_overall||'').match(/(\d+)\s*[:–-]\s*(\d+)/);
+    return {...match,event_name:match.title||'FragZoneTV',maps:matchMaps,
+      score_a:score?Number(score[1]):mapWinsA,score_b:score?Number(score[2]):mapWinsB};
+  });
+  newsCache=n.data||[];
+  playerMatchStats=ps.data||[];
+  if(ps.error)console.warn('Player stats:',ps.error);
+  contentLoaded=true;render();fzLoad();
+}
+async function refreshAuth(){
+  const {data:{user},error}=await sb.auth.getUser();
+  sessionUser=error?null:user;profile=null;adminVerified=false;ownerVerified=false;
+  if(sessionUser){
+    const p=await sb.from('profiles').select('id,login,email,role,points,created_at')
+      .eq('id',sessionUser.id).maybeSingle();
+    profile=p.data||{login:sessionUser.user_metadata?.login||sessionUser.email?.split('@')[0]};
+    const ban=await sb.rpc('fztv_my_ban');
+    if(ban.error)console.warn('Cannot check account ban:',ban.error);
+    if(ban.data){
+      await sb.auth.signOut();sessionUser=null;profile=null;
+      alert('Аккаунт заблокирован. Причина: '+(ban.data.reason||'не указана'));
+    }else{
+      const adm=await sb.rpc('fztv_is_admin');
+      if(adm.error)console.warn('Admin role check:',adm.error);
+      adminVerified=adm.data===true;
+      if(adminVerified){
+        const own=await sb.rpc('fztv_is_owner');
+        ownerVerified=own.data===true;
+      }
+    }
+  }
+  render();
+  if(adminVerified && location.hash.startsWith('#/admin')){
+    loadUsers().catch(e=>console.error('Пользователи:',e));
+  }
+}
+function authPage(){const u=currentUser();if(u)return `<div class="auth-wrap"><section class="auth-card"><h1>Личный кабинет</h1><h2>${escapeAuth(u.login)}</h2><p>${escapeAuth(u.email)}</p><p>Баллы: ${escapeAuth(u.points||0)}</p><button class="auth-logout" id="authLogout">Выйти</button>${isAdmin()?'<p><a class="back" href="#/admin">Админ-панель</a></p>':''}</section></div>`;return `<div class="auth-wrap"><section class="auth-card"><div class="eyebrow">FRAGZONETV · SUPABASE</div><h1>${authMode==='login'?'Вход':'Регистрация'}</h1><div class="auth-tabs"><button type="button" data-auth-mode="login" class="${authMode==='login'?'active':''}">Вход</button><button type="button" data-auth-mode="register" class="${authMode==='register'?'active':''}">Регистрация</button></div><form id="authForm" class="auth-form">${authMode==='register'?'<label>Никнейм<input name="login" minlength="3" maxlength="24" required></label>':''}<label>Email<input name="email" type="email" required></label><label>Пароль<input name="password" type="password" minlength="6" required></label><button type="submit" class="auth-submit">${authMode==='login'?'ВОЙТИ':'ЗАРЕГИСТРИРОВАТЬСЯ'}</button><div id="authMessage" class="auth-message" role="status"></div></form><p class="auth-note">Аккаунт хранится в общей базе Supabase. Если включено подтверждение почты, открой письмо перед первым входом.</p></section></div>`}
+function matchCard(m){let maps=Array.isArray(m.maps)?m.maps:[];return `<article class="panel" style="padding:18px;margin:12px 0"><small style="color:var(--muted)">${escapeAuth(fmtDate(m.starts_at))} · ${escapeAuth(m.status)}</small><h2>${escapeAuth(m.team_a)} <span style="color:var(--red)">${m.score_a??0} : ${m.score_b??0}</span> ${escapeAuth(m.team_b)}</h2><p style="color:var(--muted)">${escapeAuth(m.event_name||'FragZoneTV')}</p>${maps.length?`<div style="display:flex;flex-wrap:wrap;gap:8px">${maps.map(x=>`<span class="toolbtn">${escapeAuth(x.name)}: ${Number(x.a)||0}–${Number(x.b)||0}</span>`).join('')}</div>`:''}</article>`}
+function matches(){return `<div class="page-title"><h1>Матчи CS2</h1></div>${matchesCache.length?matchesCache.map(matchCard).join(''):'<section class="panel detail-empty">Матчи ещё не опубликованы</section>'}`}
+function newsPage(){return `<div class="page-title"><h1>Новости FragZoneTV</h1></div>${newsCache.length?newsCache.map(n=>`<article class="panel" style="padding:22px;margin:12px 0"><small>${escapeAuth(fmtDate(n.created_at))}</small><h2>${escapeAuth(n.title)}</h2><p style="white-space:pre-wrap;line-height:1.6">${escapeAuth(n.content||n.body)}</p></article>`).join(''):'<section class="panel detail-empty">Новостей пока нет</section>'}`}
+function adminPage(){if(!isAdmin())return '<section class="panel detail-empty">Нет доступа к админ-панели. <a href="#/auth" style="color:#ff6875">Войти в аккаунт</a></section>';return `<div class="page-title"><h1>Админ-панель FragZoneTV</h1></div><section class="panel" style="padding:18px"><h2>Пользователи (${usersCache.length})</h2><button class="toolbtn" id="refreshUsers">Обновить список</button><div id="usersList">${usersCache.map(u=>`<div class="rank-team" style="flex-wrap:wrap;gap:12px"><div style="flex:1;min-width:190px"><b>${escapeAuth(u.login||'Игрок')}</b><small style="display:block">${escapeAuth(u.email)} · ${escapeAuth(fmtDate(u.created_at))}</small><small>${u.ban?'🔴 Заблокирован: '+escapeAuth(u.ban.reason):'🟢 Активен'}</small></div>${staffRoles[u.id]!=='owner'?`<button class="toolbtn" data-user-ban="${u.id}">${u.ban?'Разблокировать':'Заблокировать'}</button>`:''}${ownerVerified&&staffRoles[u.id]!=='owner'?`<button class="toolbtn" data-user-admin="${u.id}">${staffRoles[u.id]==='admin'?'Снять админа':'Выдать админку'}</button>`:''}<small>${staffRoles[u.id]==='owner'?'👑 Владелец':staffRoles[u.id]==='admin'?'🛡 Администратор':'Игрок'}</small></div>`).join('')||'<p>Пока нет данных. Нажми «Обновить список».</p>'}</div></section><section class="panel" style="padding:18px;margin-top:16px"><h2>Добавить или изменить матч</h2><form id="matchEditor" class="auth-form"><label>Матч для редактирования<select name="id" id="matchSelect"><option value="">Новый матч</option>${matchesCache.map(m=>`<option value="${m.id}">${escapeAuth(m.team_a)} — ${escapeAuth(m.team_b)}</option>`).join('')}</select></label><label>Команда 1<select name="team_a" required><option>Team Woods</option><option>Woods Academy</option><option>s73</option><option>Vayron</option><option>Другая команда</option></select></label><label>Название команды 1 (если другая)<input name="custom_a"></label><label>Команда 2<select name="team_b" required><option>s73</option><option>Team Woods</option><option>Woods Academy</option><option>Vayron</option><option>Другая команда</option></select></label><label>Название команды 2 (если другая)<input name="custom_b"></label><label>Турнир<input name="event_name" placeholder="FZTV CUP"></label><label>Дата и время<input name="starts_at" type="datetime-local" required></label><label>Статус<select name="status"><option value="upcoming">Предстоящий</option><option value="live">LIVE</option><option value="finished">Завершён</option></select></label><label>Счёт по картам команды 1<input name="score_a" type="number" min="0" max="9" value="0"></label><label>Счёт по картам команды 2<input name="score_b" type="number" min="0" max="9" value="0"></label><label>Карты (каждая строка: Mirage,13,9)<textarea name="maps" rows="4" placeholder="Mirage,13,9&#10;Dust2,11,13"></textarea></label><button class="auth-submit">Сохранить матч</button><button type="button" class="toolbtn" id="deleteMatch">Удалить выбранный матч</button><p id="matchMessage"></p></form></section><section class="panel" style="padding:18px;margin-top:16px"><h2>Публикация новостей</h2><form id="newsEditor" class="auth-form"><label>Редактировать новость<select name="id" id="newsSelect"><option value="">Новая новость</option>${newsCache.map(n=>`<option value="${n.id}">${escapeAuth(n.title)}</option>`).join('')}</select></label><label>Заголовок<input name="title" maxlength="180" required></label><label>Текст<textarea name="body" rows="7" required></textarea></label><button class="auth-submit">Опубликовать / сохранить</button><button type="button" class="toolbtn" id="deleteNews">Удалить выбранную новость</button><p id="newsMessage"></p></form></section>`}
+async function loadUsers(){const [result,roles]=await Promise.all([sb.rpc('fztv_admin_list_users'),sb.rpc('fztv_staff_list')]);if(result.error)throw result.error;if(roles.error)throw roles.error;staffRoles=Object.fromEntries((roles.data||[]).map(r=>[r.user_id,r.role]));usersCache=result.data||[];render()}
+async function adminWrite(table,payload,id){
+  if(table==='fztv_site_matches'){
+    const {maps=[],score_a=0,score_b=0,event_name='',...fields}=payload;
+    const record={...fields,title:event_name,result_overall:String(score_a)+':'+String(score_b)};
+    const q=id?sb.from(table).update(record).eq('id',id):sb.from(table).insert(record);
+    const {data,error}=await q.select('id').single();
+    if(error)throw error;
+    const matchId=data.id;
+    if(id){
+      const del=await sb.from('fztv_match_maps').delete().eq('match_id',matchId);
+      if(del.error)throw del.error;
+    }
+    if(maps.length){
+      const insert=await sb.from('fztv_match_maps').insert(maps.map((x,i)=>({
+        match_id:matchId,map_name:x.name,map_order:i+1,score_a:x.a,score_b:x.b
+      })));
+      if(insert.error)throw insert.error;
+    }
+  }else{
+    if(table==='fztv_news'){
+      payload={...payload,content:payload.body,published:true};
+      delete payload.body;
+    }
+    const q=id?sb.from(table).update(payload).eq('id',id):sb.from(table).insert(payload);
+    const {error}=await q;
+    if(error)throw error;
+  }
+  await loadContent();
+}
+function bindFztv(){document.querySelectorAll('[data-auth-mode]').forEach(b=>b.onclick=()=>{authMode=b.dataset.authMode;render()});document.getElementById('authLogout')?.addEventListener('click',async()=>{await sb.auth.signOut();await refreshAuth()});const af=document.getElementById('authForm');if(af)af.onsubmit=async e=>{e.preventDefault();const fd=new FormData(af),msg=document.getElementById('authMessage'),btn=af.querySelector('[type=submit]');btn.disabled=true;try{const email=String(fd.get('email')).trim(),password=String(fd.get('password'));if(authMode==='register'){const login=String(fd.get('login')).trim();const {data,error}=await sb.auth.signUp({email,password,options:{data:{login}}});if(error)throw error;msg.textContent=data.session?'Регистрация выполнена.':'Проверь почту и подтверди регистрацию, затем войди.';if(data.session)await refreshAuth()}else{const {error}=await sb.auth.signInWithPassword({email,password});if(error)throw error;const {data:ban}=await sb.rpc('fztv_my_ban');if(ban){await sb.auth.signOut();throw Error('Аккаунт заблокирован: '+ban.reason)}await refreshAuth()}}catch(err){msg.textContent=err.message}finally{btn.disabled=false}};
+ document.getElementById('refreshUsers')?.addEventListener('click',()=>loadUsers().catch(e=>alert(e.message)));
+ document.querySelectorAll('[data-user-admin]').forEach(b=>b.onclick=async()=>{const u=usersCache.find(x=>x.id===b.dataset.userAdmin);if(!u)return;const grant=staffRoles[u.id]!=='admin';if(!confirm((grant?'Выдать админ-панель':'Забрать админ-панель')+' пользователю '+(u.login||u.email)+'?'))return;try{const {error}=await sb.rpc('fztv_owner_set_admin',{target_user:u.id,grant_admin:grant});if(error)throw error;await loadUsers();alert(grant?'Права администратора выданы':'Права администратора отозваны')}catch(e){alert(e.message)}});
+ document.querySelectorAll('[data-user-ban]').forEach(b=>b.onclick=async()=>{const u=usersCache.find(x=>x.id===b.dataset.userBan);try{if(u.ban){if(!confirm('Снять блокировку?'))return;const {error}=await sb.rpc('fztv_admin_remove_ban',{target_user:u.id});if(error)throw error}else{const reason=prompt('Причина блокировки:','Нарушение правил');if(reason===null)return;const days=Number(prompt('Дней: 1, 7, 30 или 0 (навсегда)','7'));if(![0,1,7,30].includes(days))throw Error('Неверный срок');const {error}=await sb.rpc('fztv_admin_set_ban',{target_user:u.id,ban_reason:reason,duration_days:days});if(error)throw error}await loadUsers()}catch(e){alert(e.message)}});
+ const mf=document.getElementById('matchEditor');if(mf){document.getElementById('matchSelect').onchange=e=>{const m=matchesCache.find(x=>x.id===e.target.value);mf.reset();mf.elements.id.value=m?.id||'';if(!m)return;for(const k of ['team_a','team_b','event_name','status','score_a','score_b']){if(mf.elements[k]){if((k==='team_a'||k==='team_b')&&![...mf.elements[k].options].some(o=>o.value===m[k])){mf.elements[k].value='Другая команда';mf.elements[k==='team_a'?'custom_a':'custom_b'].value=m[k]}else mf.elements[k].value=m[k]??''}}mf.elements.starts_at.value=m.starts_at?.slice(0,16)||'';mf.elements.maps.value=(m.maps||[]).map(x=>[x.name,x.a,x.b].join(',')).join('\n')};mf.onsubmit=async e=>{e.preventDefault();const f=new FormData(mf);try{const maps=String(f.get('maps')||'').split(/\n/).map(x=>x.trim()).filter(Boolean).map(line=>{const [name,a,b]=line.split(',').map(x=>x.trim());if(!name||!/^\d+$/.test(a)||!/^\d+$/.test(b))throw Error('Формат карты: Mirage,13,9');return {name,a:Number(a),b:Number(b)}});const val=k=>String(f.get(k)||'').trim();const payload={team_a:val('team_a')==='Другая команда'?val('custom_a'):val('team_a'),team_b:val('team_b')==='Другая команда'?val('custom_b'):val('team_b'),event_name:val('event_name'),starts_at:new Date(val('starts_at')).toISOString(),status:val('status'),score_a:Number(val('score_a')),score_b:Number(val('score_b')),maps};if(!payload.team_a||!payload.team_b)throw Error('Укажи обе команды');await adminWrite('fztv_matches',payload,val('id')||null);alert('Матч сохранён');location.hash='#/matches'}catch(err){document.getElementById('matchMessage').textContent=err.message}};document.getElementById('deleteMatch').onclick=async()=>{const id=mf.elements.id.value;if(!id||!confirm('Удалить матч?'))return;const {error}=await sb.from('fztv_site_matches').delete().eq('id',id);if(error)alert(error.message);else{await loadContent();location.hash='#/admin'}}}
+ const nf=document.getElementById('newsEditor');if(nf){document.getElementById('newsSelect').onchange=e=>{const n=newsCache.find(x=>x.id===e.target.value);nf.elements.title.value=n?.title||'';nf.elements.body.value=n?.content||n?.body||''};nf.onsubmit=async e=>{e.preventDefault();const f=new FormData(nf);try{await adminWrite('fztv_news',{title:String(f.get('title')).trim(),body:String(f.get('body')).trim()},String(f.get('id')||'')||null);alert('Новость опубликована');location.hash='#/news'}catch(err){document.getElementById('newsMessage').textContent=err.message}};document.getElementById('deleteNews').onclick=async()=>{const id=nf.elements.id.value;if(!id||!confirm('Удалить новость?'))return;const {error}=await sb.from('fztv_news').delete().eq('id',id);if(error)alert(error.message);else{await loadContent();location.hash='#/admin'}}}
+}
+function render(){const route=(location.hash||'#/home').replace(/^#\/?/,'').split('/')[0];let html;if(route==='home')html=home()+`<div class="page-title"><h2>Последние матчи</h2></div>${matchesCache.slice(0,3).map(matchCard).join('')}`;else if(route==='auth')html=authPage();else if(route==='admin')html=adminPage()+fzModeration();else if(route==='matches'||route==='match')html=matches();else if(route==='news')html=newsPage();else if(route==='bank')html=bankPage();else if(route==='ranking')html=ranking().replace('</section>',fzTeams.filter(t=>t.status==='approved').map(t=>`<a class="rank-team" href="${fzTeamLink(t)}"><div class="rank-place">—</div><div class="rank-logo">${fzImg(t.logo_url)?`<img src="${fzImg(t.logo_url)}" alt="">`:fzEsc(t.tag)}</div><div class="rank-main"><strong>${fzEsc(t.name)}</strong><small>${fzEsc(t.country)} · CS2</small></div><div class="rank-players">${fzPlayers.filter(p=>p.team_id===t.id).length} игроков</div><div class="rank-arrow">FZ 0</div></a>`).join('')+'</section>');else if(route==='team')html=location.hash.toLowerCase().includes('/taykans')?taykansDetail():location.hash.toLowerCase().includes('/woods')?teamDetail():fzTeamPage();else if(route==='my-teams')html=fzMyTeams();else if(route==='team-new')html=sessionUser?fzTeamForm(null):fzMyTeams();else if(route==='team-edit'){const t=fzTeams.find(x=>x.id===location.hash.split('/')[2]);html=t&&fzOwned(t)?fzTeamForm(t):'<div class="fz-manager">Нет доступа</div>';}else if(route==='player-edit'){const parts=location.hash.split('/'),p=fzPlayers.find(x=>x.id===parts[2]);html=fzPlayerForm(p,parts[3]);}else if(route==='tournaments')html=tournamentCalendar();else if(route==='tournament'){const parts=location.hash.split('/');html=tournamentDetail(decodeURIComponent(parts[2]||'Турнир'),decodeURIComponent(parts[3]||'Дата уточняется'))}else if(route==='players')html=fzPlayersTable();else if(route==='player')html=location.hash.includes('/db-')?fzDbPlayerPage():fztvPlayerProfile();else if(route==='rules')html=rulesPage();else if(route==='stats')html=statsPage();else html=home();app.innerHTML=html;document.querySelectorAll('#nav a').forEach(a=>a.classList.toggle('active',a.dataset.route===route));const top=document.querySelector('.auth-top-link');if(top)top.textContent=currentUser()?.login||'Войти / Регистрация';const admin=document.getElementById('adminTopLink');if(admin)admin.style.display=isAdmin()?'inline-flex':'none';bindFztv();fzBind();if(typeof bindBank==='function')bindBank();document.querySelectorAll('[data-filter]').forEach(b=>b.addEventListener('click',()=>{currentFilter=b.dataset.filter;render()}));document.querySelectorAll('[data-tournament]').forEach(b=>b.addEventListener('click',(event)=>{event.preventDefault();event.stopPropagation();location.hash='#/tournament/'+b.dataset.tournament+'/'+encodeURIComponent(b.dataset.date)}));const more=document.getElementById('novMore');if(more)more.onclick=()=>{showNovMore=!showNovMore;render()};const col=document.getElementById('collapse');if(col)col.onclick=()=>{collapsed=!collapsed;render()};const earlier=document.getElementById('earlier');if(earlier)earlier.onclick=()=>document.getElementById('calendar')?.scrollIntoView({behavior:'smooth',block:'start'})}
+window.addEventListener('hashchange',render);
+sb.auth.onAuthStateChange(()=>{setTimeout(refreshAuth,0)});
+render();refreshAuth();loadContent();
+</script>
+</body></html>]];
+ const base=fzPlayerLink(p);
+ return `<div class="fztv-player-tabs"><a href="${base}" class="${tab==='main'?'active':''}">Основной</a><a href="${base}/stats" class="${tab==='stats'?'active':''}">Статистика</a></div><section class="fztv-player-card"><div class="fztv-player-hero"><div class="fztv-player-photo">${fzImg(p.photo_url)?`<img src="${fzImg(p.photo_url)}" alt="">`:'<div class="placeholder">🎮</div>'}</div><div class="fztv-player-main"><h1>${fzEsc(p.nickname)}</h1><p class="fztv-player-sub">${fzEsc(t?.name||'FragZoneTV')} · Counter-Strike 2</p><div class="fztv-player-facts">${fields.map(([k,v])=>`<div class="fztv-player-fact"><span>${k}</span><strong>${fzEsc(v)}</strong></div>`).join('')}</div>${tab==='stats'&&!m?'<div class="fz-notice">Статистика появится после внесения индивидуальных результатов матчей.</div>':''}${tab==='main'&&fzImg(p.steam_url)?`<p style="margin-top:14px"><a href="${fzImg(p.steam_url)}" target="_blank" rel="noopener noreferrer">Профиль Steam ↗</a></p>`:''}</div></div><div class="fztv-trophies"><h3>Трофеи</h3><p>Трофеев пока нет</p></div></section>`;
+}
+function fzPlayersTable(){
+ const legacy=['sw4mper','Loytaber','Skrizzi','xBlackerx','BOSSKPEC'].map(name=>({nickname:name,team:'Team Woods',team_id:'legacy',primary_role:({sw4mper:'Hybrid',loytaber:'AWP',skrizzi:'Rifler',xblackerx:'IGL',bosskpec:'Entry fragger'})[name.toLowerCase()]||'Rifler',country:'',id:'legacy-'+name,prize_usd:0}));
+ const items=[...legacy,...fzPlayers.filter(p=>fzTeams.some(t=>t.id===p.team_id&&t.status==='approved')).map(p=>({...p,team:fzTeams.find(t=>t.id===p.team_id)?.name||''}))];
+ let filtered=items.filter(p=>(fzPlayerTeamFilter==='all'||p.team_id===fzPlayerTeamFilter)&&(fzPlayerRoleFilter==='all'||p.primary_role===fzPlayerRoleFilter)&&((p.nickname+' '+(p.first_name||'')+' '+(p.last_name||'')).toLowerCase().includes(fzPlayerSearch.toLowerCase())));
+ filtered.sort((a,b)=>a.nickname.localeCompare(b.nickname,'ru'));
+ return `<div class="page-title"><h1>Игроки FragZoneTV</h1></div><div class="fz-actions"><a href="#/my-teams" class="fz-action">+ Мои команды / добавить игрока</a></div><section class="fz-manager"><div class="fz-actions"><input class="fz-filter" style="flex:2;min-width:160px" id="fzSearch" placeholder="Поиск по нику или имени" value="${fzEsc(fzPlayerSearch)}"><select class="fz-filter" style="flex:1" id="fzTeamFilter"><option value="all">Все команды</option><option value="legacy" ${fzPlayerTeamFilter==='legacy'?'selected':''}>Team Woods</option>${fzTeams.filter(t=>t.status==='approved').map(t=>`<option value="${t.id}" ${fzPlayerTeamFilter===t.id?'selected':''}>${fzEsc(t.name)}</option>`).join('')}</select><select class="fz-filter" style="flex:1" id="fzRoleFilter"><option value="all">Все роли</option>${['AWP','Rifler','IGL','Entry fragger','Support','Lurker','Anchor','Hybrid'].map(r=>`<option value="${r}" ${fzPlayerRoleFilter===r?'selected':''}>${r}</option>`).join('')}</select></div><div class="fz-notice">Рейтинг по индивидуальным показателям появится после внесения статистики матчей. Пока игроки показаны по алфавиту, без вымышленных оценок.</div><div class="fz-table-wrap"><table class="fz-table"><thead><tr><th>Ник</th><th>Рейтинг</th><th>Имя</th><th>Команда</th><th>Роль</th><th>Призовые</th><th>Страна</th></tr></thead><tbody>${filtered.map(p=>`<tr><td><a href="${p.team_id==='legacy'?fztvPlayerLink(p.nickname)+'/stats':fzPlayerLink(p)+'/stats'}">${fzEsc(p.nickname)}</a></td><td>—</td><td>${fzEsc([p.first_name,p.last_name].filter(Boolean).join(' ')||'—')}</td><td>${fzEsc(p.team)}</td><td><span class="fz-tag">${fzEsc(p.primary_role)}</span></td><td>0 $</td><td>${fzEsc(p.country||'—')}</td></tr>`).join('')||'<tr><td colspan="7">Игроков не найдено</td></tr>'}</tbody></table></div></section>`;
+}
+function fzModeration(){
+ if(!isAdmin())return '';
+ return `<section class="fz-manager"><h2>Модерация команд</h2>${fzTeams.filter(t=>t.status==='pending').map(t=>`<div class="fz-actions" style="align-items:center;border-bottom:1px solid #314257"><b>${fzEsc(t.name)} [${fzEsc(t.tag)}]</b><span>${fzEsc(t.country)}</span><a href="${fzTeamLink(t)}">Открыть</a><button class="fz-action" data-fz-approve="${t.id}">Одобрить</button><button class="fz-action danger" data-fz-reject="${t.id}">Отклонить</button></div>`).join('')||'<p>Новых заявок нет.</p>'}<h3 style="margin-top:20px">Все команды</h3>${fzTeams.map(t=>`<div class="fz-actions" style="align-items:center"><a href="${fzTeamLink(t)}">${fzEsc(t.name)}</a><span class="fz-tag">${fzEsc(t.status)}</span><a href="#/team-edit/${t.id}">Редактировать</a><a href="#/player-edit/new/${t.id}">Добавить игрока</a></div>`).join('')}</section>`;
+}
+function fzBind(){
+ document.getElementById('fzSearch')?.addEventListener('input',e=>{fzPlayerSearch=e.target.value;render();document.getElementById('fzSearch')?.focus()});
+ document.getElementById('fzTeamFilter')?.addEventListener('change',e=>{fzPlayerTeamFilter=e.target.value;render()});
+ document.getElementById('fzRoleFilter')?.addEventListener('change',e=>{fzPlayerRoleFilter=e.target.value;render()});
+ document.getElementById('fzTeamForm')?.addEventListener('submit',async e=>{
+  e.preventDefault();const f=e.currentTarget,fd=new FormData(f),id=f.dataset.id;
+  const fields=Object.fromEntries(['name','tag','country','description','logo_url','color_primary','color_secondary','coach','president'].map(k=>[k,String(fd.get(k)||'').trim()]));
+  if(fields.logo_url&&!fzImg(fields.logo_url))return alert('Для логотипа нужна ссылка HTTPS');
+  const t=id?fzTeams.find(x=>x.id===id):null;if(id&&!fzOwned(t))return alert('Нет прав');
+  const q=id?sb.from('fztv_teams').update(fields).eq('id',id):sb.from('fztv_teams').insert({...fields,owner_id:sessionUser?.id,status:'pending'});
+  const {error}=await q;if(error)return alert(error.message);
+  await fzLoad();location.hash='#/my-teams';alert(id?'Команда обновлена':'Заявка отправлена на модерацию');
+ });
+ document.getElementById('fzPlayerForm')?.addEventListener('submit',async e=>{
+  e.preventDefault();const f=e.currentTarget,fd=new FormData(f),id=f.dataset.id,team_id=f.dataset.team;
+  const t=fzTeams.find(x=>x.id===team_id);if(!fzOwned(t))return alert('Нет прав');
+  const fields=Object.fromEntries(['nickname','first_name','last_name','country','birth_date','primary_role','secondary_role','faceit_level','steam_url','telegram','discord','photo_url'].map(k=>[k,String(fd.get(k)||'').trim()]));
+  fields.birth_date=fields.birth_date||null;fields.faceit_level=fields.faceit_level?Number(fields.faceit_level):null;
+  for(const key of ['steam_url','photo_url'])if(fields[key]&&!fzImg(fields[key]))return alert('Ссылки должны начинаться с https://');
+  if(isAdmin()&&fd.has('prize_usd'))fields.prize_usd=Number(fd.get('prize_usd')||0);
+  const q=id?sb.from('fztv_team_players').update(fields).eq('id',id):sb.from('fztv_team_players').insert({...fields,team_id});
+  const {error}=await q;if(error)return alert(error.message);
+  await fzLoad();location.hash=fzTeamLink(t);
+ });
+ document.getElementById('fzDeletePlayer')?.addEventListener('click',async()=>{
+  const f=document.getElementById('fzPlayerForm');if(!f||!confirm('Удалить игрока из команды?'))return;
+  const {error}=await sb.from('fztv_team_players').delete().eq('id',f.dataset.id);if(error)return alert(error.message);
+  await fzLoad();location.hash='#/team/'+f.dataset.team;
+ });
+ document.querySelectorAll('[data-fz-approve],[data-fz-reject]').forEach(b=>b.addEventListener('click',async()=>{
+  if(!isAdmin())return;const approve=b.hasAttribute('data-fz-approve'),id=b.dataset.fzApprove||b.dataset.fzReject;
+  const note=approve?'':prompt('Причина отклонения:');if(!approve&&note===null)return;
+  const {error}=await sb.from('fztv_teams').update({status:approve?'approved':'rejected',moderation_note:note||''}).eq('id',id);
+  if(error)return alert(error.message);await fzLoad();
+ }));
 }
 function playersPage(){const order=['sw4mper','Loytaber','Skrizzi','xBlackerx','BOSSKPEC'];const roster=order.map(name=>teamWoodsRoster.find(([p])=>p.toLowerCase()===name.toLowerCase())).filter(Boolean);return `<div class="crumb"><a href="#/home">Главная</a>　/　Игроки</div><div class="page-title"><div><h1>Игроки</h1><p>Состав команды Team Woods · Counter-Strike 2</p></div><a class="back" href="#/team/woods">← Team Woods</a></div><section class="panel"><div class="ranking-head">🇷🇺 TEAM WOODS · ОСНОВНОЙ СОСТАВ</div><div class="tw-roster" style="padding:18px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px">${roster.map(([player,photo])=>`<a class="tw-player" href="${fztvPlayerLink(player)}/stats" style="min-width:0;color:inherit;text-decoration:none"><img src="${photo}" alt="${player}"><b>${player==='bosskpec'?'BOSSKPEC':player}</b><small style="display:block;color:var(--muted);margin-top:5px">🇷🇺 Россия · Team Woods</small></a>`).join('')}</div><div class="detail-empty">Статистика игроков появится после добавления результатов матчей.</div></section>`}
 let authMode='register';
