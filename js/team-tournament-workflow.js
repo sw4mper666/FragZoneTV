@@ -8,13 +8,38 @@ export async function mountFragZoneTeams({client,root}) {
  const heading=(title)=>root.append(el('h2',title));
  const msg=el('p');msg.setAttribute('role','status');
  const field=(label,required=true)=>{const wrap=el('label',label+' '),input=el('input');input.required=required;wrap.append(input);return {wrap,input};};
- root.replaceChildren();heading('Регистрация команды');
- const form=el('form'),name=field('Название команды'),tag=field('Тег (2–5 символов)'),country=field('Страна',false);
- tag.input.maxLength=5;form.append(name.wrap,tag.wrap,country.wrap);
- const submit=el('button','Отправить на модерацию');submit.type='submit';form.append(submit);root.append(form,msg);
+ root.replaceChildren();
+ const adminRoute=location.hash.startsWith('#/admin');
+ let form;
+ if(!adminRoute){
+ heading('Создание команды');
+ const open=el('button','＋ Создать команду');open.type='button';open.className='toolbtn';root.append(open);
+ form=el('form');form.className='auth-form';form.hidden=true;
+ open.onclick=()=>{form.hidden=!form.hidden;open.textContent=form.hidden?'＋ Создать команду':'Закрыть форму';};
+ const name=field('Название команды'),tag=field('Тег (2–5 символов)'),country=field('Страна',false);
+ name.input.maxLength=70;name.input.minLength=2;tag.input.maxLength=5;tag.input.minLength=2;
+ const avatarLabel=el('label','Аватарка команды '),avatar=el('input');avatar.type='file';avatar.accept='image/png,image/jpeg,image/webp';avatar.required=true;avatarLabel.append(avatar);
+ const preview=el('img');preview.alt='Предпросмотр аватарки';preview.width=96;preview.height=96;preview.style.cssText='object-fit:cover;border-radius:14px;display:none';
+ let previewUrl=null;
+ avatar.onchange=()=>{if(previewUrl)URL.revokeObjectURL(previewUrl);const file=avatar.files?.[0];preview.style.display=file?'block':'none';if(file){previewUrl=URL.createObjectURL(file);preview.src=previewUrl;}};
+ form.append(avatarLabel,preview,name.wrap,tag.wrap,country.wrap);
+ const submit=el('button','Отправить на модерацию');submit.type='submit';submit.className='auth-submit';form.append(submit);root.append(form,msg);
  form.addEventListener('submit',async e=>{e.preventDefault();submit.disabled=true;msg.textContent='Отправляем заявку…';
- const {error}=await client.from('fztv_teams').insert({name:name.input.value.trim(),tag:tag.input.value.trim(),country:country.input.value.trim(),owner_id:user.id,status:'pending'});
- msg.textContent=error?'Ошибка: '+error.message:'Команда отправлена на модерацию';if(!error)form.reset();submit.disabled=false;await refresh();});
+ try {
+ const file=avatar.files?.[0];
+ if(!file || !['image/png','image/jpeg','image/webp'].includes(file.type) || file.size>2097152)throw Error('Выбери PNG, JPG или WebP размером до 2 МБ');
+ const ext={'image/png':'png','image/jpeg':'jpg','image/webp':'webp'}[file.type];
+ const path=user.id+'/'+crypto.randomUUID()+'.'+ext;
+ const {error:uploadError}=await client.storage.from('fztv-team-avatars').upload(path,file,{contentType:file.type,upsert:false});
+ if(uploadError)throw uploadError;
+ const logo_url=client.storage.from('fztv-team-avatars').getPublicUrl(path).data.publicUrl;
+ const {error}=await client.from('fztv_teams').insert({name:name.input.value.trim(),tag:tag.input.value.trim(),country:country.input.value.trim(),logo_url,owner_id:user.id,status:'pending'});
+ if(error)throw error;
+ msg.textContent='Команда отправлена на модерацию';form.reset();preview.style.display='none';form.hidden=true;open.textContent='＋ Создать команду';
+ await refresh();
+ }catch(error){msg.textContent='Ошибка: '+error.message;}finally{submit.disabled=false;}
+ });
+ }
  const myTeams=el('section');root.append(myTeams);
  async function refresh(){
  myTeams.replaceChildren(el('h2','Мои команды'));
