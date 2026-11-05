@@ -1,0 +1,30 @@
+name: Refresh player country flags
+on:
+  push:
+    paths:
+      - '.github/workflows/refresh-player-country-flags.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Update asset URL
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          s=re.sub(r'src="\./js/admin-player-trophies\.js(?:\?[^"]*)?"','src="./js/admin-player-trophies.js?v=flags-20261106"',s)
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Publish
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet || git commit -m "Activate country flags on player profiles"
+          git push
