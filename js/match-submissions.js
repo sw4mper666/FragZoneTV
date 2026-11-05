@@ -93,6 +93,32 @@ async function review(client,root){
  const section=N('section');section.id='fz-match-review';section.className='fz-sub';
  section.append(N('h2','Заявки на матчи'));const refreshBtn=N('button','Обновить заявки');refreshBtn.className='toolbtn',refreshBtn.type='button';const list=N('div');section.append(refreshBtn,list);
  root.querySelector('.page-title')?.insertAdjacentElement('afterend',section);
+ const published=N('section');published.className='fz-sub';published.id='fz-published-match-admin';
+ published.append(N('h2','Опубликованные матчи'));
+ const pubRefresh=N('button','Обновить список матчей');pubRefresh.className='toolbtn';pubRefresh.type='button';
+ const pubList=N('div');published.append(pubRefresh,pubList);section.insertAdjacentElement('afterend',published);
+ const loadPublished=async()=>{
+  const access=await client.rpc('fztv_is_admin');if(access.error||!access.data){published.remove();return}
+  const result=await client.from('fztv_site_matches').select('id,title,team_a,team_b,starts_at,result_overall').order('starts_at',{ascending:false}).limit(100);
+  pubList.replaceChildren();
+  if(result.error){pubList.append(N('p','Ошибка: '+result.error.message));return}
+  if(!result.data?.length){pubList.append(N('p','Опубликованных матчей нет.'));return}
+  for(const match of result.data){
+   const row=N('div');row.className='fz-review';
+   const link=N('a',match.team_a+' — '+match.team_b+' · '+(match.result_overall||'запланирован')+' · '+new Date(match.starts_at).toLocaleDateString('ru-RU'));
+   link.href='#/match/'+match.id;link.style.color='#e8f0ff';row.append(link);
+   const del=N('button','Удалить матч');del.type='button';del.className='toolbtn';del.style.marginLeft='15px';
+   del.onclick=async()=>{
+    if(!confirm('Удалить матч '+match.team_a+' — '+match.team_b+'? Статистика игроков и начисленные за этот матч RP также будут отменены. Это действие необратимо.'))return;
+    del.disabled=true;
+    const result=await client.rpc('fztv_admin_delete_match',{p_match_id:match.id});
+    if(result.error){const error=N('p','Ошибка: '+result.error.message);row.append(error);del.disabled=false;return}
+    await loadPublished();
+   };
+   row.append(del);pubList.append(row);
+  }
+ };
+ pubRefresh.onclick=loadPublished;await loadPublished();
  const load=async()=>{
   const allowed=await client.rpc('fztv_is_admin');if(allowed.error||!allowed.data){section.remove();return}
   const result=await client.from('fztv_match_submissions').select('*').eq('status','pending').order('created_at',{ascending:true});
