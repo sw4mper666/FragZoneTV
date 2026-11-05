@@ -1,0 +1,30 @@
+name: Activate admin match deletion panel
+on:
+  push:
+    paths:
+      - '.github/workflows/enable-match-deletion-panel.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  activate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Refresh admin script reference
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          import re
+          s=re.sub(r'src="\./js/admin-player-trophies\.js(?:\?[^"]*)?"', 'src="./js/admin-player-trophies.js?v=delete-match-20261106"',s)
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet || git commit -m "Activate deletion-only admin match panel"
+          git push
