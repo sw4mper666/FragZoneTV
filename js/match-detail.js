@@ -47,13 +47,13 @@ async function roster(client,team,legacy,stats){
   for(const p of r.data||[])players.push({slug:'team_'+p.id.replace(/-/g,''),name:p.nickname,photo:p.photo_url});
  }
  for(const p of legacy.filter(x=>(x.team_name||'').toLowerCase()===team.name.toLowerCase())){
-  if(!players.some(x=>x.slug===p.player_slug))players.push({slug:p.player_slug,name:p.nickname,photo:p.photo_url});
+  if(!players.some(x=>x.slug===p.player_slug))players.push({slug:p.player_slug,name:p.nickname,photo:p.photo_url||((team.name.toLowerCase()==='team woods'&&window.fztvWoodsPhoto)?window.fztvWoodsPhoto(p.player_slug):null)});
  }
  // Historical match participants remain visible after team changes.
  for(const st of stats){
   if(players.some(x=>x.slug===st.player_slug))continue;
   const prev=legacy.find(x=>x.player_slug===st.player_slug);
-  players.push({slug:st.player_slug,name:prev?.nickname||st.player_slug,photo:prev?.photo_url||null});
+  players.push({slug:st.player_slug,name:prev?.nickname||st.player_slug,photo:prev?.photo_url||((team.name.toLowerCase()==='team woods'&&window.fztvWoodsPhoto)?window.fztvWoodsPhoto(st.player_slug):null)});
  }
  return players;
 }
