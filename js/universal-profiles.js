@@ -70,5 +70,5 @@ export async function mount({client,root,route}){
  const parts=location.hash.split('/'),key=decodeURIComponent(parts[2]||'').toLowerCase();
  if(route==='team-created')return teamPage(client,root,parts[2]||'');
  if(route==='player'&&(key.startsWith('team_')||key==='xblackerx'||!['sw4mper','loytaber','skrizzi','fladar','bosskpec'].includes(key)))return playerPage(client,root,key,parts[3]==='stats'?'stats':'main');
- if(route==='players')return playersPage(client,root);
+ if(route==='players'){await playersPage(client,root);if(location.hash.startsWith('#/players')){const tbody=root.querySelector('.fztv-players-table tbody');if(tbody)await import('./player-quick-editor.js').then(m=>m.attachCaptainGears({client,tbody}));}return;}
 }
