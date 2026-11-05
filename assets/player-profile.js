@@ -9,7 +9,7 @@ const external=(typeof publicPlayersCache!=='undefined'?publicPlayersCache:[]).f
 const name=roster?.[0]||legacy?.nickname||external?.nickname||slug;
 const photo=roster?.[1]||legacy?.photo_url||external?.photo_url||'';
 const team=legacy?.team_name||external?.fztv_teams?.name||'Team Woods';
-if(!roster&&!legacy&&!external)return original();
+if(!roster&&!legacy&&!external)return '<div class="detail-empty">Загрузка профиля игрока…</div>';
 if(location.hash.split('/')[3]!=='stats'&&roster)return original();
 const all=(playerMatchStats||[]).filter(x=>String(x.player_slug||'').toLowerCase()===slug);
 const sorted=[...all].sort((a,b)=>{const t=x=>new Date(x.created_at||((typeof matchesCache!=='undefined'?matchesCache:[]).find(m=>String(m.id)===String(x.match_id))||{}).starts_at||0).getTime()||0;return t(b)-t(a)});
