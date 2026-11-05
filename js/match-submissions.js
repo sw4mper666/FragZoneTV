@@ -1,7 +1,7 @@
 // FragZoneTV: match upload, live FZTVR and moderator approval.
 const N=(tag,txt)=>{const n=document.createElement(tag);if(txt!==undefined)n.textContent=txt;return n;};
 const slug=id=>'team_'+String(id).replace(/-/g,'');
-const calc=(k,d,a)=>Math.max(0,100+10*(+k||0)-10*(+d||0)+3*(+a||0));
+const calc=(k,d,a)=>((Number(k||0)+Number(a||0)*0.5)/Math.max(1,Number(d||0))).toFixed(2);
 const styles='.fz-sub{background:#111b2b;border:1px solid #354963;border-radius:12px;padding:20px;margin:18px 0;color:#f2f6ff}.fz-sub h2{margin:0 0 14px}.fz-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.fz-grid label{display:flex;flex-direction:column;gap:6px;color:#abc1db;font-size:12px}.fz-grid input,.fz-grid select,.fz-grid textarea{min-width:0;background:#080f1c;border:1px solid #3a4d67;color:#fff;border-radius:7px;padding:10px}.fz-full{grid-column:1/-1}.fz-primary{padding:12px 18px;background:#e52546;color:#fff;border:0;border-radius:8px;font-weight:800;cursor:pointer}.fz-preview{display:flex;align-items:center;justify-content:space-between;gap:15px;background:#1a2940;padding:20px;border-radius:9px;font-weight:800}.fz-preview span{color:#9eb3ce}.fz-stat-table{border-collapse:collapse;width:100%;min-width:490px;font-size:13px}.fz-stat-table th{background:#1b2941;color:#a9bcd5;padding:9px}.fz-stat-table td{border-bottom:1px solid #2e3f56;padding:6px}.fz-stat-table input[type=number]{width:64px;padding:7px}.fz-rating{color:#25e8a5;font-weight:800}.fz-status{color:#ffc0ca;font-size:13px}.fz-review{border:1px solid #32465f;padding:12px;margin:12px 0;border-radius:9px}@media(max-width:650px){.fz-grid{grid-template-columns:1fr}.fz-sub{padding:12px}}';
 const field=(label,type='text')=>{const l=N('label',label),x=N('input');x.type=type;l.append(x);return {l,x};};
 const sel=(options)=>{const s=N('select');for(const [v,t] of options){const o=N('option',t);o.value=v;s.append(o)}return s;};
@@ -57,7 +57,7 @@ function form(client,panel,data,user){
  const event=field('Название турнира / ивента'),date=field('Дата','date'),time=field('Время','time');date.x.required=true;date.x.value=new Date().toISOString().slice(0,10);for(const x of [event,date,time])f.append(x.l);
  const mapLabel=N('label','Карты (по одной строке: Mirage,13,9)'),maps=N('textarea');maps.rows=3;maps.placeholder='Mirage,13,9\nDust2,11,13';mapLabel.className='fz-full';mapLabel.append(maps);f.append(mapLabel);
  const lists=N('div');lists.className='fz-full';f.append(lists);
- const explain=N('p','FZTVR предварительно = max(0, 100 + 10 × (K − D) + 3 × A). Рейтинг и статистика публикуются только после подтверждения администратором.');explain.className='fz-full';explain.style.color='#96abc7';f.append(explain);
+ const explain=N('p','FZTVR = (K + 0,5 × A) / max(D, 1), округление до 2 знаков. Рейтинг и статистика публикуются только после подтверждения администратором.');explain.className='fz-full';explain.style.color='#96abc7';f.append(explain);
  const send=N('button','Отправить на проверку');send.className='fz-primary fz-full';send.type='submit';f.append(send);
  const status=N('p');status.className='fz-status fz-full';status.setAttribute('role','status');f.append(status);
  const selected=s=>data.teams[Number(s.value)];
