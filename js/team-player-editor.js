@@ -20,16 +20,39 @@ export async function mountTeamPlayerEditor({client,container,team,user}){
  const photo=field('Ссылка на фото','photo_url',false,'url');
  const upload=field('Загрузить фотографию (до 2 МБ)','photo_file',false,'file');upload.i.accept='image/png,image/jpeg,image/webp';
  const preview=el('img');preview.alt='Предпросмотр';preview.width=100;preview.height=100;preview.style.cssText='object-fit:cover;border-radius:12px;display:none';
- let previewUrl;upload.i.onchange=()=>{if(previewUrl)URL.revokeObjectURL(previewUrl);const f=upload.i.files?.[0];preview.style.display=f?'block':'none';if(f){previewUrl=URL.createObjectURL(f);preview.src=previewUrl;}};
+ let editingId=null, previewUrl;upload.i.onchange=()=>{if(previewUrl)URL.revokeObjectURL(previewUrl);const f=upload.i.files?.[0];preview.style.display=f?'block':'none';if(f){previewUrl=URL.createObjectURL(f);preview.src=previewUrl;}};
  for(const f of fields.slice(0,5))form.append(f.l);
  form.append(primary.l,secondary.l,faceit.l);
  for(const f of fields.slice(5))form.append(f.l);
  form.append(photo.l,upload.l,preview);
  const note=el('p','В команде может быть только один игрок с FACEIT 10. Призовые нового игрока — $0.');form.append(note);
  const save=el('button','Сохранить игрока');save.type='submit';save.className='auth-submit';form.append(save);
- open.onclick=()=>{form.hidden=!form.hidden;open.textContent=form.hidden?'＋ Добавить игрока':'Закрыть форму';};
+ 
+ function resetEditor(){
+   editingId=null;form.reset();form.hidden=true;preview.style.display='none';
+   if(previewUrl){URL.revokeObjectURL(previewUrl);previewUrl=null;}
+   open.textContent='＋ Добавить игрока';save.textContent='Сохранить игрока';
+ }
+ function showEditor(p=null){
+   editingId=p?.id||null;form.reset();
+   for(const f of fields) f.i.value=(p?.[f.i.name]??'');
+   primary.select.value=p?.primary_role||'Rifler';
+   secondary.select.value=p?.secondary_role||'';
+   faceit.select.value=p?.faceit_level==null?'':String(p.faceit_level);
+   photo.i.value=p?.photo_url||'';
+   upload.i.value='';
+   if(previewUrl){URL.revokeObjectURL(previewUrl);previewUrl=null;}
+   preview.style.display=p?.photo_url?'block':'none';
+   if(p?.photo_url)preview.src=p.photo_url;
+   form.hidden=false;
+   save.textContent=p?'Сохранить изменения':'Сохранить игрока';
+   open.textContent='Закрыть форму';
+   status.textContent=p?'Редактирование игрока: '+p.nickname:'Добавление игрока';
+   form.scrollIntoView({behavior:'smooth',block:'nearest'});
+ }
+ open.onclick=()=>{if(form.hidden)showEditor();else resetEditor();};
  async function refresh(){
- const {data,error}=await client.from('fztv_team_players').select('id,nickname,country,primary_role,faceit_level,photo_url').eq('team_id',team.id).order('created_at',{ascending:true});
+ const {data,error}=await client.from('fztv_team_players').select('*').eq('team_id',team.id).order('created_at',{ascending:true});
  roster.replaceChildren();
  if(error){roster.append(el('p','Ошибка загрузки: '+error.message));return;}
  if(!data?.length)roster.append(el('p','Игроков пока нет.'));
@@ -37,14 +60,16 @@ export async function mountTeamPlayerEditor({client,container,team,user}){
  const row=el('div');row.className='fztv-player-row';
  if(p.photo_url){const img=el('img');img.src=p.photo_url;img.alt='';row.append(img);}
  const text=el('span',p.nickname+' · '+(p.country||'—')+' · '+(p.primary_role||'Rifler')+(p.faceit_level?' · FACEIT '+p.faceit_level:''));row.append(text);
+ const edit=el('button','Редактировать');edit.type='button';edit.className='toolbtn';
+ edit.onclick=()=>showEditor(p);row.append(edit);
  const remove=el('button','Удалить');remove.type='button';remove.className='toolbtn';
  remove.onclick=async()=>{if(!confirm('Удалить игрока '+p.nickname+' из команды?'))return;remove.disabled=true;const {error}=await client.from('fztv_team_players').delete().eq('id',p.id).eq('team_id',team.id);status.textContent=error?'Ошибка: '+error.message:'Игрок удалён';await refresh();};row.append(remove);roster.append(row);
  }
  }
  form.onsubmit=async e=>{e.preventDefault();save.disabled=true;status.textContent='Сохраняем игрока…';
  try{
- const payload={team_id:team.id,prize_usd:0};
- for(const f of fields){if(f.i.name!=='birth_date')payload[f.i.name]=f.i.value.trim();else if(f.i.value)payload.birth_date=f.i.value;}
+ const payload=editingId?{}:{team_id:team.id,prize_usd:0};
+ for(const f of fields){if(f.i.name!=='birth_date')payload[f.i.name]=f.i.value.trim();else payload.birth_date=f.i.value||null;}
  payload.primary_role=primary.select.value;payload.secondary_role=secondary.select.value;
  payload.faceit_level=faceit.select.value?Number(faceit.select.value):null;
  let photoUrl=photo.i.value.trim()||null;
@@ -54,8 +79,13 @@ export async function mountTeamPlayerEditor({client,container,team,user}){
  const {error}=await client.storage.from('fztv-player-photos').upload(path,file,{contentType:file.type});if(error)throw error;
  photoUrl=client.storage.from('fztv-player-photos').getPublicUrl(path).data.publicUrl;}
  payload.photo_url=photoUrl;
- const {error}=await client.from('fztv_team_players').insert(payload);if(error)throw error;
- form.reset();form.hidden=true;preview.style.display='none';open.textContent='＋ Добавить игрока';status.textContent='Игрок добавлен';await refresh();
+ const result=editingId
+   ?await client.from('fztv_team_players').update(payload).eq('id',editingId).eq('team_id',team.id).select('id')
+   :await client.from('fztv_team_players').insert(payload).select('id');
+ if(result.error)throw result.error;
+ if(!result.data?.length)throw Error('Изменение не подтверждено. Проверь права капитана.');
+ const wasEditing=Boolean(editingId);
+ resetEditor();status.textContent=wasEditing?'Изменения игрока сохранены':'Игрок добавлен';await refresh();
  }catch(err){status.textContent='Ошибка: '+err.message;}finally{save.disabled=false;}
  };
  await refresh();
