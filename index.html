@@ -317,7 +317,7 @@ function fztvPlayerProfile(){
  const sum=k=>stats.reduce((n,x)=>n+(Number(x[k])||0),0),matches=stats.length,kills=sum('kills'),deaths=sum('deaths'),assists=sum('assists'),rounds=sum('rounds_played'),headshots=sum('headshots'),wins=stats.filter(x=>x.won===true).length;
  const kd=matches?(deaths?(kills/deaths).toFixed(2):kills?'∞':'0.00'):'—';
  const ratio=(n,d)=>d?(n/d).toFixed(1):'—';
- const fztvr=matches?Math.round(stats.reduce((n,r)=>n+Math.max(0,100+10*(Number(r.kills)||0)-10*(Number(r.deaths)||0)+3*(Number(r.assists)||0)),0)/matches):'—';
+ const fztvr=matches?((kills+0.5*assists)/Math.max(1,deaths)).toFixed(2):'—';
  const metrics=[['FZTVR',fztvr],['K/D',kd],['Винрейт',matches?Math.round(100*wins/matches)+'%':'—'],['Убийств / матч',ratio(kills,matches)],['Смертей / матч',ratio(deaths,matches)],['Ассистов / матч',ratio(assists,matches)],['Матчей',matches||'—']];
  const tabs=`<div class="fztv-player-tabs"><a class="${tab==='main'?'active':''}" href="${fztvPlayerLink(name)}">Основной</a><a class="${tab==='stats'?'active':''}" href="${fztvPlayerLink(name)}/stats">Статистика</a></div>`;
  const photoHtml=`<img src="${photo}" alt="${escapeAuth(name)}">`;
@@ -333,7 +333,7 @@ async function loadPublicPlayers(){
 }
 function fztvrForPlayer(slug){
  const rows=(playerMatchStats||[]).filter(p=>p.player_slug===slug);
- return rows.length?Math.round(rows.reduce((n,r)=>n+Math.max(0,100+10*(Number(r.kills)||0)-10*(Number(r.deaths)||0)+3*(Number(r.assists)||0)),0)/rows.length):null;
+ return rows.length?((rows.reduce((n,r)=>n+(Number(r.kills)||0)+0.5*(Number(r.assists)||0),0))/Math.max(1,rows.reduce((n,r)=>n+(Number(r.deaths)||0),0))).toFixed(2):null;
 }
 function playersPage(){
  const woods=['sw4mper','Loytaber','Skrizzi','fladar','BOSSKPEC'].map(n=>({nickname:n,photo_url:teamWoodsRoster.find(([p])=>p.toLowerCase()===n.toLowerCase())?.[1],team:'Team Woods',country:'Россия',rating:fztvrForPlayer(fztvPlayerSlug(n)),role:'—',href:fztvPlayerLink(n)+'/stats'}));
