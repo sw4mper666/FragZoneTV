@@ -140,4 +140,31 @@ async function review(client,root){
   }
  };
  refreshBtn.onclick=load;await load();
+ const deleteSection=N('section');deleteSection.className='fz-sub';deleteSection.id='fz-admin-delete-matches';
+ deleteSection.append(N('h2','Управление опубликованными матчами'));
+ const deleteRefresh=N('button','Обновить список матчей');deleteRefresh.type='button';deleteRefresh.className='toolbtn';
+ const deleteList=N('div');deleteSection.append(deleteRefresh,deleteList);section.insertAdjacentElement('afterend',deleteSection);
+ const loadPublished=async()=>{
+  const allowed=await client.rpc('fztv_is_admin');
+  if(allowed.error||!allowed.data){deleteSection.remove();return}
+  const result=await client.from('fztv_site_matches').select('id,team_a,team_b,starts_at,result_overall,title').order('starts_at',{ascending:false}).limit(100);
+  deleteList.replaceChildren();
+  if(result.error){deleteList.append(N('p','Ошибка: '+result.error.message));return}
+  if(!result.data?.length){deleteList.append(N('p','Матчей нет.'));return}
+  for(const match of result.data){
+   const row=N('div');row.className='fz-review';
+   row.append(N('h3',match.team_a+' — '+match.team_b),N('p',(match.title||'Матч')+' · '+(match.result_overall||'Без результата')+' · '+new Date(match.starts_at).toLocaleDateString('ru-RU')));
+   const button=N('button','Удалить матч');button.type='button';button.className='toolbtn';
+   const msg=N('p');
+   button.onclick=async()=>{
+    if(!confirm('Удалить матч '+match.team_a+' — '+match.team_b+'? Будут удалены карты и статистика игроков, а начисленные за матч RP отменены. Это действие необратимо.'))return;
+    button.disabled=true;msg.textContent='Удаление…';
+    const r=await client.rpc('fztv_admin_delete_match',{p_match_id:match.id});
+    if(r.error){msg.textContent='Ошибка: '+r.error.message;button.disabled=false;return}
+    await loadPublished();
+   };
+   row.append(button,msg);deleteList.append(row);
+  }
+ };
+ deleteRefresh.onclick=loadPublished;await loadPublished();
 }
