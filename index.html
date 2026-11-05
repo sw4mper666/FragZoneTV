@@ -143,6 +143,23 @@ select,textarea{background:#0b111a;color:#fff;border:1px solid #34445a;border-ra
 @media(max-width:560px){.tw-top{padding:18px!important;min-height:0!important;flex-wrap:wrap!important;gap:14px!important}.tw-logo{width:86px!important;height:86px!important;flex:0 0 86px!important}.tw-identity h1{font-size:32px!important}.tw-roster{grid-template-columns:repeat(2,minmax(0,1fr))!important;padding:10px!important;gap:10px!important}.tw-metrics{grid-template-columns:repeat(2,minmax(0,1fr))!important;margin:10px!important}.tw-metric{padding:12px 5px!important}.tw-metric b{font-size:20px!important}.tw-form{margin:10px!important}.tw-facts{margin:0 10px 14px!important}}
 </style>
 
+<style id="fztv-ranking-red-tier-portrait">
+/* Ranking layout aligned with vertical CS2 player portraits. */
+.fztv-unified-summary{gap:10px}
+.fztv-unified-name{display:flex;align-items:center;flex-wrap:wrap;column-gap:12px;row-gap:4px}
+.fztv-unified-name>strong{font-size:15px}
+.fztv-unified-name>small{flex-basis:100%;order:3;font-size:11px}
+.fztv-rank-tier-red{display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;border:1px solid #ef2946;background:rgba(220,15,45,.13);color:#ff566a;border-radius:15px;padding:3px 9px;font-size:10px;line-height:1.25;font-weight:900;letter-spacing:.06em}
+.fztv-unified-roster{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+.fztv-unified-player{min-width:0}
+.fztv-unified-player img,.fztv-unified-player>span{width:100%;height:auto;aspect-ratio:3/4;max-height:230px;object-fit:cover;object-position:center top;border-radius:5px}
+.fztv-unified-player b{font-size:12px;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fztv-first-place{border-color:#e32b45}
+.fztv-first-place .fztv-unified-place{color:#ff5269}
+.fztv-first-place .fztv-unified-arrow{display:none}
+.fztv-first-place .fztv-unified-summary{cursor:default}
+@media(max-width:700px){.fztv-unified-roster{grid-template-columns:repeat(5,minmax(94px,1fr));overflow-x:auto;gap:8px;padding-bottom:6px}.fztv-unified-player img,.fztv-unified-player>span{aspect-ratio:3/4;height:auto;max-height:none}.fztv-unified-name>strong{font-size:13px}.fztv-unified-summary{padding:10px 8px}}
+</style>
 </head>
 <body>
 <header class="topbar">
@@ -240,12 +257,12 @@ function enhanceRankingLayout(route){
  const dynamic=approvedTeamsCache.filter(t=>!['team woods','taykans'].includes(t.name.trim().toLowerCase())).map(t=>({name:t.name,logo_url:t.logo_url,players:approvedRosterCache[t.id]||[],href:'#/team-created/'+encodeURIComponent(t.id),country:teamNationality(approvedRosterCache[t.id]||[]).flag}));
  const entries=[...staticTeams,...dynamic];
  entries.forEach((t,i)=>{
- const card=document.createElement('details');card.className='fztv-unified-team';
- const summary=document.createElement('summary');summary.className='fztv-unified-summary';
+ const card=document.createElement('details');card.className='fztv-unified-team';if(i===0){card.open=true;card.classList.add('fztv-first-place');}
+ const summary=document.createElement('summary');summary.className='fztv-unified-summary';if(i===0)summary.addEventListener('click',ev=>ev.preventDefault());
  const rank=document.createElement('b');rank.className='fztv-unified-place';rank.textContent='#'+(i+1);
  const logo=document.createElement('span');logo.className='fztv-unified-logo';
  if(t.logo_url){const img=document.createElement('img');img.src=t.logo_url;img.alt='';logo.append(img);}else if(t.logo)logo.append(t.logo);else logo.textContent='🏆';
- const name=document.createElement('span');name.className='fztv-unified-name';const title=document.createElement('strong');title.textContent=t.name;const sub=document.createElement('small');sub.textContent='TIER '+(i+1<=10?1:i+1<=20?2:3)+' · '+(t.players.length?t.players.map(p=>p.nickname).join(' · '):'Состав пока не добавлен');name.append(title,sub);
+ const name=document.createElement('span');name.className='fztv-unified-name';const title=document.createElement('strong');title.textContent=t.name;const sub=document.createElement('small');sub.textContent=t.players.length?t.players.map(p=>p.nickname).join(' · '):'Состав пока не добавлен';name.append(title,sub);const tierBadge=document.createElement('span');tierBadge.className='fztv-rank-tier-red';tierBadge.textContent='TIER '+(i+1<=10?1:i+1<=20?2:3);name.append(tierBadge);
  const points=document.createElement('b');points.className='fztv-unified-points';points.textContent='0 FZ';
  const arrow=document.createElement('span');arrow.className='fztv-unified-arrow';arrow.textContent='⌄';
  summary.append(rank,logo,name,points,arrow);card.append(summary);
