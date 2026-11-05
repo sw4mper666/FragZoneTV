@@ -91,4 +91,60 @@ export async function mountTeamPlayerEditor({client,container,team,user}){
  }catch(err){status.textContent='Ошибка: '+err.message;}finally{save.disabled=false;}
  };
  await refresh();
+
+ if(team.name.toLowerCase()==='team woods'){
+  const section=el('section');section.className='fztv-editor';
+  section.append(el('h3','Основной состав Team Woods'));
+  const items=el('div'),message=el('p');message.setAttribute('role','status');
+  section.append(items,message);container.append(section);
+  async function refreshLegacy(){
+   const result=await client.from('fztv_roster_players').select('player_slug,nickname,photo_url,age,team_name').eq('team_name','Team Woods').order('created_at');
+   items.replaceChildren();
+   if(result.error){items.append(el('p',result.error.message));return;}
+   if(!result.data?.length){items.append(el('p','В составе нет игроков.'));return;}
+   for(const p of result.data){
+    const wrap=el('div');wrap.style.cssText='padding:12px;margin:10px 0;border:1px solid #35465c;border-radius:9px';
+    const label=el('strong',p.nickname+' · '+p.player_slug);wrap.append(label);
+    const form=el('form');form.className='fztv-player-form';form.hidden=true;
+    const nick=field('Ник','legacy_nick',true),age=field('Возраст','legacy_age',false,'number'),avatar=field('Ссылка на фото','legacy_photo',false,'url'),uploadImg=field('Загрузить фото (до 2 МБ)','legacy_file',false,'file');
+    nick.i.value=p.nickname;age.i.value=p.age??'';avatar.i.value=p.photo_url||'';uploadImg.i.accept='image/png,image/jpeg,image/webp';
+    if(p.photo_url){const img=el('img');img.src=p.photo_url;img.alt='';img.style.cssText='width:65px;height:80px;object-fit:cover';wrap.append(img);}
+    form.append(nick.l,age.l,avatar.l,uploadImg.l);
+    const saveButton=el('button','Сохранить профиль');saveButton.className='auth-submit';saveButton.type='submit';form.append(saveButton);
+    const openButton=el('button','Редактировать');openButton.className='toolbtn';openButton.type='button';
+    openButton.onclick=()=>{form.hidden=!form.hidden;openButton.textContent=form.hidden?'Редактировать':'Скрыть форму'};
+    const kick=el('button','Исключить в свободные агенты');kick.type='button';kick.className='toolbtn';
+    kick.onclick=async()=>{
+     if(!confirm('Исключить '+p.nickname+' из Team Woods? Профиль и статистика сохранятся.'))return;
+     kick.disabled=true;
+     const result=await client.rpc('fztv_kick_legacy_player',{p_slug:p.player_slug});
+     message.textContent=result.error?'Ошибка: '+result.error.message:'Игрок исключён из Team Woods';
+     await refreshLegacy();
+    };
+    form.onsubmit=async e=>{
+     e.preventDefault();saveButton.disabled=true;message.textContent='Сохранение…';
+     try{
+      let photo=avatar.i.value.trim();
+      const file=uploadImg.i.files?.[0];
+      if(file){
+       const ext={'image/png':'png','image/jpeg':'jpg','image/webp':'webp'}[file.type];
+       if(!ext||file.size>2097152)throw Error('Загрузи PNG, JPG или WebP размером до 2 МБ');
+       const filepath=user.id+'/'+crypto.randomUUID()+'.'+ext;
+       const uploaded=await client.storage.from('fztv-player-photos').upload(filepath,file,{contentType:file.type});
+       if(uploaded.error)throw uploaded.error;
+       photo=client.storage.from('fztv-player-photos').getPublicUrl(filepath).data.publicUrl;
+      }
+      const result=await client.rpc('fztv_edit_legacy_player',{
+       p_slug:p.player_slug,p_nickname:nick.i.value.trim(),p_photo_url:photo,p_age:age.i.value?Number(age.i.value):null
+      });
+      if(result.error)throw result.error;
+      message.textContent='Игрок сохранён. Профиль остаётся прежним, ID '+p.player_slug;
+      await refreshLegacy();
+     }catch(err){message.textContent='Ошибка: '+err.message}finally{saveButton.disabled=false;}
+    };
+    wrap.append(openButton,kick,form);items.append(wrap);
+   }
+  }
+  await refreshLegacy();
+ }
 }
