@@ -1,0 +1,31 @@
+name: Refresh player profile asset versions
+on:
+  push:
+    paths:
+      - '.github/workflows/refresh-player-profile-cache.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Version profile assets and universal module
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace('href="assets/player-profile.css"','href="assets/player-profile.css?v=20261106fix2"')
+          s=s.replace('src="assets/player-profile.js"','src="assets/player-profile.js?v=20261106fix2"')
+          s=s.replace("import('./js/universal-profiles.js')","import('./js/universal-profiles.js?v=20261106fix2')")
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet || git commit -m "Bust stale profile scripts and stop stats flicker"
+          git push
