@@ -160,6 +160,7 @@ select,textarea{background:#0b111a;color:#fff;border:1px solid #34445a;border-ra
 .fztv-first-place .fztv-unified-summary{cursor:default}
 @media(max-width:700px){.fztv-unified-roster{grid-template-columns:repeat(5,minmax(94px,1fr));overflow-x:auto;gap:8px;padding-bottom:6px}.fztv-unified-player img,.fztv-unified-player>span{aspect-ratio:3/4;height:auto;max-height:none}.fztv-unified-name>strong{font-size:13px}.fztv-unified-summary{padding:10px 8px}}
 </style>
+<link rel="stylesheet" href="assets/player-profile.css">
 </head>
 <body>
 <header class="topbar">
@@ -460,4 +461,5 @@ sb.auth.onAuthStateChange(()=>{setTimeout(refreshAuth,0)});
 render();refreshAuth();loadContent();loadApprovedTeams();loadPublicPlayers();loadLegacyRoster();loadTeamRP();
 </script>
 <script src="./js/admin-player-trophies.js"></script>
+<script src="assets/player-profile.js"></script>
 </body></html>
