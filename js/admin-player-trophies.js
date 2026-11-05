@@ -212,6 +212,22 @@
           else root.append(panel);
         }
         if((hash.includes('player')||hash.includes('игрок'))&&!document.getElementById('fztv-free-agents'))freeAgents(root);
+        if(hash.startsWith('#/players')){
+          const tbody=root.querySelector('.fztv-players-table tbody');
+          if(tbody){
+            const known=new Set([...tbody.querySelectorAll('tr')].map(tr=>tr.querySelector('td:nth-child(2)')?.textContent?.trim().toLowerCase()));
+            for(const p of state.rows){
+              if(known.has(p.nickname.toLowerCase()))continue;
+              const tr=el('tr');
+              const tdAvatar=el('td'),avatar=el('span',p.photo_url?'':'👤');avatar.className='fztv-avatar';
+              if(p.photo_url){const img=el('img');img.src=p.photo_url;img.alt='';avatar.append(img);}tdAvatar.append(avatar);
+              const tdNick=el('td'),link=el('a',p.nickname);link.href='#/player/'+encodeURIComponent(p.player_slug);tdNick.append(link);
+              const cells=[tdAvatar,tdNick,el('td',String(p.rating||0)),el('td','—'),el('td',p.team_name||'Свободный агент'),el('td','—'),el('td','—')];
+              for(const td of cells)tr.append(td);
+              tbody.append(tr);
+            }
+          }
+        }
         if((hash.includes('team')||hash.includes('woods'))&&!hash.includes('player')){
           // Replace the departed player's roster label, but keep xblackerx on transfers.
           for(const leaf of root.querySelectorAll('a,span,strong,h3,h4')){
