@@ -1,0 +1,28 @@
+(function(){
+const original=window.fztvPlayerProfile;
+if(typeof original!=='function')return;
+window.fztvPlayerProfile=function(){
+const slug=decodeURIComponent((location.hash.split('/')[2]||'')).toLowerCase();
+const roster=woodsRosterNow().find(x=>x[2]===slug);
+if(!roster)return original();
+const [name,photo]=roster;
+if(location.hash.split('/')[3]!=='stats')return original();
+const all=(playerMatchStats||[]).filter(x=>x.player_slug===slug);
+const sorted=[...all].sort((a,b)=>{const t=x=>new Date(x.created_at||matchesCache.find(m=>String(m.id)===String(x.match_id))?.starts_at||0).getTime()||0;return t(b)-t(a)});
+const n=Number(new URLSearchParams(location.hash.split('?')[1]||'').get('last'))||0;
+const stats=n===10||n===30?sorted.slice(0,n):sorted;
+const total=stats.length,sum=k=>stats.reduce((v,x)=>v+(Number(x[k])||0),0);
+const kills=sum('kills'),deaths=sum('deaths'),assists=sum('assists'),wins=stats.filter(x=>x.won===true).length;
+const kd=total?(deaths?(kills/deaths).toFixed(2):kills?'∞':'0.00'):'—';
+const rating=total?((kills+.5*assists)/Math.max(1,deaths)).toFixed(2):'—';
+const win=total?Math.round(wins/total*100):null;
+const pct=(v,max)=>max?Math.max(0,Math.min(100,Math.round(v/max*100))):null;
+const mini=(title,value,score)=>'<div><b>'+value+'</b><small>'+title+'</small><div class="fzstats-track"><i style="width:'+(score??0)+'%"></i></div></div>';
+const detail=(title,value,description)=>'<details><summary><span>'+title+'</span><span>'+(value==null?'—':value+'/100')+' ⌄</span></summary><div class="fzstats-track" style="margin-top:13px"><i style="width:'+(value??0)+'%"></i></div><p>'+description+'</p></details>';
+const impact=total?pct(kills+assists*.5,Math.max(1,deaths)*2):null;
+const survival=total?pct(Math.max(0,total*30-deaths),total*30):null;
+const support=total?pct(assists,total*4):null;
+const period='<div class="fzstats-period">Период: '+[0,10,30].map(x=>'<a class="'+(x===n?'active':'')+'" href="'+fztvPlayerLink(name)+'/stats'+(x?'?last='+x:'')+'">'+(x?x+' матчей':'Всё время')+'</a>').join('')+'<span>'+total+' матч(ей)</span></div>';
+return '<div class="crumb"><a href="#/players">Игроки</a> / '+escapeAuth(name)+' / Статистика</div><div class="fztv-player-tabs"><a href="'+fztvPlayerLink(name)+'">Основной</a><a class="active" href="'+fztvPlayerLink(name)+'/stats">Статистика</a></div><section class="fzstats"><div class="fzstats-photo"><img src="'+escapeAuth(photo)+'" alt=""><div class="fzstats-id"><h2>'+escapeAuth(name)+'</h2><p>Team Woods · Counter-Strike 2</p></div></div><div class="fzstats-main"><div class="fzstats-top"><div class="fzstats-side"><b>'+kd+'</b><small>K/D</small></div><div class="fzstats-arc"><div><small>'+(total?'FZTVR':'НЕТ ДАННЫХ')+'</small><strong>'+rating+'</strong></div></div><div class="fzstats-side"><b>'+rating+'</b><small>FZTVR</small></div></div><div class="fzstats-six">'+mini('ВИНРЕЙТ',win==null?'—':win+'%',win)+mini('УБИЙСТВ/МАТЧ',total?(kills/total).toFixed(1):'—',total?pct(kills,total*40):null)+mini('СМЕРТЕЙ/МАТЧ',total?(deaths/total).toFixed(1):'—',survival)+mini('АССИСТОВ/МАТЧ',total?(assists/total).toFixed(1):'—',support)+mini('СТАБИЛЬНОСТЬ','—',null)+mini('МАТЧЕЙ',total,null)+'</div></div><div class="fzstats-bottom">'+period+'<div class="fzstats-details">'+detail('✦ Огневая мощь',impact,'Оценка на основе убийств и ассистов.')+detail('⇄ K/D',total?pct(kills,Math.max(1,deaths)*2):null,'Отношение убийств к смертям.')+detail('ϟ Влияние',impact,'Условный показатель влияния.')+detail('✚ Поддержка',support,'Ассисты за матч.')+detail('♥ Выживаемость',survival,'Смерти за матч.')+detail('≋ Стабильность',null,'Недостаточно данных.')+detail('🏆 Винрейт',win,'Доля выигранных матчей.')+'</div></div></section>';
+};
+})();
