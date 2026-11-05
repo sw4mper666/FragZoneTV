@@ -50,6 +50,9 @@ async function playersPage(client,root){
  if(p.fztv_teams?.status!=='approved')continue;
  const name=[...tbody.querySelectorAll('tr')].find(tr=>tr.querySelector('td:nth-child(2)')?.textContent.trim().toLowerCase()===p.nickname.toLowerCase())?.querySelector('td:nth-child(2)');
  if(name)name.innerHTML='<a href="#/player/'+keyFor(p.id)+'">'+esc(p.nickname)+'</a>';
+ else{
+ const tr=document.createElement('tr');tr.innerHTML='<td>👤</td><td><a href="#/player/'+keyFor(p.id)+'">'+esc(p.nickname)+'</a></td><td>—</td><td>—</td><td>'+esc(p.fztv_teams.name)+'</td><td>—</td><td>—</td>';tbody.append(tr);
+ }
  }
  for(const p of roster.data||[]){
  const row=[...tbody.querySelectorAll('tr')].find(tr=>tr.querySelector('td:nth-child(2)')?.textContent.trim().toLowerCase()===p.nickname.toLowerCase());
