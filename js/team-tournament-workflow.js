@@ -54,6 +54,9 @@ export async function mountFragZoneTeams({client,root}) {
  button.onclick=async()=>{button.disabled=true;const {error}=await client.from('fztv_tournament_applications').insert({team_id:team.id,tournament_id:select.value,owner_id:user.id});msg.textContent=error?'Ошибка: '+error.message:'Заявка на турнир отправлена';button.disabled=false;};
  item.append(select,button);
  }myTeams.append(item);
+ if(team.status==='approved'){
+ import('./team-player-editor.js').then(m=>m.mountTeamPlayerEditor({client,container:item,team,user})).catch(err=>{const p=el('p','Не удалось загрузить управление игроками: '+err.message);item.append(p);});
+ }
  }
  }
  await refresh();
