@@ -1,0 +1,28 @@
+// Public FZTV match detail page; published matches only.
+const X=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const flags={'россия':'🇷🇺','russia':'🇷🇺','ru':'🇷🇺','украина':'🇺🇦','ukraine':'🇺🇦','ua':'🇺🇦','швеция':'🇸🇪','sweden':'🇸🇪','se':'🇸🇪','беларусь':'🇧🇾','belarus':'🇧🇾','by':'🇧🇾','казахстан':'🇰🇿','kazakhstan':'🇰🇿','kz':'🇰🇿','азербайджан':'🇦🇿','azerbaijan':'🇦🇿','az':'🇦🇿','германия':'🇩🇪','germany':'🇩🇪','de':'🇩🇪','польша':'🇵🇱','poland':'🇵🇱','pl':'🇵🇱','сша':'🇺🇸','usa':'🇺🇸','us':'🇺🇸','франция':'🇫🇷','france':'🇫🇷','fr':'🇫🇷','турция':'🇹🇷','turkey':'🇹🇷','tr':'🇹🇷','україна':'🇺🇦'};
+const flag=name=>flags[String(name||'').trim().toLowerCase()]||'🌐';
+const css='.fz-match-hero{background:linear-gradient(125deg,#111b2b,#0a101b 55%,#22131d);border:1px solid #33465f;border-radius:12px;overflow:hidden}.fz-match-herohead{padding:16px 24px;border-bottom:1px solid #2f3d53;display:flex;align-items:center;justify-content:space-between;gap:12px;color:#94aeca}.fz-match-herohead button{border:1px solid #405069;color:#e2eaf7;background:#19253a;border-radius:7px;padding:9px 14px;cursor:pointer}.fz-match-faceoff{display:grid;grid-template-columns:minmax(0,1fr) minmax(110px,.55fr) minmax(0,1fr);min-height:260px;align-items:center}.fz-match-side{min-width:0;text-align:center;position:relative;isolation:isolate;padding:36px 12px}.fz-match-flag{position:absolute;font-size:clamp(90px,15vw,240px);line-height:1;opacity:.16;top:50%;left:50%;transform:translate(-50%,-50%);z-index:-1;filter:saturate(.7)}.fz-match-logo{width:76px;height:76px;object-fit:contain;display:block;margin:0 auto 12px}.fz-match-side h2{font-size:clamp(16px,2.5vw,27px);margin:8px 0;font-weight:900;overflow-wrap:anywhere}.fz-match-score{text-align:center}.fz-match-score strong{font-size:clamp(32px,5vw,64px);font-weight:900;color:#fff;white-space:nowrap}.fz-match-score p{font-size:12px;color:#9eafc5}.fz-match-maps{margin-top:17px;border:1px solid #36455e;border-radius:12px;padding:20px;background:#101b2a}.fz-match-map{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;padding:16px 12px;border-bottom:1px solid #2d3d55}.fz-match-map:last-child{border-bottom:0}.fz-match-map span:first-child{text-align:right;color:#c8d5e8}.fz-match-map strong{font-size:24px;color:#fff}.fz-match-map span:last-child{text-align:left;color:#c8d5e8}.fz-match-mapname{text-align:center;color:#91a5c1;font-size:12px;margin-top:4px}.fz-match-crumb{margin-bottom:15px;color:#99aecb}.fz-match-crumb a{color:#b8c8df}@media(max-width:650px){.fz-match-faceoff{grid-template-columns:minmax(0,1fr) minmax(95px,.7fr) minmax(0,1fr);min-height:200px}.fz-match-logo{width:52px;height:52px}.fz-match-side{padding:22px 4px}.fz-match-score strong{font-size:29px}.fz-match-herohead{padding:12px}}';
+export async function mount({client,root,id}){
+ if(!client||!root||!id)return;
+ if(!document.getElementById('fz-match-detail-style')){const style=document.createElement('style');style.id='fz-match-detail-style';style.textContent=css;document.head.append(style);}
+ root.innerHTML='<section class="panel detail-empty">Загрузка матча…</section>';
+ const [matchResult,mapResult,teamsResult]=await Promise.all([
+  client.from('fztv_site_matches').select('*').eq('id',id).maybeSingle(),
+  client.from('fztv_match_maps').select('*').eq('match_id',id).order('map_order'),
+  client.from('fztv_teams').select('id,name,country,logo_url').eq('status','approved')
+ ]);
+ if(!location.hash.startsWith('#/match/'+id))return;
+ if(matchResult.error||!matchResult.data){root.innerHTML='<section class="panel detail-empty">Матч не найден. <a href="#/matches">Все матчи</a></section>';return;}
+ const m=matchResult.data,teamRows=teamsResult.data||[],a=teamRows.find(t=>t.name.toLowerCase()===m.team_a.toLowerCase()),b=teamRows.find(t=>t.name.toLowerCase()===m.team_b.toLowerCase());
+ const parseScore=String(m.result_overall||'').match(/(\d+)\s*[:–-]\s*(\d+)/),status=m.status==='upcoming'?'Запланирован':m.status==='live'?'LIVE':'Завершён';
+ const score=parseScore?parseScore[1]+' : '+parseScore[2]:'VS';
+ const side=t=>'<div class="fz-match-side"><div class="fz-match-flag" aria-hidden="true">'+flag(t?.country)+'</div>'+(t?.logo_url?'<img class="fz-match-logo" src="'+X(t.logo_url)+'" alt="">':'')+'<h2>'+X(t?.name||'Команда')+'</h2><small>'+X(t?.country||'')+'</small></div>';
+ const rows=(mapResult.data||[]).map(mp=>'<div><div class="fz-match-map"><span>'+X(m.team_a)+'</span><strong>'+X(mp.score_a??'—')+' : '+X(mp.score_b??'—')+'</strong><span>'+X(m.team_b)+'</span></div><div class="fz-match-mapname">'+X(mp.map_name)+'</div></div>').join('');
+ root.innerHTML='<div class="fz-match-crumb"><a href="#/matches">Матчи</a> / '+X(m.title||m.team_a+' — '+m.team_b)+'</div><section class="fz-match-hero"><div class="fz-match-herohead"><span>'+X(m.title||'FragZoneTV')+' · '+new Date(m.starts_at||m.created_at).toLocaleString('ru-RU')+'</span><button id="fz-share-match" type="button">Поделиться</button></div><div class="fz-match-faceoff">'+side({...a,name:m.team_a})+'<div class="fz-match-score"><strong>'+score+'</strong><p>'+status+'</p></div>'+side({...b,name:m.team_b})+'</div></section><section class="fz-match-maps"><h2>Карты матча</h2>'+(rows||'<p style="color:#92a8c4">Карты пока не указаны.</p>')+'</section>';
+ root.querySelector('#fz-share-match').onclick=async()=>{
+  const url=location.href;
+  try{if(navigator.share){await navigator.share({title:m.team_a+' — '+m.team_b,url})}else if(navigator.clipboard){await navigator.clipboard.writeText(url);root.querySelector('#fz-share-match').textContent='Ссылка скопирована'}else{window.prompt('Ссылка на матч',url)}}
+  catch(e){if(e.name!=='AbortError')window.prompt('Ссылка на матч',url)}
+ };
+}
