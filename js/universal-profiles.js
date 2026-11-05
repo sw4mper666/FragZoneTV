@@ -27,19 +27,23 @@ async function playerPage(client,root,key,tab){
  root.innerHTML='<div class="crumb"><a href="#/players">Игроки</a> / '+esc(name)+'</div>'+tabs+'<section class="fztv-player-card"><div class="fztv-player-hero"><div class="fztv-player-photo"><img src="'+esc(photo)+'" alt="'+esc(name)+'"></div><div class="fztv-player-main"><h1>'+esc(name)+'</h1><p class="fztv-player-sub">'+esc(team)+' · CS2</p>'+(tab==='stats'?statsHtml(st.data||[]):factHtml)+'</div></div>'+(tab==='main'?'<div class="fztv-trophies"><h3>Трофеи</h3><p>Трофеев пока нет</p></div>':'')+'</section>';
 }
 async function teamPage(client,root,id){
- const [teams,players]=await Promise.all([
+ const [teams,players,rpRows]=await Promise.all([
  client.from('fztv_teams').select('*').eq('status','approved').order('created_at',{ascending:true}),
- client.from('fztv_team_players').select('*').eq('team_id',id).order('created_at',{ascending:true})]);
+ client.from('fztv_team_players').select('*').eq('team_id',id).order('created_at',{ascending:true}),
+ client.from('fztv_team_rp').select('name,rp')]);
  if(location.hash.split('/')[2]!==id)return;
  const team=(teams.data||[]).find(t=>t.id===id);
  if(!team){root.innerHTML='<div class="detail-empty">Команда не найдена или не одобрена.</div>';return;}
  const listed=(teams.data||[]).filter(t=>!['team woods','taykans'].includes(t.name.toLowerCase()));
- const rank=listed.findIndex(t=>t.id===id)+3,level=tier(rank),roster=players.data||[];
+ const rp=Object.fromEntries((rpRows.data||[]).map(x=>[x.name.toLowerCase(),Number(x.rp)||0]));
+ const ordered=['Team Woods','Taykans',...listed.map(x=>x.name)].sort((a,b)=>(rp[b.toLowerCase()]||0)-(rp[a.toLowerCase()]||0));
+ const rank=Math.max(1,ordered.findIndex(n=>n.toLowerCase()===team.name.toLowerCase())+1),level=tier(rank),roster=players.data||[];
+ const currentRp=rp[team.name.toLowerCase()]||0;
  const ages=roster.filter(p=>p.birth_date).map(p=>Math.floor((Date.now()-new Date(p.birth_date).getTime())/31557600000));
  const avg=ages.length?Math.round(ages.reduce((a,b)=>a+b,0)/ages.length):'—';
- const metrics=[['МИРОВОЙ РАНГ','#'+rank],['RP','0'],['ВИНРЕЙТ','0%'],['W–L','0–0'],['ВИНСТРИК','0'],['ПРИЗОВЫЕ','$0'],['ТИТУЛЫ','0'],['ЛУЧШАЯ ПОЗИЦИЯ','#'+rank],['СР. ВОЗРАСТ',avg]];
+ const metrics=[['МИРОВОЙ РАНГ','#'+rank],['RP',String(currentRp)],['ВИНРЕЙТ','0%'],['W–L','0–0'],['ВИНСТРИК','0'],['ПРИЗОВЫЕ','$0'],['ТИТУЛЫ','0'],['ЛУЧШАЯ ПОЗИЦИЯ','#'+rank],['СР. ВОЗРАСТ',avg]];
  const cards=roster.map(p=>'<a class="tw-player" href="#/player/'+keyFor(p.id)+'" style="color:inherit;text-decoration:none"><img src="'+esc(p.photo_url||fallback)+'" alt="'+esc(p.nickname)+'"><b>'+esc(p.nickname)+'</b><small class="tw-role">'+esc(p.primary_role||'Игрок')+'</small></a>').join('');
- const facts=[['Рейтинг (RP)','0'],['Позиция','#'+rank],['Тир','TIER '+level],['Лучшая позиция','#'+rank],['Игроков в составе',roster.length],['Средний возраст',avg],['Тренер',team.coach||'—']];
+ const facts=[['Рейтинг (RP)',String(currentRp)],['Позиция','#'+rank],['Тир','TIER '+level],['Лучшая позиция','#'+rank],['Игроков в составе',roster.length],['Средний возраст',avg],['Тренер',team.coach||'—']];
  const logo=team.logo_url?'<img src="'+esc(team.logo_url)+'" alt="'+esc(team.name)+'">':'★';
  root.innerHTML='<div class="crumb"><a href="#/ranking">Рейтинг</a> / '+esc(team.name)+'</div><section class="tw-profile fztv-universal-team"><div class="tw-top"><div class="tw-logo">'+logo+'</div><div class="tw-identity"><div class="tw-meta"><span>'+esc(team.country||'🌐 Международная')+'</span><span class="tw-tier">TIER '+level+'</span></div><h1>'+esc(team.name)+'</h1><span class="tw-tag">'+esc(team.tag)+'</span></div></div><div class="tw-metrics">'+metrics.map(([a,b])=>'<div class="tw-metric"><b>'+esc(b)+'</b><small>'+a+'</small></div>').join('')+'</div><div class="tw-roster">'+(cards||'<p style="padding:20px">Состав пока пуст</p>')+'</div><div class="tw-facts">'+facts.map(([a,b])=>'<div class="tw-fact"><span>'+esc(a)+'</span><b>'+esc(b)+'</b></div>').join('')+'</div></section>';
 }
@@ -48,11 +52,11 @@ async function playersPage(client,root){
  const [players,roster]=await Promise.all([client.from('fztv_team_players').select('id,nickname,fztv_teams(name,status)'),client.from('fztv_roster_players').select('*')]);
  if(!location.hash.startsWith('#/players'))return;
  for(const p of players.data||[]){
- if(p.fztv_teams?.status!=='approved')continue;
+ if(p.fztv_teams&&p.fztv_teams.status!=='approved')continue;
  const name=[...tbody.querySelectorAll('tr')].find(tr=>tr.querySelector('td:nth-child(2)')?.textContent.trim().toLowerCase()===p.nickname.toLowerCase())?.querySelector('td:nth-child(2)');
  if(name)name.innerHTML='<a href="#/player/'+keyFor(p.id)+'">'+esc(p.nickname)+'</a>';
  else{
- const tr=document.createElement('tr');tr.innerHTML='<td>👤</td><td><a href="#/player/'+keyFor(p.id)+'">'+esc(p.nickname)+'</a></td><td>—</td><td>—</td><td>'+esc(p.fztv_teams.name)+'</td><td>—</td><td>—</td>';tbody.append(tr);
+ const tr=document.createElement('tr');tr.innerHTML='<td>👤</td><td><a href="#/player/'+keyFor(p.id)+'">'+esc(p.nickname)+'</a></td><td>—</td><td>—</td><td>'+esc(p.fztv_teams?.name||'Свободный агент')+'</td><td>—</td><td>—</td>';tbody.append(tr);
  }
  }
  for(const p of roster.data||[]){
