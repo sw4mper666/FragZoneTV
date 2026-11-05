@@ -45,7 +45,7 @@ export async function mountFragZoneTeams({client,root}) {
  myTeams.replaceChildren(el('h2','Мои команды'));
  const {data:teams,error}=await client.from('fztv_teams').select('id,name,tag,status').eq('owner_id',user.id).order('created_at',{ascending:false});
  if(error){myTeams.append(el('p',error.message));return;}
- const {data:tournaments}=await client.from('tournaments').select('id,name,status').eq('status','registration');
+ const {data:tournamentRows}=await client.from('tournaments').select('id,name,status,registration_opens_at,starts_at').eq('status','registration');const tournaments=(tournamentRows||[]).filter(t=>Date.now()>=new Date(t.registration_opens_at).getTime()&&(!t.starts_at||Date.now()<new Date(t.starts_at).getTime()));
  for(const team of teams||[]){
  const item=el('div');item.append(el('strong',team.name+' ['+team.tag+'] — '+team.status));
  if(team.status==='approved'){
