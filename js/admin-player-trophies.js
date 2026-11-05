@@ -296,3 +296,73 @@
  observer.observe(app,{childList:true,subtree:false});
  replaceMatchEditor();
 })();
+
+
+/* FZTV Admin Control Center — organize existing live panels without rebuilding their handlers. */
+(()=>{
+ const style=document.createElement('style');
+ style.textContent='.fzac{display:grid;grid-template-columns:228px minmax(0,1fr);gap:22px;align-items:start}.fzac-nav{background:#111a27;border:1px solid #2b3a4d;border-radius:12px;padding:15px;position:sticky;top:86px}.fzac-brand{font-size:17px;font-weight:900;letter-spacing:.6px;padding:8px 10px 18px}.fzac-brand span{color:#ed3046}.fzac-nav small{display:block;color:#8594a8;font-size:10px;letter-spacing:1px;padding:6px 10px}.fzac-nav button{width:100%;display:flex;align-items:center;gap:11px;text-align:left;background:transparent;color:#b7c4d5;border:0;border-radius:7px;padding:12px 10px;font-size:13px;font-weight:700}.fzac-nav button.active{background:#292e3b;color:white;box-shadow:inset 3px 0 #ef344c}.fzac-nav button:hover{background:#263447}.fzac-content{min-width:0}.fzac-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:17px}.fzac-header h1{margin:0;font-size:26px}.fzac-label{color:#9daec0;font-size:12px}.fzac-section{display:none}.fzac-section.active{display:block}.fzac-section>.panel,.fzac-section>section{margin-top:0!important;margin-bottom:14px}.fzac-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:20px}.fzac-metric{background:#162233;border:1px solid #304158;border-radius:10px;padding:19px}.fzac-metric small{color:#a4b2c4;font-size:12px}.fzac-metric b{display:block;font-size:32px;margin-top:12px}.fzac-activity{padding:20px;background:#152032;border:1px solid #304158;border-radius:10px}.fzac-activity h2{font-size:17px}.fzac-activity p{color:#a8b8ca;font-size:13px}.fzac-empty{padding:25px;border:1px dashed #35485e;border-radius:10px;color:#a4b2c5}@media(max-width:850px){.fzac{grid-template-columns:1fr;gap:12px}.fzac-nav{position:static}.fzac-nav-buttons{display:flex;overflow:auto;gap:4px}.fzac-nav button{white-space:nowrap;width:auto}.fzac-metrics{grid-template-columns:repeat(2,1fr)}}';
+ document.head.append(style);
+ const sections=[['overview','▦','Обзор'],['matches','⚔','Матчи'],['tournaments','🏆','Турниры'],['teams','⬡','Команды'],['players','♙','Игроки'],['users','♧','Пользователи'],['news','▤','Новости']];
+ let active='overview',scheduled=false;
+ function category(section){
+  const text=(section.querySelector('h2,h3')?.textContent||'').toLowerCase();
+  if(section.querySelector('#usersList,#refreshUsers')||text.includes('пользоват')||text.includes('бан'))return 'users';
+  if(section.querySelector('#matchEditor,#fztv-delete-match-select')||text.includes('матч')||text.includes('результат'))return 'matches';
+  if(section.querySelector('#newsEditor')||text.includes('новост'))return 'news';
+  if(text.includes('турнир')||text.includes('сетк'))return 'tournaments';
+  if(text.includes('команд')||text.includes('заявк'))return 'teams';
+  if(text.includes('игрок')||text.includes('трофе')||text.includes('трансфер'))return 'players';
+  return 'overview';
+ }
+ function mount(){
+  if(!location.hash.startsWith('#/admin'))return;
+  const root=document.getElementById('app');if(!root)return;
+  const existing=root.querySelector('.fzac');
+  if(existing){
+   const content=existing.querySelector('.fzac-content');
+   // Other admin extensions can append panels after the dashboard is mounted.
+   const incoming=[...root.children].filter(x=>x.matches('section.panel,section')&&!x.closest('.fzac'));
+   for(const item of incoming)existing.querySelector('[data-fzac-section="'+category(item)+'"]').append(item);
+   return;
+  }
+  const adminHeading=[...root.querySelectorAll('.page-title h1')].find(x=>x.textContent.includes('Админ'));
+  if(!adminHeading)return;
+  const page=adminHeading.closest('.page-title');
+  const panels=[...root.children].filter(x=>x.matches('section.panel,section'));
+  const dashboard=document.createElement('div');dashboard.className='fzac';
+  const nav=document.createElement('aside');nav.className='fzac-nav';
+  nav.innerHTML='<div class="fzac-brand">⬡ FZTV <span>ADMIN</span></div><small>НАВИГАЦИЯ</small>';
+  const buttons=document.createElement('div');buttons.className='fzac-nav-buttons';
+  const content=document.createElement('main');content.className='fzac-content';
+  const header=document.createElement('div');header.className='fzac-header';
+  const heading=document.createElement('h1');const label=document.createElement('span');label.className='fzac-label';label.textContent='Панель управления';
+  header.append(heading,label);content.append(header);
+  const buckets={};
+  for(const [id,icon,name] of sections){
+   const btn=document.createElement('button');btn.type='button';btn.dataset.fzacTab=id;btn.textContent=icon+'  '+name;buttons.append(btn);
+   const section=document.createElement('div');section.className='fzac-section';section.dataset.fzacSection=id;content.append(section);buckets[id]=section;
+   btn.onclick=()=>{active=id;show()};
+  }
+  nav.append(buttons);
+  const overview=buckets.overview;
+  const metrics=document.createElement('div');metrics.className='fzac-metrics';
+  const metricsData=[['Команды',()=>typeof approvedTeams!=='undefined'?approvedTeams.length:'—'],['Игроки',()=>typeof publicPlayersCache!=='undefined'?publicPlayersCache.length:'—'],['Матчи',()=>typeof matchesCache!=='undefined'?matchesCache.length:'—'],['Заявки',()=> '—']];
+  for(const [name,get] of metricsData){const metric=document.createElement('div');metric.className='fzac-metric';const t=document.createElement('small');t.textContent=name;const value=document.createElement('b');value.textContent=get();metric.append(t,value);metrics.append(metric)}
+  overview.append(metrics);
+  const activity=document.createElement('div');activity.className='fzac-activity';activity.innerHTML='<h2>Последние действия</h2><p>Новые заявки, результаты матчей и уведомления появятся в соответствующих разделах.</p>';overview.append(activity);
+  for(const panel of panels)buckets[category(panel)].append(panel);
+  dashboard.append(nav,content);page.replaceWith(dashboard);
+  function show(){
+   heading.textContent=sections.find(x=>x[0]===active)?.[2]||'Обзор';
+   dashboard.querySelectorAll('[data-fzac-tab]').forEach(b=>b.classList.toggle('active',b.dataset.fzacTab===active));
+   dashboard.querySelectorAll('[data-fzac-section]').forEach(b=>b.classList.toggle('active',b.dataset.fzacSection===active));
+   for(const [id] of sections){if(id==='overview')continue;const b=buckets[id];if(!b.children.length){const empty=document.createElement('div');empty.className='fzac-empty';empty.textContent='В этом разделе пока нет данных.';b.append(empty)}}
+  }
+  show();
+ }
+ const root=document.getElementById('app');
+ if(root){new MutationObserver(()=>{if(scheduled)return;scheduled=true;setTimeout(()=>{scheduled=false;mount()},180)}).observe(root,{childList:true,subtree:false})}
+ window.addEventListener('hashchange',()=>setTimeout(mount,220));
+ setTimeout(mount,240);
+})();
