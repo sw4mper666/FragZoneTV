@@ -62,8 +62,10 @@ export async function mountTeamPlayerEditor({client,container,team,user}){
  const text=el('span',p.nickname+' · '+(p.country||'—')+' · '+(p.primary_role||'Rifler')+(p.faceit_level?' · FACEIT '+p.faceit_level:''));row.append(text);
  const edit=el('button','Редактировать');edit.type='button';edit.className='toolbtn';
  edit.onclick=()=>showEditor(p);row.append(edit);
- const remove=el('button','Удалить');remove.type='button';remove.className='toolbtn';
- remove.onclick=async()=>{if(!confirm('Удалить игрока '+p.nickname+' из команды?'))return;remove.disabled=true;const {error}=await client.from('fztv_team_players').delete().eq('id',p.id).eq('team_id',team.id);status.textContent=error?'Ошибка: '+error.message:'Игрок удалён';await refresh();};row.append(remove);roster.append(row);
+ const kick=el('button','Исключить из команды');kick.type='button';kick.className='toolbtn';
+ kick.onclick=async()=>{if(!confirm('Исключить '+p.nickname+' из состава? Профиль и статистика сохранятся, игрок станет свободным агентом.'))return;kick.disabled=true;const {error}=await client.rpc('fztv_kick_player',{p_player_id:p.id});status.textContent=error?'Ошибка: '+error.message:'Игрок исключён и стал свободным агентом';await refresh();};row.append(kick);
+ const remove=el('button','Удалить навсегда');remove.type='button';remove.className='toolbtn';
+ remove.onclick=async()=>{if(!confirm('Безвозвратно удалить анкету '+p.nickname+'? Вместо этого можно исключить игрока, сохранив профиль.'))return;remove.disabled=true;const {error}=await client.from('fztv_team_players').delete().eq('id',p.id).eq('team_id',team.id);status.textContent=error?'Ошибка: '+error.message:'Анкета удалена';await refresh();};row.append(remove);roster.append(row);
  }
  }
  form.onsubmit=async e=>{e.preventDefault();save.disabled=true;status.textContent='Сохраняем игрока…';
