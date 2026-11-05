@@ -1,0 +1,30 @@
+name: Activate FZTV admin control center
+on:
+  push:
+    paths:
+      - '.github/workflows/activate-admin-control-center.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  activate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Refresh admin script
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          s=re.sub(r'src="\./js/admin-player-trophies\.js(?:\?[^"]*)?"','src="./js/admin-player-trophies.js?v=control-center-20261106"',s)
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Publish updated index
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet || git commit -m "Activate compact admin dashboard"
+          git push
