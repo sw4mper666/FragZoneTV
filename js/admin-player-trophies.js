@@ -1,6 +1,6 @@
 // FragZoneTV: admin player editing and MVP/EVP trophy management.
 (()=>{
- const legacy=['sw4mper','loytaber','skrizzi','xblackerx','bosskpec'];
+ const legacy=['sw4mper','loytaber','skrizzi','fladar','bosskpec'];
  const $=(tag,text)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;return e;};
  const slugOf=p=>p.id?'team:'+p.id:p.nickname.toLowerCase();
  const fields=[['first_name','Имя'],['last_name','Фамилия'],['country','Страна'],['primary_role','Основная роль'],['secondary_role','Дополнительная роль'],['steam_url','Steam'],['telegram','Telegram'],['discord','Discord'],['birth_date','Дата рождения'],['faceit_level','FACEIT уровень'],['prize_usd','Призовые ($)']];
@@ -189,6 +189,15 @@
       }else if(hash.startsWith('#/player/')){
         const slug=decodeURIComponent(location.hash.split('/')[2]||'').toLowerCase();
         const p=state.rows.find(x=>x.player_slug===slug||x.nickname.toLowerCase()===slug);
+        if(p&&!document.getElementById('fztv-roster-profile')){
+          const profile=el('section');profile.id='fztv-roster-profile';profile.className='fztv-move-panel';
+          const heading=el('h2',p.nickname);profile.append(heading);
+          profile.append(el('p',p.team_name?'Команда: '+p.team_name:'Статус: свободный агент'));
+          if(p.age)profile.append(el('p','Возраст: '+p.age+' лет'));
+          profile.append(el('p','Рейтинг: '+(p.rating||0)));
+          if(p.photo_url){const img=el('img');img.src=p.photo_url;img.alt='Фото '+p.nickname;img.style.cssText='max-width:120px;max-height:120px;object-fit:cover;border-radius:12px';profile.prepend(img);}
+          root.prepend(profile);
+        }
         if(p&&!document.getElementById('fztv-player-team-status')){
           const badge=el('div',p.team_name?'Команда: '+p.team_name:'Свободный агент · NO TEAM');
           badge.id='fztv-player-team-status';badge.className='fztv-free-banner';root.prepend(badge);
@@ -203,6 +212,15 @@
           else root.append(panel);
         }
         if((hash.includes('player')||hash.includes('игрок'))&&!document.getElementById('fztv-free-agents'))freeAgents(root);
+        if((hash.includes('team')||hash.includes('woods'))&&!hash.includes('player')){
+          // Replace the departed player's roster label, but keep xblackerx on transfers.
+          for(const leaf of root.querySelectorAll('a,span,strong,h3,h4')){
+            if(leaf.children.length===0 && leaf.textContent.trim().toLowerCase()==='xblackerx'){
+              const inside=leaf.closest('#fztv-transfer-preview,#fztv-free-agents');
+              if(!inside){leaf.textContent='fladar';if(leaf.tagName==='A'&&leaf.href.includes('/player/'))leaf.href='#/player/fladar';}
+            }
+          }
+        }
       }
     }finally{rendering=false;}
   }
