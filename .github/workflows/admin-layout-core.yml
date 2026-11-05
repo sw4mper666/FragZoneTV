@@ -1,0 +1,76 @@
+name: Install compact admin layout in main renderer
+on:
+  push:
+    paths:
+      - '.github/workflows/admin-layout-core.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install layout in main page
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          if 'function legacyAdminPage()' not in s:
+              s=s.replace('function adminPage(){','function legacyAdminPage(){',1)
+          marker='async function loadUsers(){'
+          if 'function fztvCompactAdminPage()' not in s:
+              code=r"""
+function fztvCompactAdminPage(){
+ const raw=legacyAdminPage();
+ if(!isAdmin())return raw;
+ const sections=raw.match(/<section class="panel"[\s\S]*?<\/section>/g)||[];
+ const tabs=[['overview','▦','Обзор'],['matches','⚔','Матчи'],['tournaments','🏆','Турниры'],['teams','⬡','Команды'],['players','♙','Игроки'],['users','♧','Пользователи'],['news','▤','Новости']];
+ const counts=[['Команды',typeof approvedTeams!=='undefined'?approvedTeams.length:0],['Игроки',typeof publicPlayersCache!=='undefined'?publicPlayersCache.length:0],['Матчи',matchesCache.length],['Заявки','—']];
+ const menu=tabs.map(([id,ico,title])=>'<button type="button" data-admintab="'+id+'" onclick="fztvSwitchAdminTab(\''+id+'\')">'+ico+' &nbsp; '+title+'</button>').join('');
+ const overview='<div class="fztv-admin-metrics">'+counts.map(([k,v])=>'<div><small>'+k+'</small><b>'+v+'</b></div>').join('')+'</div><div class="fztv-admin-activity"><h2>Последние действия</h2><p>Управление заявками, матчами и игроками — в соответствующих разделах слева.</p></div>';
+ const panels={overview,users:sections[0]||'',matches:sections[1]||'',news:sections[2]||'',tournaments:'<div class="fztv-admin-empty">Управление турнирами</div>',teams:'<div class="fztv-admin-empty">Управление командами и заявками</div>',players:'<div class="fztv-admin-empty">Управление игроками</div>'};
+ return '<div class="fztv-admin-layout"><aside class="fztv-admin-sidebar"><strong>⬡ FZTV <em>ADMIN</em></strong><small>НАВИГАЦИЯ</small>'+menu+'</aside><div class="fztv-admin-body"><h1 id="fztv-admin-heading">Обзор</h1>'+tabs.map(([id])=>'<div class="fztv-admin-tab" data-adminpanel="'+id+'">'+panels[id]+'</div>').join('')+'</div></div>';
+}
+function fztvSwitchAdminTab(id){
+ document.querySelectorAll('[data-admintab]').forEach(e=>e.classList.toggle('active',e.dataset.admintab===id));
+ document.querySelectorAll('[data-adminpanel]').forEach(e=>e.classList.toggle('active',e.dataset.adminpanel===id));
+ const b=document.querySelector('[data-admintab="'+id+'"]');
+ const h=document.getElementById('fztv-admin-heading');
+ if(h&&b)h.textContent=b.textContent.trim().replace(/^[^А-Яа-яA-Za-z]+/,'');
+}
+function adminPage(){return fztvCompactAdminPage()}
+"""
+              s=s.replace(marker,code+'\n'+marker,1)
+          css=r"""
+<style id="fztv-admin-core-css">
+.fztv-admin-layout{display:grid;grid-template-columns:225px minmax(0,1fr);gap:22px;align-items:start}
+.fztv-admin-sidebar{position:sticky;top:85px;background:#111a27;border:1px solid #2e4055;border-radius:10px;padding:16px}
+.fztv-admin-sidebar strong{display:block;font-size:18px;padding:7px 9px 19px}
+.fztv-admin-sidebar em{font-style:normal;color:#f04458}
+.fztv-admin-sidebar small{display:block;color:#93a1b5;padding:0 9px 8px;font-size:10px;letter-spacing:1px}
+.fztv-admin-sidebar button{display:block;width:100%;text-align:left;padding:12px 10px;border:0;background:transparent;color:#b5c5d8;border-radius:6px;font-weight:700;font-size:13px}
+.fztv-admin-sidebar button:hover,.fztv-admin-sidebar button.active{background:#293547;color:#fff}
+.fztv-admin-sidebar button.active{box-shadow:inset 3px 0 #f04458}
+.fztv-admin-body{min-width:0}.fztv-admin-body h1{font-size:27px;margin:8px 0 22px}
+.fztv-admin-tab{display:none}.fztv-admin-tab.active{display:block}
+.fztv-admin-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}
+.fztv-admin-metrics>div,.fztv-admin-activity{background:#172333;border:1px solid #30445d;border-radius:9px;padding:19px}
+.fztv-admin-metrics small{display:block;color:#9eb0c6}.fztv-admin-metrics b{display:block;font-size:30px;margin-top:13px}
+.fztv-admin-activity{margin-top:18px}.fztv-admin-activity h2{font-size:18px}.fztv-admin-activity p,.fztv-admin-empty{color:#9caec3}
+@media(max-width:780px){.fztv-admin-layout{grid-template-columns:1fr}.fztv-admin-sidebar{position:static}.fztv-admin-sidebar button{display:inline-block;width:auto}.fztv-admin-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+"""
+          if 'id="fztv-admin-core-css"' not in s:s=s.replace('</head>',css+'</head>',1)
+          s=s.replace("if(route==='admin')html=adminPage();","if(route==='admin')html=adminPage();")
+          s=s.replace('bindFztv();','bindFztv();if(route===\'admin\')fztvSwitchAdminTab(\'overview\');')
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit main page
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet || git commit -m "Render compact admin sidebar directly in core app"
+          git push
