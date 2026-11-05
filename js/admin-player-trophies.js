@@ -3,7 +3,7 @@
  const legacy=['sw4mper','loytaber','skrizzi','fladar','bosskpec'];
  const $=(tag,text)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;return e;};
  const slugOf=p=>p.id?'team:'+p.id:p.nickname.toLowerCase();
- const fields=[['first_name','Имя'],['last_name','Фамилия'],['country','Страна'],['primary_role','Основная роль'],['secondary_role','Дополнительная роль'],['steam_url','Steam'],['telegram','Telegram'],['discord','Discord'],['birth_date','Дата рождения'],['faceit_level','FACEIT уровень'],['prize_usd','Призовые ($)']];
+ const fields=[['first_name','Имя'],['last_name','Фамилия'],['country','Страна'],['flag_background_url','Флаг на фоне (HTTPS-ссылка)'],['primary_role','Основная роль'],['secondary_role','Дополнительная роль'],['steam_url','Steam'],['telegram','Telegram'],['discord','Discord'],['birth_date','Дата рождения'],['faceit_level','FACEIT уровень'],['prize_usd','Призовые ($)']];
  async function mount(){
   if(typeof sb==='undefined')return;
   const root=document.querySelector('#app');if(!root)return;
@@ -365,4 +365,44 @@
  if(root){new MutationObserver(()=>{if(scheduled)return;scheduled=true;setTimeout(()=>{scheduled=false;mount()},180)}).observe(root,{childList:true,subtree:false})}
  window.addEventListener('hashchange',()=>setTimeout(mount,220));
  setTimeout(mount,240);
+})();
+
+
+/* Player country and subtle flag background. */
+(()=>{
+ const style=document.createElement('style');
+ style.textContent='.fztv-player-main{position:relative;isolation:isolate}.fztv-player-main::before{content:"";position:absolute;inset:0;background-image:var(--fztv-player-flag);background-size:cover;background-position:center;opacity:.12;pointer-events:none;z-index:-1;border-radius:8px}.fztv-player-flag-name{display:inline-flex;align-items:center;gap:8px}.fztv-player-flag-name img{width:27px;height:18px;object-fit:cover;border-radius:2px}';
+ document.head.append(style);
+ let busy=false;
+ async function refresh(){
+  if(!location.hash.startsWith('#/player/'))return;
+  const slug=decodeURIComponent(location.hash.split('/')[2]||'').toLowerCase();
+  const main=document.querySelector('#app .fztv-player-main');
+  if(!main||busy||main.dataset.flagLoaded===slug)return;
+  main.dataset.flagLoaded=slug;busy=true;
+  try{
+   let country='Россия',custom='';
+   const legacy=['sw4mper','loytaber','skrizzi','fladar','bosskpec','xblackerx'];
+   if(legacy.includes(slug)){
+    const {data}=await sb.from('fztv_legacy_player_profiles').select('country,flag_background_url').eq('player_slug',slug).maybeSingle();
+    country=data?.country||country;custom=data?.flag_background_url||'';
+   }else{
+    const {data}=await sb.from('fztv_team_players').select('country,flag_background_url').ilike('nickname',slug).limit(1).maybeSingle();
+    country=data?.country||(slug==='yeksander'?'Азербайджан':'Россия');custom=data?.flag_background_url||'';
+   }
+   if(!main.isConnected)return;
+   const flag=/азербайджан|azerbaijan/i.test(country)?'az':'ru';
+   const url=custom&&/^https:\/\/[^\s"'<>]+$/i.test(custom)?custom:'https://flagcdn.com/w1280/'+flag+'.png';
+   main.style.setProperty('--fztv-player-flag','url("'+url.replace(/"/g,'%22')+'")');
+   const fact=[...main.querySelectorAll('.fztv-player-fact')].find(e=>e.querySelector('span')?.textContent.trim()==='Страна');
+   if(fact){
+    const val=fact.querySelector('strong');
+    if(val){val.replaceChildren();const wrap=document.createElement('span');wrap.className='fztv-player-flag-name';const img=document.createElement('img');img.src='https://flagcdn.com/w80/'+flag+'.png';img.alt='';const txt=document.createElement('span');txt.textContent=country;wrap.append(img,txt);val.append(wrap)}
+   }
+  }catch(e){console.warn('Player country:',e)}finally{busy=false}
+ }
+ const app=document.getElementById('app');
+ if(app)new MutationObserver(()=>{if(location.hash.startsWith('#/player/'))setTimeout(refresh,100)}).observe(app,{childList:true,subtree:false});
+ window.addEventListener('hashchange',()=>setTimeout(refresh,180));
+ setTimeout(refresh,220);
 })();
