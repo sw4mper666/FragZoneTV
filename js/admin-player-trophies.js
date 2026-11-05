@@ -246,3 +246,53 @@
   window.addEventListener('hashchange',()=>setTimeout(()=>mount().catch(console.error),120));
   mount().catch(console.error);
 })();
+
+
+/* Admin: match deletion only. All dependent stats and RP are rolled back atomically by the database RPC. */
+(()=>{
+ const app=document.getElementById('app');if(!app)return;
+ let running=false;
+ function replaceMatchEditor(){
+  if(!location.hash.startsWith('#/admin'))return;
+  const old=document.getElementById('matchEditor');
+  if(!old)return;
+  const section=old.closest('section');if(!section)return;
+  const panel=document.createElement('section');
+  panel.className='panel';
+  panel.style.cssText='padding:18px;margin-top:16px';
+  const title=document.createElement('h2');title.textContent='Удаление матчей';
+  const description=document.createElement('p');description.style.cssText='font-size:12px;color:#aab9cb;line-height:1.6';
+  description.textContent='При удалении матча удаляются его карты и статистика всех участвовавших игроков. Рейтинг пересчитывается по оставшимся матчам, а RP за удалённый матч отменяется.';
+  const select=document.createElement('select');select.id='fztv-delete-match-select';select.style.cssText='width:100%;max-width:620px;padding:12px;background:#111c2c;border:1px solid #3a4c65;color:#fff;border-radius:6px';
+  const placeholder=document.createElement('option');placeholder.value='';placeholder.textContent='Выбери матч для удаления';select.append(placeholder);
+  for(const m of (typeof matchesCache!=='undefined'?matchesCache:[])){
+   const option=document.createElement('option');option.value=m.id;
+   option.textContent=[m.team_a+' — '+m.team_b,m.title||m.event_name||'',m.starts_at?new Date(m.starts_at).toLocaleString('ru-RU'):''].filter(Boolean).join(' · ');
+   select.append(option);
+  }
+  const button=document.createElement('button');button.type='button';button.className='auth-submit';button.textContent='Удалить выбранный матч';button.style.cssText='display:block;margin-top:12px;background:#d72b45';
+  const message=document.createElement('p');message.style.cssText='font-size:12px;color:#ffb2c0';
+  button.onclick=async()=>{
+   if(running||!select.value)return;
+   const label=select.selectedOptions[0]?.textContent||'матч';
+   if(!confirm('Удалить '+label+'? Статистика игроков и RP за этот матч будут отменены. Действие необратимо.'))return;
+   running=true;button.disabled=true;message.textContent='Удаление матча…';
+   try{
+    const {error}=await sb.rpc('fztv_admin_delete_match',{p_match_id:select.value});
+    if(error)throw error;
+    const id=select.value;
+    const check=await sb.from('fztv_site_matches').select('id').eq('id',id);
+    if(check.error)throw check.error;
+    if(check.data?.length)throw Error('Матч всё ещё существует. Проверь права доступа.');
+    message.textContent='Матч и его статистика удалены.';
+    await loadContent();
+   }catch(err){message.textContent='Не удалось удалить матч: '+err.message;}
+   finally{running=false;button.disabled=false;}
+  };
+  panel.append(title,description,select,button,message);
+  section.replaceWith(panel);
+ }
+ const observer=new MutationObserver(()=>replaceMatchEditor());
+ observer.observe(app,{childList:true,subtree:false});
+ replaceMatchEditor();
+})();
