@@ -1,6 +1,7 @@
 // Team owner player editor for FragZoneTV
 export async function mountTeamPlayerEditor({client,container,team,user}){
  const el=(tag,txt)=>{const n=document.createElement(tag);if(txt!=null)n.textContent=txt;return n;};
+ const style=el('style');style.textContent='.fztv-editor{margin:18px 0;padding:18px;border:1px solid #2c405a;border-radius:12px;background:#101925}.fztv-player-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:18px}.fztv-player-form[hidden]{display:none}.fztv-player-form label{display:flex;flex-direction:column;gap:7px;font-size:12px;color:#9eafc6}.fztv-player-form input,.fztv-player-form select{background:#090f19;border:1px solid #33445b;color:#f1f5fc;border-radius:7px;padding:11px;min-width:0}.fztv-player-form button,.fztv-player-form p{grid-column:1/-1}.fztv-player-row{display:flex;gap:12px;align-items:center;padding:10px;border-bottom:1px solid #283a50}.fztv-player-row span{flex:1}.fztv-player-row img{width:40px;height:40px;object-fit:cover;border-radius:50%}@media(max-width:640px){.fztv-player-form{grid-template-columns:1fr}}';container.append(style);
  const box=el('section');box.className='fztv-editor';container.append(box);
  const header=el('h3','Состав команды · '+team.name);box.append(header);
  const roster=el('div');box.append(roster);
