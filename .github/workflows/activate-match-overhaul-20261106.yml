@@ -1,0 +1,34 @@
+name: Publish match history and team FZ fixes
+on:
+  push:
+    paths:
+      - '.github/workflows/activate-match-overhaul-20261106.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Activate revised match modules and team counters
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          s,n=re.subn(r"import\('\./js/match-submissions\.js(?:\?[^']*)?'\)","import('./js/match-submissions.js?v=admin-fix-fz-20261106')",s)
+          if n!=1:raise SystemExit('Expected one match-submissions import')
+          s=s.replace('<small>RP</small>', '<small>FZ</small>')
+          if './js/fztv-match-overview.js' not in s:
+              s=s.replace('</body>', '<script src="./js/fztv-match-overview.js?v=20261106-v2"></script>\n</body>')
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet || git commit -m "Activate published match list and correct team FZ counters"
+          git push
