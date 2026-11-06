@@ -1,0 +1,33 @@
+name: Label ranking points FZ
+on:
+  push:
+    paths:
+      - '.github/workflows/fz-naming-20261106.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Rename legacy RP labels
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace("points.textContent=getTeamRP(t.name)+' RP'", "points.textContent=getTeamRP(t.name)+' FZ'")
+          s=s.replace('<span>Рейтинг (RP)</span>', '<span>Рейтинг (FZ)</span>')
+          p.write_text(s,encoding='utf-8')
+          u=Path('js/universal-profiles.js')
+          x=u.read_text(encoding='utf-8').replace("['RP',String(currentRp)]","['FZ',String(currentRp)]").replace("['Рейтинг (RP)',String(currentRp)]","['Рейтинг (FZ)',String(currentRp)]")
+          u.write_text(x,encoding='utf-8')
+          PY
+      - name: Publish
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html js/universal-profiles.js
+          git diff --cached --quiet || git commit -m "Rename all team ranking scores FZ"
+          git push
