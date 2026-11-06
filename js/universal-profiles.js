@@ -41,9 +41,9 @@ async function teamPage(client,root,id){
  const currentRp=rp[team.name.toLowerCase()]||0;
  const ages=roster.filter(p=>p.birth_date).map(p=>Math.floor((Date.now()-new Date(p.birth_date).getTime())/31557600000));
  const avg=ages.length?Math.round(ages.reduce((a,b)=>a+b,0)/ages.length):'—';
- const metrics=[['МИРОВОЙ РАНГ','#'+rank],['RP',String(currentRp)],['ВИНРЕЙТ','0%'],['W–L','0–0'],['ВИНСТРИК','0'],['ПРИЗОВЫЕ','$0'],['ТИТУЛЫ','0'],['ЛУЧШАЯ ПОЗИЦИЯ','#'+rank],['СР. ВОЗРАСТ',avg]];
+ const metrics=[['МИРОВОЙ РАНГ','#'+rank],['FZ',String(currentRp)],['ВИНРЕЙТ','0%'],['W–L','0–0'],['ВИНСТРИК','0'],['ПРИЗОВЫЕ','$0'],['ТИТУЛЫ','0'],['ЛУЧШАЯ ПОЗИЦИЯ','#'+rank],['СР. ВОЗРАСТ',avg]];
  const cards=roster.map(p=>'<a class="tw-player" href="#/player/'+keyFor(p.id)+'" style="color:inherit;text-decoration:none"><img src="'+esc(p.photo_url||fallback)+'" alt="'+esc(p.nickname)+'"><b>'+esc(p.nickname)+'</b><small class="tw-role">'+esc(p.primary_role||'Игрок')+'</small></a>').join('');
- const facts=[['Рейтинг (RP)',String(currentRp)],['Позиция','#'+rank],['Тир','TIER '+level],['Лучшая позиция','#'+rank],['Игроков в составе',roster.length],['Средний возраст',avg],['Тренер',team.coach||'—']];
+ const facts=[['Рейтинг (FZ)',String(currentRp)],['Позиция','#'+rank],['Тир','TIER '+level],['Лучшая позиция','#'+rank],['Игроков в составе',roster.length],['Средний возраст',avg],['Тренер',team.coach||'—']];
  const logo=team.logo_url?'<img src="'+esc(team.logo_url)+'" alt="'+esc(team.name)+'">':'★';
  root.innerHTML='<div class="crumb"><a href="#/ranking">Рейтинг</a> / '+esc(team.name)+'</div><section class="tw-profile fztv-universal-team"><div class="tw-top"><div class="tw-logo">'+logo+'</div><div class="tw-identity"><div class="tw-meta"><span>'+esc(team.country||'🌐 Международная')+'</span><span class="tw-tier">TIER '+level+'</span></div><h1>'+esc(team.name)+'</h1><span class="tw-tag">'+esc(team.tag)+'</span></div></div><div class="tw-metrics">'+metrics.map(([a,b])=>'<div class="tw-metric"><b>'+esc(b)+'</b><small>'+a+'</small></div>').join('')+'</div><div class="tw-roster">'+(cards||'<p style="padding:20px">Состав пока пуст</p>')+'</div><div class="tw-facts">'+facts.map(([a,b])=>'<div class="tw-fact"><span>'+esc(a)+'</span><b>'+esc(b)+'</b></div>').join('')+'</div></section>';
 }

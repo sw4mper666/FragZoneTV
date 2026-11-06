@@ -272,7 +272,7 @@ function enhanceRankingLayout(route){
  const logo=document.createElement('span');logo.className='fztv-unified-logo';
  if(t.logo_url){const img=document.createElement('img');img.src=t.logo_url;img.alt='';logo.append(img);}else if(t.logo)logo.append(t.logo);else logo.textContent='🏆';
  const name=document.createElement('span');name.className='fztv-unified-name';const title=document.createElement('strong');title.textContent=t.name;const sub=document.createElement('small');sub.textContent=t.players.length?t.players.map(p=>p.nickname).join(' · '):'Состав пока не добавлен';name.append(title,sub);const tierBadge=document.createElement('span');tierBadge.className='fztv-rank-tier-red';tierBadge.textContent='TIER '+(i+1<=10?1:i+1<=20?2:3);name.append(tierBadge);
- const points=document.createElement('b');points.className='fztv-unified-points';points.textContent=getTeamRP(t.name)+' RP';
+ const points=document.createElement('b');points.className='fztv-unified-points';points.textContent=getTeamRP(t.name)+' FZ';
  const arrow=document.createElement('span');arrow.className='fztv-unified-arrow';arrow.textContent='⌄';
  summary.append(rank,logo,name,points,arrow);card.append(summary);
  const detail=document.createElement('div');detail.className='fztv-unified-detail';
@@ -304,7 +304,7 @@ function teamDetail(){
   </div>
 
   <div class="tw-roster">${roster.map(([player,photo,slug])=>{const roles={sw4mper:'HYBRID',loytaber:'AWP',skrizzi:'RIFLER',fladar:'IGL',bosskpec:'ENTRY FRAGGER'};const key=slug;const role=(roles[key]||'');return `<a class="tw-player" href="#/player/${slug}/stats" style="color:inherit;text-decoration:none"><img src="${photo}" alt="${player}"><b>${player==='bosskpec'?'BOSSKPEC':player}</b><small class="tw-role">${role}</small></a>`}).join('')}</div>
-  <div class="tw-facts"><div class="tw-fact"><span>Рейтинг (RP)</span><b class="gold">${getTeamRP("Team Woods")}</b></div><div class="tw-fact"><span>Позиция</span><b><strong class="red">#0</strong> международного, <strong class="red">#0</strong> регионального (Россия)</b></div><div class="tw-fact"><span>Тир</span><b class="tier">TIER 1</b></div><div class="tw-fact"><span>Лучшая позиция</span><b class="red">#0</b></div><div class="tw-fact"><span>Игроков в составе</span><b>5</b></div><div class="tw-fact"><span>Средний возраст</span><b>0</b></div><div class="tw-fact"><span>Тренер</span><b style="color:#4b88ff">JWling</b></div></div>
+  <div class="tw-facts"><div class="tw-fact"><span>Рейтинг (FZ)</span><b class="gold">${getTeamRP("Team Woods")}</b></div><div class="tw-fact"><span>Позиция</span><b><strong class="red">#0</strong> международного, <strong class="red">#0</strong> регионального (Россия)</b></div><div class="tw-fact"><span>Тир</span><b class="tier">TIER 1</b></div><div class="tw-fact"><span>Лучшая позиция</span><b class="red">#0</b></div><div class="tw-fact"><span>Игроков в составе</span><b>5</b></div><div class="tw-fact"><span>Средний возраст</span><b>0</b></div><div class="tw-fact"><span>Тренер</span><b style="color:#4b88ff">JWling</b></div></div>
   <div class="tw-trophy"><img src="${trophy}" alt="Трофей CSTV"></div>
  </section>`;
 }
