@@ -1,0 +1,30 @@
+name: Enable team owner editing
+on:
+  push:
+    paths:
+      - '.github/workflows/enable-team-editor-20261106.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  activate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Load team editor on every profile
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          if './js/team-owner-edit.js' not in s:
+              s=s.replace('</body>','<script src="./js/team-owner-edit.js?v=edit20261106"></script>\n</body>',1)
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Publish
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet || git commit -m "Enable team owner editor and remove extra profile facts"
+          git push
