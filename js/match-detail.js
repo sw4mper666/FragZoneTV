@@ -1,6 +1,6 @@
 // FragZoneTV public match page: teams, flags, maps, approved player statistics.
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const codes={'россия':'ru','russia':'ru','ru':'ru','украина':'ua','ukraine':'ua','швеция':'se','sweden':'se','беларусь':'by','казахстан':'kz','азербайджан':'az','германия':'de','польша':'pl','сша':'us','france':'fr','франция':'fr'};
+const codes={'россия':'ru','russia':'ru','ru':'ru','украина':'ua','ukraine':'ua','швеция':'se','sweden':'se','беларусь':'by','казахстан':'kz','азербайджан':'az','германия':'de','польша':'pl','сша':'us','france':'fr','франция':'fr','великобритания':'gb','турция':'tr','грузия':'ge','армения':'am','узбекистан':'uz','латвия':'lv','литва':'lt','эстония':'ee','финляндия':'fi','дания':'dk','норвегия':'no','испания':'es','италия':'it','нидерланды':'nl','чехия':'cz','молдова':'md','румыния':'ro','словакия':'sk','канада':'ca','бразилия':'br'};
 const mapNames=['Mirage','Dust2','Inferno','Nuke','Ancient','Anubis','Cache'];
 const mapId=v=>String(v||'').toLowerCase().replace(/[\s_-]/g,'').replace('dustii','dust2').replace('dedust2','dust2');
 const imgMap=v=>{
