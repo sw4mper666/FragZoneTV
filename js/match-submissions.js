@@ -33,9 +33,9 @@ export async function mount({client,root,route}){
  if(!root||!client||!['matches','admin'].includes(route))return;
  if(!document.getElementById('fz-sub-style')){const style=N('style',styles);style.id='fz-sub-style';document.head.append(style);}
  if(route==='admin')return review(client,root);
- const button=N('button','＋ Загрузить матч');button.className='fz-primary';button.id='fz-upload-match';
+ const button=root.querySelector('#fz-upload-match')||N('button','＋ Загрузить матч');button.className='fz-primary';button.id='fz-upload-match';
  const panel=N('section');panel.className='fz-sub';panel.hidden=true;
- const slot=N('div');slot.append(button,panel);
+ const slot=N('div');if(!button.isConnected)slot.append(button);slot.append(panel);
  const anchor=root.querySelector('#fz-upload-match-anchor');if(anchor)anchor.append(slot);else root.prepend(slot);
  button.onclick=async()=>{
   if(!panel.hidden){panel.hidden=true;return}
