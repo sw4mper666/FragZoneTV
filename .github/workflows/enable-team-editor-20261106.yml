@@ -19,6 +19,7 @@ jobs:
           s=p.read_text(encoding='utf-8')
           if './js/team-owner-edit.js' not in s:
               s=s.replace('</body>','<script src="./js/team-owner-edit.js?v=edit20261106"></script>\n</body>',1)
+          s=s.replace('team-owner-edit.js?v=edit20261106"','team-owner-edit.js?v=edit20261106-v2"')
           p.write_text(s,encoding='utf-8')
           PY
       - name: Publish
