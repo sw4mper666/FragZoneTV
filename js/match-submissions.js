@@ -165,7 +165,7 @@ async function review(client,root){
  deleteSection.append(N('h2','Управление опубликованными матчами'));
  const deleteRefresh=N('button','Обновить список матчей');deleteRefresh.type='button';deleteRefresh.className='toolbtn';
  const deleteList=N('div');deleteSection.append(deleteRefresh,deleteList);section.insertAdjacentElement('afterend',deleteSection);
- const loadPublished=async()=>{
+ const loadPublishedForDeletion=async()=>{
   const allowed=await client.rpc('fztv_is_admin');
   if(allowed.error||!allowed.data){deleteSection.remove();return}
   const result=await client.from('fztv_site_matches').select('id,team_a,team_b,starts_at,result_overall,title').order('starts_at',{ascending:false}).limit(100);
@@ -182,10 +182,10 @@ async function review(client,root){
     button.disabled=true;msg.textContent='Удаление…';
     const r=await client.rpc('fztv_admin_delete_match',{p_match_id:match.id});
     if(r.error){msg.textContent='Ошибка: '+r.error.message;button.disabled=false;return}
-    await loadPublished();
+    await loadPublishedForDeletion();
    };
    row.append(button,msg);deleteList.append(row);
   }
  };
- deleteRefresh.onclick=loadPublished;await loadPublished();
+ deleteRefresh.onclick=loadPublishedForDeletion;await loadPublishedForDeletion();
 }
