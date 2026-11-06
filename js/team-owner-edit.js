@@ -25,7 +25,7 @@
   const title=document.createElement('h3');title.textContent='Редактировать команду';form.append(title);
   const nameLabel=document.createElement('label');nameLabel.textContent='Название команды';
   const input=document.createElement('input');input.type='text';input.minLength=3;input.maxLength=40;input.required=true;input.value=team.name;nameLabel.append(input);form.append(nameLabel);
-  const fileLabel=document.createElement('label');fileLabel.textContent='Аватар команды — JPG, PNG или WebP, до 3 МБ';
+  const fileLabel=document.createElement('label');fileLabel.textContent='Аватар команды — JPG, PNG или WebP, до 2 МБ';
   const file=document.createElement('input');file.type='file';file.accept='image/jpeg,image/png,image/webp';fileLabel.append(file);form.append(fileLabel);
   const preview=document.createElement('img');preview.alt='Аватар';if(team.logo_url)preview.src=team.logo_url;else preview.hidden=true;form.append(preview);
   const submit=document.createElement('button');submit.type='submit';submit.textContent='Сохранить';
@@ -41,7 +41,7 @@
     let logoUrl=null;const upload=file.files?.[0];
     if(upload){
      const kinds={'image/png':'png','image/jpeg':'jpg','image/webp':'webp'},ext=kinds[upload.type];
-     if(!ext||upload.size>3*1024*1024)throw Error('Допустимы JPG, PNG и WebP до 3 МБ');
+     if(!ext||upload.size>2*1024*1024)throw Error('Допустимы JPG, PNG и WebP до 2 МБ');
      const key=user.id+'/'+crypto.randomUUID()+'.'+ext;
      const {error:uploadError}=await sb.storage.from('fztv-team-avatars').upload(key,upload,{upsert:false,contentType:upload.type,cacheControl:'3600'});
      if(uploadError)throw uploadError;
