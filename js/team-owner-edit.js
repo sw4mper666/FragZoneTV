@@ -15,7 +15,7 @@
   if(userError||!user||!header.isConnected)return;
   const {data:teams,error}=await sb.from('fztv_teams').select('id,name,logo_url,owner_id').eq('owner_id',user.id);
   if(error||!header.isConnected)return;
-  const team=(teams||[]).find(t=>path[1]==='team-created'?t.id===path[2]:t.name.toLowerCase()===name.toLowerCase());
+  const team=(teams||[]).find(t=>path[1]==='team-created'?t.id===path[2]:(path[2]==='woods'?t.id==='4f4585f3-f960-4b23-a835-de9d00cb10dd':t.name.toLowerCase()===name.toLowerCase()));
   if(!team)return;
   header.dataset.teamEditMounted='yes';
   heading.textContent=team.name;
