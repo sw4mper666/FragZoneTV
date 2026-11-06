@@ -1,0 +1,31 @@
+name: Activate new match upload modal
+on:
+  push:
+    paths:
+      - '.github/workflows/activate-match-modal-20261106.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Update match uploader module version
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          s,n=re.subn(r"import\('\./js/match-submissions\.js(?:\?[^']*)?'\)","import('./js/match-submissions.js?v=modal-20261106-1')",s)
+          if n!=1:raise SystemExit(f'Expected one match module import, found {n}')
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet || git commit -m "Activate modal match uploader"
+          git push
