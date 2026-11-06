@@ -3,6 +3,7 @@ const N=(tag,txt)=>{const n=document.createElement(tag);if(txt!==undefined)n.tex
 const slug=id=>'team_'+String(id).replace(/-/g,'');
 const calc=(k,d,a)=>((Number(k||0)+Number(a||0)*0.5)/Math.max(1,Number(d||0))).toFixed(2);
 const styles='.fz-sub{background:#111b2b;border:1px solid #354963;border-radius:12px;padding:20px;margin:18px 0;color:#f2f6ff}.fz-sub h2{margin:0 0 14px}.fz-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.fz-grid label{display:flex;flex-direction:column;gap:6px;color:#abc1db;font-size:12px}.fz-grid input,.fz-grid select,.fz-grid textarea{min-width:0;background:#080f1c;border:1px solid #3a4d67;color:#fff;border-radius:7px;padding:10px}.fz-full{grid-column:1/-1}.fz-primary{padding:12px 18px;background:#e52546;color:#fff;border:0;border-radius:8px;font-weight:800;cursor:pointer}.fz-preview{display:flex;align-items:center;justify-content:space-between;gap:15px;background:#1a2940;padding:20px;border-radius:9px;font-weight:800}.fz-preview span{color:#9eb3ce}.fz-stat-table{border-collapse:collapse;width:100%;min-width:490px;font-size:13px}.fz-stat-table th{background:#1b2941;color:#a9bcd5;padding:9px}.fz-stat-table td{border-bottom:1px solid #2e3f56;padding:6px}.fz-stat-table input[type=number]{width:64px;padding:7px}.fz-rating{color:#25e8a5;font-weight:800}.fz-status{color:#ffc0ca;font-size:13px}.fz-review{border:1px solid #32465f;padding:12px;margin:12px 0;border-radius:9px}@media(max-width:650px){.fz-grid{grid-template-columns:1fr}.fz-sub{padding:12px}}';
+const uploadStyles='.fz-upload-overlay{position:fixed;inset:0;background:rgba(2,7,15,.82);backdrop-filter:blur(7px);z-index:99999;display:flex;justify-content:center;align-items:center;padding:18px}.fz-upload-overlay[hidden]{display:none!important}.fz-upload-dialog{width:min(750px,100%);max-height:94vh;display:flex;flex-direction:column;background:#101a2a;border:1px solid #40536d;border-radius:14px;box-shadow:0 22px 95px #000b;overflow:hidden}.fz-upload-heading{padding:18px 24px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #2d405b;background:#111e31}.fz-upload-heading h2{font-size:23px;margin:0;color:#f1f5fb}.fz-upload-close{background:none;border:0;color:#a6bad3;font-size:32px;line-height:1;cursor:pointer}.fz-upload-close:hover{color:#fff}.fz-upload-panel{overflow-y:auto;min-height:0;flex:1;margin:0!important;padding:22px!important;border:0!important;border-radius:0!important;background:transparent!important}.fz-upload-panel>h2{display:none}.fz-upload-panel .fz-preview{grid-row:1;grid-column:1/-1;background:#1a2b43;border:1px solid #334c70;min-height:115px}.fz-upload-panel .fz-grid{gap:15px}.fz-upload-panel .fz-primary[type=submit]{background:#ed2638}.fz-upload-panel input:focus,.fz-upload-panel select:focus,.fz-upload-panel textarea:focus{outline:1px solid #eb3d56}@media(max-width:650px){.fz-upload-overlay{padding:0}.fz-upload-dialog{width:100%;height:100%;max-height:100vh;border-radius:0}.fz-upload-panel{padding:15px!important}}';
 const field=(label,type='text')=>{const l=N('label',label),x=N('input');x.type=type;l.append(x);return {l,x};};
 const sel=(options)=>{const s=N('select');for(const [v,t] of options){const o=N('option',t);o.value=v;s.append(o)}return s;};
 async function getData(client){
@@ -31,18 +32,38 @@ function addTable(root,team,side,scheduled){
 }
 export async function mount({client,root,route}){
  if(!root||!client||!['matches','admin'].includes(route))return;
- if(!document.getElementById('fz-sub-style')){const style=N('style',styles);style.id='fz-sub-style';document.head.append(style);}
+ if(!document.getElementById('fz-sub-style')){const style=N('style',styles+uploadStyles);style.id='fz-sub-style';document.head.append(style);}
  if(route==='admin')return review(client,root);
- const button=root.querySelector('#fz-upload-match')||N('button','＋ Загрузить матч');button.className='fz-primary';button.id='fz-upload-match';
- const panel=N('section');panel.className='fz-sub';panel.hidden=true;
- const slot=N('div');if(!button.isConnected)slot.append(button);slot.append(panel);
- const anchor=root.querySelector('#fz-upload-match-anchor');if(anchor)anchor.append(slot);else root.prepend(slot);
+
+ const button=root.querySelector('#fz-upload-match')||N('button','＋ Загрузить матч');
+ button.className='fz-primary';button.id='fz-upload-match';
+ const overlay=N('div');overlay.className='fz-upload-overlay';overlay.hidden=true;
+ overlay.setAttribute('role','dialog');overlay.setAttribute('aria-modal','true');overlay.setAttribute('aria-label','Новый матч');
+ const dialog=N('div');dialog.className='fz-upload-dialog';
+ const top=N('div');top.className='fz-upload-heading';
+ const title=N('h2','НОВЫЙ МАТЧ');const close=N('button','×');close.type='button';close.className='fz-upload-close';close.setAttribute('aria-label','Закрыть');
+ top.append(title,close);
+ const panel=N('section');panel.className='fz-sub fz-upload-panel';
+ dialog.append(top,panel);overlay.append(dialog);
+ const anchor=root.querySelector('#fz-upload-match-anchor');
+ if(!button.isConnected){(anchor||root).prepend(button)}
+ document.body.append(overlay);
+ const dismiss=()=>{overlay.hidden=true;document.body.style.overflow=''};
+ close.onclick=dismiss;
+ overlay.onclick=e=>{if(e.target===overlay)dismiss()};
+ const keyHandler=e=>{if(e.key==='Escape'&&!overlay.hidden)dismiss()};
+ document.addEventListener('keydown',keyHandler,{signal:(()=>{const c=new AbortController();window.addEventListener('hashchange',()=>{dismiss();document.removeEventListener('keydown',keyHandler);overlay.remove()},{once:true,signal:c.signal});return c.signal})()});
  button.onclick=async()=>{
-  if(!panel.hidden){panel.hidden=true;return}
-  panel.hidden=false;panel.replaceChildren(N('p','Загрузка…'));
-  try{const {data:{user}}=await client.auth.getUser();if(!user){panel.replaceChildren(N('p','Войди в аккаунт, чтобы загрузить матч.'));return}const data=await getData(client);form(client,panel,data,user)}
-  catch(err){panel.replaceChildren(N('p','Ошибка: '+err.message))}
+  if(!overlay.hidden){dismiss();return}
+  overlay.hidden=false;document.body.style.overflow='hidden';
+  panel.replaceChildren(N('p','Загрузка команд…'));
+  try{
+   const {data:{user},error}=await client.auth.getUser();if(error)throw error;
+   if(!user){panel.replaceChildren(N('p','Чтобы загрузить матч, войди в свой аккаунт.'));return}
+   const data=await getData(client);if(overlay.isConnected)form(client,panel,data,user);
+  }catch(err){panel.replaceChildren(N('p','Ошибка: '+err.message))}
  };
+
 }
 function form(client,panel,data,user){
  panel.replaceChildren(N('h2','НОВЫЙ МАТЧ'));
