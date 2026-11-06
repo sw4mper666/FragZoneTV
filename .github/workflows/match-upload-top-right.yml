@@ -1,0 +1,33 @@
+name: Put match upload button in header
+on:
+  push:
+    paths:
+      - '.github/workflows/match-upload-top-right.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add visible header button
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          old='<p>Опубликованные матчи FragZoneTV</p></div>'
+          new='<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap"><p>Опубликованные матчи FragZoneTV</p><button type="button" id="fz-upload-match" class="fz-primary" style="background:#ed2638;color:#fff;border:1px solid #ff5063;border-radius:8px;padding:12px 18px;font-weight:800;cursor:pointer">＋ Загрузить матч</button></div></div>'
+          if old not in s:raise SystemExit('Matches header not found')
+          s=s.replace(old,new,1)
+          s=s.replace('match-submissions.js?v=upload-fix-20261106','match-submissions.js?v=upload-topright-20261106')
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet || git commit -m "Place upload match button top right"
+          git push
