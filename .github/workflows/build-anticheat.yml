@@ -1,4 +1,4 @@
-name: Build FZTV Anti-Cheat 1.0 for Windows
+name: Build FZTV Anti-Cheat 2.0 for Windows
 on:
   workflow_dispatch:
   push:
@@ -18,10 +18,10 @@ jobs:
       - name: Install client dependencies
         run: python -m pip install --upgrade pip "psutil==6.1.1" "pyinstaller==6.12.0"
       - name: Build Windows executable
-        run: python -m PyInstaller --noconfirm --clean --onefile --windowed --name FZTV-AntiCheat-1.0 anticheat/client.py
+        run: python -m PyInstaller --noconfirm --clean --onefile --windowed --name FZTV-AntiCheat-2.0 anticheat/client.py
       - name: Upload Windows executable
         uses: actions/upload-artifact@v4
         with:
-          name: FZTV-AntiCheat-1.0-Windows
-          path: dist/FZTV-AntiCheat-1.0.exe
+          name: FZTV-AntiCheat-2.0-Windows
+          path: dist/FZTV-AntiCheat-2.0.exe
           if-no-files-found: error
