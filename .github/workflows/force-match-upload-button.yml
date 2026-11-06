@@ -1,0 +1,33 @@
+name: Force visible match upload button
+on:
+  push:
+    paths:
+      - '.github/workflows/force-match-upload-button.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Ensure upload button is in matches page HTML
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          old='<p>Опубликованные матчи FragZoneTV</p></div>'
+          new='<p>Опубликованные матчи FragZoneTV</p></div><div id="fz-upload-match-anchor" style="margin:12px 0 18px"></div>'
+          if old not in s:raise SystemExit('matches header not found')
+          s=s.replace(old,new,1)
+          s=s.replace("import('./js/match-submissions.js')","import('./js/match-submissions.js?v=upload-fix-20261106')")
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Publish
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet || git commit -m "Make match upload visible on matches page"
+          git push
