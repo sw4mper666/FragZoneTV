@@ -76,45 +76,111 @@ export async function mountAccount({client,root,user,onUpdated}){
  });
 }
 
+
+function memberHref(id){
+ return /^[-0-9a-f]{36}$/i.test(String(id||''))?'#/member/'+encodeURIComponent(id):'#/players';
+}
+function authorIdentity(p,name){
+ const username=esc(p?.login||name||'Игрок');
+ const avatar=pic(p?.avatar_url);
+ const icon=avatar?'<img alt="" loading="lazy" src="'+esc(avatar)+'">':esc((p?.login||name||'?').slice(0,1).toUpperCase());
+ return '<a class="fztv-comment-author" href="'+memberHref(p?.id)+'" title="Открыть профиль"><span class="fztv-comment-avatar">'+icon+'</span><strong>'+username+'</strong></a>';
+}
+function commentHtml(item,author,canDelete){
+ const identity=authorIdentity(author||{id:item.user_id},item.author_name);
+ return '<div class="fztv-comment-head">'+identity+'<span>'+esc(dateFmt(item.created_at))+'</span></div>'+
+   '<p>'+esc(item.body)+'</p>'+(canDelete?'<button type="button" class="fztv-comment-delete">Удалить</button>':'');
+}
+function addAuthorStyles(){
+ if(document.getElementById('fztv-comment-author-css'))return;
+ const e=document.createElement('style');e.id='fztv-comment-author-css';
+ e.textContent='.fztv-comment-author{display:inline-flex;align-items:center;gap:9px;text-decoration:none;color:#e8f0fc;font-weight:750;min-width:0}.fztv-comment-author:hover{color:#6faeff}.fztv-comment-avatar{width:34px;height:34px;flex-shrink:0;display:grid;place-items:center;border-radius:50%;background:#293d59;color:white;font-weight:900;border:1px solid #3d5778;overflow:hidden}.fztv-comment-avatar img{width:100%;height:100%;object-fit:cover}.fztv-comment-head{align-items:center}.fztv-public-profile{max-width:850px;margin:20px auto}.fztv-public-profile .fztv-profile-head{align-items:center}.fztv-public-profile .fztv-public-bio{background:#111923;border:1px solid #29384c;border-radius:12px;padding:20px;margin-top:18px;white-space:pre-wrap;line-height:1.5}';
+ document.head.append(e);
+}
 export async function mountNewsComments({client,root,user}){
- initStyle();
+ initStyle();addAuthorStyles();
  const mounts=[...root.querySelectorAll('.fztv-comment-mount')];
  if(!mounts.length)return;
  const ids=mounts.map(x=>x.dataset.newsId);
- const {data, error}=await client.from('fztv_news_comments').select('id,news_id,user_id,author_name,body,created_at').in('news_id',ids).order('created_at',{ascending:true}).limit(500);
+ const {data,error}=await client.from('fztv_news_comments')
+  .select('id,news_id,user_id,author_name,body,created_at')
+  .in('news_id',ids).order('created_at',{ascending:true}).limit(500);
  if(error){mounts.forEach(x=>x.textContent='Комментарии временно недоступны.');return}
+ const comments=data||[];
+ const authorIds=[...new Set(comments.map(x=>x.user_id).filter(Boolean).concat(user?.id?[user.id]:[]))];
+ let authors=new Map();
+ if(authorIds.length){
+  const result=await client.from('fztv_public_profiles').select('id,login,avatar_url').in('id',authorIds);
+  if(!result.error)authors=new Map((result.data||[]).map(p=>[p.id,p]));
+ }
+ const makeComment=(item,container,title,adjust)=>{
+  const card=document.createElement('div');card.className='fztv-comment';
+  const own=!!(user&&item.user_id===user.id);
+  card.innerHTML=commentHtml(item,authors.get(item.user_id),own);
+  if(own){
+   const del=card.querySelector('.fztv-comment-delete');
+   del.onclick=async()=>{
+    if(!confirm('Удалить комментарий?'))return;
+    del.disabled=true;
+    const {error}=await client.from('fztv_news_comments').delete().eq('id',item.id).eq('user_id',user.id);
+    if(error){del.disabled=false;alert(error.message);return}
+    card.remove();adjust(-1);
+   };
+  }
+  container.append(card);
+ };
  for(const mount of mounts){
   if(!mount.isConnected)continue;
   const newsId=mount.dataset.newsId;
-  const comments=(data||[]).filter(x=>x.news_id===newsId);
+  const items=comments.filter(x=>x.news_id===newsId);
   const box=document.createElement('div');box.className='fztv-news-comments';
-  const title=document.createElement('h3');title.textContent='💬 Комментарии ('+comments.length+')';box.append(title);
-  for(const item of comments){
-   const el=document.createElement('div');el.className='fztv-comment';
-   el.innerHTML='<div class="fztv-comment-head"><strong>'+esc(item.author_name)+'</strong><span>'+esc(dateFmt(item.created_at))+'</span></div><p>'+esc(item.body)+'</p>';
-   if(user && user.id===item.user_id){
-    const del=document.createElement('button');del.className='fztv-comment-delete';del.textContent='Удалить';el.append(del);
-    del.onclick=async()=>{if(!confirm('Удалить комментарий?'))return;del.disabled=true;const {error}=await client.from('fztv_news_comments').delete().eq('id',item.id).eq('user_id',user.id);if(error){alert(error.message);del.disabled=false;return}el.remove();title.textContent='💬 Комментарии ('+(--commentCount)+')'};
-   }
-   box.append(el);
-  }
-  let commentCount=comments.length;
+  let count=items.length;
+  const title=document.createElement('h3');
+  const adjust=n=>{count+=n;title.textContent='💬 Комментарии ('+count+')'};
+  adjust(0);box.append(title);
+  items.forEach(item=>makeComment(item,box,title,adjust));
   if(user){
-   const form=document.createElement('form');form.className='fztv-comment-form';form.innerHTML='<textarea name="body" rows="3" maxlength="1500" required placeholder="Оставить комментарий…"></textarea><button type="submit">Отправить комментарий</button><div class="fztv-profile-message" role="status"></div>';
+   const form=document.createElement('form');form.className='fztv-comment-form';
+   form.innerHTML='<textarea name="body" rows="3" maxlength="1500" required placeholder="Оставить комментарий…"></textarea><button type="submit">Отправить комментарий</button><div class="fztv-profile-message" role="status"></div>';
    form.onsubmit=async e=>{
-    e.preventDefault();const value=form.elements.body.value.trim(),btn=form.querySelector('button'),msg=form.querySelector('[role=status]');
+    e.preventDefault();const value=form.elements.body.value.trim();
+    const btn=form.querySelector('button'),msg=form.querySelector('[role=status]');
     if(!value||value.length>1500)return;
     btn.disabled=true;msg.textContent='';
-    const {error}=await client.from('fztv_news_comments').insert({news_id:newsId,user_id:user.id,author_name:String(user.login||user.email?.split('@')[0]||'Игрок').slice(0,80),body:value});
+    const {data:inserted,error}=await client.from('fztv_news_comments')
+     .insert({news_id:newsId,user_id:user.id,author_name:String(user.login||user.email?.split('@')[0]||'Игрок').slice(0,80),body:value})
+     .select('id,news_id,user_id,author_name,body,created_at').single();
     if(error){msg.textContent=error.message;btn.disabled=false;return}
-    const comment=document.createElement('div');comment.className='fztv-comment';comment.innerHTML='<div class="fztv-comment-head"><strong>'+esc(user.login||'Игрок')+'</strong><span>Только что</span></div><p>'+esc(value)+'</p>';
-    box.insertBefore(comment,form);title.textContent='💬 Комментарии ('+(++commentCount)+')';form.reset();btn.disabled=false;
-    const reload=document.createElement('button');reload.className='fztv-comment-delete';reload.textContent='Обновить комментарии';reload.onclick=()=>{location.reload()};comment.append(reload);
+    if(!authors.has(user.id))authors.set(user.id,{id:user.id,login:user.login||'Игрок',avatar_url:user.avatar_url});
+    makeComment(inserted,box,title,adjust);
+    const latest=box.lastElementChild;
+    if(latest&&latest!==form)box.insertBefore(latest,form);
+    adjust(1);form.reset();btn.disabled=false;
    };
    box.append(form);
   }else{
-   const p=document.createElement('p');p.className='fztv-profile-help';p.innerHTML='Чтобы оставить комментарий, <a href="#/auth" style="color:#63a9ff">войдите в аккаунт</a>.';box.append(p);
+   const note=document.createElement('p');note.className='fztv-profile-help';
+   note.innerHTML='Чтобы оставить комментарий, <a href="#/auth" style="color:#63a9ff">войдите в аккаунт</a>.';
+   box.append(note);
   }
   mount.replaceChildren(box);
  }
+}
+export async function mountPublicMember({client,root,id}){
+ initStyle();addAuthorStyles();
+ if(!root)return;
+ if(!/^[-0-9a-f]{36}$/i.test(id||'')){root.textContent='Неверная ссылка профиля.';return}
+ const {data:member,error}=await client.from('fztv_public_profiles')
+  .select('id,login,avatar_url,bio,banner_color,created_at').eq('id',id).maybeSingle();
+ if(!root.isConnected)return;
+ if(error||!member){root.innerHTML='<section class="panel" style="padding:20px">Профиль не найден. <a href="#/news">Вернуться к новостям</a></section>';return}
+ const palette=['blue','red','green','purple','orange','cyan','gold','slate'];
+ const color=palette.includes(member.banner_color)?member.banner_color:'blue';
+ const avatar=pic(member.avatar_url);
+ const icon=avatar?'<img alt="Аватар" src="'+esc(avatar)+'">':esc((member.login||'И').slice(0,1).toUpperCase());
+ root.innerHTML='<div class="fztv-account fztv-public-profile"><div class="fztv-cover" data-banner-color="'+color+'"></div>'+
+  '<div class="fztv-profile-head"><div class="fztv-user-avatar">'+icon+'</div>'+
+  '<div><h1>'+esc(member.login||'Игрок')+'</h1><p>Участник FragZoneTV</p><p>На сайте с '+esc(dateFmt(member.created_at))+'</p></div></div>'+
+  '<div class="fztv-public-bio"><h3 style="margin:0 0 12px">О себе</h3>'+esc(member.bio||'Пользователь пока ничего о себе не рассказал.')+'</div>'+
+  '<p style="margin-top:20px"><a class="toolbtn" href="#/news">← Вернуться к новостям</a></p></div>';
 }
