@@ -113,7 +113,7 @@ async function review(client,root){
  if(document.getElementById('fz-match-review'))return;
  const section=N('section');section.id='fz-match-review';section.className='fz-sub';
  section.append(N('h2','Заявки на матчи'));const refreshBtn=N('button','Обновить заявки');refreshBtn.className='toolbtn',refreshBtn.type='button';const list=N('div');section.append(refreshBtn,list);
- root.querySelector('.page-title')?.insertAdjacentElement('afterend',section);
+ const adminMatchPanel=root.querySelector('[data-adminpanel="matches"]')||root.querySelector('[data-fzac-section="matches"]')||root;adminMatchPanel.append(section);
  const published=N('section');published.className='fz-sub';published.id='fz-published-match-admin';
  published.append(N('h2','Опубликованные матчи'));
  const pubRefresh=N('button','Обновить список матчей');pubRefresh.className='toolbtn';pubRefresh.type='button';
@@ -134,7 +134,7 @@ async function review(client,root){
     del.disabled=true;
     const result=await client.rpc('fztv_admin_delete_match',{p_match_id:match.id});
     if(result.error){const error=N('p','Ошибка: '+result.error.message);row.append(error);del.disabled=false;return}
-    await loadPublished();
+    await loadPublished();if(typeof loadContent==='function')await loadContent();
    };
    row.append(del);pubList.append(row);
   }
@@ -154,7 +154,7 @@ async function review(client,root){
      if(!confirm((approve?'Опубликовать матч и статистику?':'Отклонить матч?')+' '+item.team_a+' — '+item.team_b))return;
      action.disabled=true;message.textContent='Сохранение…';
      const reply=await client.rpc('fztv_review_match_submission',{p_submission_id:item.id,p_approve:approve});
-     if(reply.error){message.textContent='Ошибка: '+reply.error.message;action.disabled=false;return}await load();
+     if(reply.error){message.textContent='Ошибка: '+reply.error.message;action.disabled=false;return}if(typeof loadContent==='function')await loadContent();else await load();
     };card.append(action)
    }
    card.append(message);list.append(card);
@@ -182,7 +182,7 @@ async function review(client,root){
     button.disabled=true;msg.textContent='Удаление…';
     const r=await client.rpc('fztv_admin_delete_match',{p_match_id:match.id});
     if(r.error){msg.textContent='Ошибка: '+r.error.message;button.disabled=false;return}
-    await loadPublishedForDeletion();
+    await loadPublishedForDeletion();if(typeof loadContent==='function')await loadContent();
    };
    row.append(button,msg);deleteList.append(row);
   }
