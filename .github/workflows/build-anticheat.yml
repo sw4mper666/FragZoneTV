@@ -6,7 +6,7 @@ on:
       - 'anticheat/**'
       - '.github/workflows/build-anticheat.yml'
 permissions:
-  contents: read
+  contents: write
 jobs:
   build-windows:
     runs-on: windows-latest
@@ -25,3 +25,20 @@ jobs:
           name: FZTV-AntiCheat-2.0-Windows
           path: dist/FZTV-AntiCheat-2.0.exe
           if-no-files-found: error
+
+      - name: Publish direct-download release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $exe = "dist/FZTV-AntiCheat-2.0.exe"
+          $checksum = (Get-FileHash $exe -Algorithm SHA256).Hash.ToLower()
+          "$checksum  FZTV-AntiCheat-2.0.exe" | Set-Content -Path "dist/SHA256SUMS.txt" -Encoding utf8
+          gh release view "ac-v2.0" 2>$null
+          if ($LASTEXITCODE -eq 0) {
+            gh release upload "ac-v2.0" $exe "dist/SHA256SUMS.txt" --clobber
+            if ($LASTEXITCODE -ne 0) { exit 1 }
+          } else {
+            gh release create "ac-v2.0" $exe "dist/SHA256SUMS.txt" --target "$env:GITHUB_SHA" --title "FZTV Anti-Cheat 2.0 (Windows 10/11)" --notes "Windows 10/11 client. Monitoring and local diagnostic checks only, not guaranteed cheat detection. Unsigned developer build. Verify SHA256 before use."
+            if ($LASTEXITCODE -ne 0) { exit 1 }
+          }
