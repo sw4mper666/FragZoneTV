@@ -195,6 +195,7 @@ select,textarea{background:#0b111a;color:#fff;border:1px solid #34445a;border-ra
 @media(max-width:700px){.fztv-unified-roster{grid-template-columns:repeat(5,minmax(94px,1fr));overflow-x:auto;gap:8px;padding-bottom:6px}.fztv-unified-player img,.fztv-unified-player>span{aspect-ratio:3/4;height:auto;max-height:none}.fztv-unified-name>strong{font-size:13px}.fztv-unified-summary{padding:10px 8px}}
 </style>
 <link rel="stylesheet" href="assets/player-profile.css?v=20261106fix2">
+<style id="fztv-lineup-styles"> .fztv-bench-panel{border-top:1px solid #30405a;margin:13px 0 0;padding:13px 4px 8px}.fztv-bench-heading{font-size:11px;font-weight:900;letter-spacing:1.1px;color:#b6c4db;margin-bottom:10px}.fztv-bench-list{display:flex;gap:9px;flex-wrap:wrap}.fztv-bench-player{display:flex;align-items:center;gap:8px;padding:7px 10px;background:#101b2b;border:1px solid #364b63;border-radius:8px;color:#e5edf7;font-size:12px;font-weight:750;text-decoration:none}.fztv-bench-player:hover{border-color:#df445d}.fztv-bench-player img{width:26px;height:26px;object-fit:cover;border-radius:5px}</style>
 </head>
 <body>
 <header class="topbar">
@@ -242,8 +243,8 @@ let approvedTeamsCache=[];
 let teamRpCache={};
 let legacyRosterCache=[];
 function getTeamRP(name){return teamRpCache[String(name||'').toLowerCase()]||0;}
-function woodsRosterNow(){return teamWoodsRoster.filter(([name])=>{if(window.fztvRemovedPlayers?.has(name.toLowerCase()))return false;const p=legacyRosterCache.find(x=>x.player_slug===name.toLowerCase());return !p||p.team_name?.toLowerCase()==='team woods';}).map(([name,photo])=>{const p=legacyRosterCache.find(x=>x.player_slug===name.toLowerCase());return [p?.nickname||name,p?.photo_url||photo,name.toLowerCase()];});}
-async function loadLegacyRoster(){const {data,error}=await sb.from('fztv_roster_players').select('player_slug,nickname,photo_url,age,team_name');if(error){console.warn('Woods roster:',error.message);return;}legacyRosterCache=data||[];if(['home','ranking','team','players','player'].includes((location.hash||'#/home').split('/')[1]))render();}
+function woodsRosterNow(){return teamWoodsRoster.filter(([name])=>{if(window.fztvRemovedPlayers?.has(name.toLowerCase()))return false;const p=legacyRosterCache.find(x=>x.player_slug===name.toLowerCase());return !p||p.team_name?.toLowerCase()==='team woods';}).map(([name,photo])=>{const p=legacyRosterCache.find(x=>x.player_slug===name.toLowerCase());return [p?.nickname||name,p?.photo_url||photo,name.toLowerCase(),p?.lineup_position||10];}).sort((a,b)=>a[3]-b[3]);}
+async function loadLegacyRoster(){const {data,error}=await sb.from('fztv_roster_players').select('player_slug,nickname,photo_url,age,team_name,lineup_position');if(error){console.warn('Woods roster:',error.message);return;}legacyRosterCache=data||[];if(['home','ranking','team','players','player'].includes((location.hash||'#/home').split('/')[1]))render();}
 async function loadTeamRP(){const {data,error}=await sb.from('fztv_team_rp').select('name,rp');if(error){console.warn('FZ RP:',error.message);return;}teamRpCache=Object.fromEntries((data||[]).map(x=>[x.name.toLowerCase(),Number(x.rp)||0]));if(['home','ranking','team','team-created'].includes((location.hash||'#/home').split('/')[1]))render();}
 
 let approvedRosterCache={};
@@ -258,9 +259,9 @@ async function loadApprovedTeams(){
  const {data,error}=await sb.from('fztv_teams').select('id,name,tag,country,logo_url').eq('status','approved').order('created_at',{ascending:true});
  if(error){console.warn('Approved teams:',error.message);return;}
  approvedTeamsCache=data||[];
- const {data:players, error:playersError}=await sb.from('fztv_team_players').select('team_id,nickname,country,photo_url').in('team_id',approvedTeamsCache.map(t=>t.id).length?approvedTeamsCache.map(t=>t.id):['00000000-0000-0000-0000-000000000000']);
+ const {data:players, error:playersError}=await sb.from('fztv_team_players').select('id,team_id,nickname,country,photo_url,lineup_position').in('team_id',approvedTeamsCache.map(t=>t.id).length?approvedTeamsCache.map(t=>t.id):['00000000-0000-0000-0000-000000000000']);
  approvedRosterCache={};
- if(!playersError)for(const p of players||[])(approvedRosterCache[p.team_id]??=[]).push(p);
+ if(!playersError){for(const p of players||[])(approvedRosterCache[p.team_id]??=[]).push(p);for(const rows of Object.values(approvedRosterCache))rows.sort((a,b)=>(a.lineup_position||99)-(b.lineup_position||99));}
  if(['home','ranking'].includes((location.hash||'#/home').replace(/^#\/?/,'').split('/')[0]))render();
 }
 function approvedTeamRows(){
@@ -300,7 +301,7 @@ function enhanceRankingLayout(route){
  previous.onclick=()=>{rankingWeekOffset--;render()};next.onclick=()=>{rankingWeekOffset=Math.min(0,rankingWeekOffset+1);render()};
  const list=document.createElement('div');list.className='fztv-unified-rank-list';
  const staticTeams=[
- {name:'Team Woods',logo:document.createElement('div'),players:woodsRosterNow().map(p=>({nickname:p[0],photo_url:p[1],slug:p[2]})),href:'#/team/woods'},
+ {name:'Team Woods',logo:document.createElement('div'),players:woodsRosterNow().map(p=>({nickname:p[0],photo_url:p[1],slug:p[2],lineup_position:p[3]})),href:'#/team/woods'},
  {name:'Taykans',logo:document.createElement('div'),players:[],href:'#/team/taykans'}
  ];
  const original=document.createElement('template');original.innerHTML=ranking();
@@ -309,21 +310,38 @@ function enhanceRankingLayout(route){
  const dynamic=approvedTeamsCache.filter(t=>!['team woods','taykans'].includes(t.name.trim().toLowerCase())).map(t=>({name:t.name,logo_url:t.logo_url,players:approvedRosterCache[t.id]||[],href:'#/team-created/'+encodeURIComponent(t.id),country:teamNationality(approvedRosterCache[t.id]||[]).flag}));
  const entries=[...staticTeams,...dynamic].sort((a,b)=>getTeamRP(b.name)-getTeamRP(a.name));
  entries.forEach((t,i)=>{
+ const orderedPlayers=[...t.players].sort((a,b)=>(a.lineup_position||99)-(b.lineup_position||99));
+ const starters=orderedPlayers.filter(p=>Number(p.lineup_position||99)<=5).slice(0,5);
+ const reserves=orderedPlayers.filter(p=>!starters.includes(p)).slice(0,5);
  const card=document.createElement('details');card.className='fztv-unified-team';if(i===0){card.open=true;card.classList.add('fztv-first-place');}
  const summary=document.createElement('summary');summary.className='fztv-unified-summary';// First-place team uses native details toggle, just like other teams.
  const rank=document.createElement('b');rank.className='fztv-unified-place';rank.textContent='#'+(i+1);
  const logo=document.createElement('span');logo.className='fztv-unified-logo';
  if(t.logo_url){const img=document.createElement('img');img.src=t.logo_url;img.alt='';logo.append(img);}else if(t.logo)logo.append(t.logo);else logo.textContent='🏆';
- const name=document.createElement('span');name.className='fztv-unified-name';const title=document.createElement('strong');title.textContent=t.name;const sub=document.createElement('small');sub.textContent=t.players.length?t.players.map(p=>p.nickname).join(' · '):'Состав пока не добавлен';name.append(title,sub);const tierBadge=document.createElement('span');tierBadge.className='fztv-rank-tier-red';tierBadge.textContent='TIER '+(i+1<=10?1:i+1<=20?2:3);name.append(tierBadge);
+ const name=document.createElement('span');name.className='fztv-unified-name';const title=document.createElement('strong');title.textContent=t.name;const sub=document.createElement('small');sub.textContent=starters.length?starters.map(p=>p.nickname).join(' · ')+(reserves.length?' · Запас: '+reserves.length:''):'Состав пока не добавлен';name.append(title,sub);const tierBadge=document.createElement('span');tierBadge.className='fztv-rank-tier-red';tierBadge.textContent='TIER '+(i+1<=10?1:i+1<=20?2:3);name.append(tierBadge);
  const points=document.createElement('b');points.className='fztv-unified-points';points.textContent=getTeamRP(t.name)+' FZ';
  const arrow=document.createElement('span');arrow.className='fztv-unified-arrow';arrow.textContent='⌄';
  summary.append(rank,logo,name,points,arrow);card.append(summary);
  const detail=document.createElement('div');detail.className='fztv-unified-detail';
  const roster=document.createElement('div');roster.className='fztv-unified-roster';
- if(!t.players.length){const p=document.createElement('p');p.textContent='Состав команды пока не добавлен';roster.append(p);}
- Array.from({length:Math.max(5,t.players.length)},(_,slot)=>t.players[slot]||null).forEach(p=>{const player=document.createElement('div');player.className='fztv-unified-player';if(p?.photo_url){const img=document.createElement('img');img.src=p.photo_url;img.alt='';player.append(img);}else{const empty=document.createElement('span');empty.className='fztv-empty-player';empty.textContent=p?'👤':'?';player.append(empty);}const nick=document.createElement('b');nick.textContent=p?(p.nickname||'Игрок'):'Свободно';player.append(nick);if(!p)player.classList.add('fztv-unified-player-free');roster.append(player);});
+ if(!starters.length){const p=document.createElement('p');p.textContent='Состав команды пока не добавлен';roster.append(p);}
+ Array.from({length:5},(_,slot)=>starters[slot]||null).forEach(p=>{const player=document.createElement('div');player.className='fztv-unified-player';if(p?.photo_url){const img=document.createElement('img');img.src=p.photo_url;img.alt='';player.append(img);}else{const empty=document.createElement('span');empty.className='fztv-empty-player';empty.textContent=p?'👤':'?';player.append(empty);}const nick=document.createElement('b');nick.textContent=p?(p.nickname||'Игрок'):'Свободно';player.append(nick);if(!p)player.classList.add('fztv-unified-player-free');roster.append(player);});
  const link=document.createElement('a');link.href=t.href;link.textContent='Профиль команды →';link.className='fztv-unified-profile';
- detail.append(roster,link);card.append(detail);list.append(card);
+ detail.append(roster);
+ if(reserves.length){
+  const panel=document.createElement('div');panel.className='fztv-bench-panel';
+  const header=document.createElement('div');header.className='fztv-bench-heading';header.textContent='ЗАМЕНА · '+reserves.length+'/5';
+  const list=document.createElement('div');list.className='fztv-bench-list';
+  reserves.forEach(p=>{
+   const item=document.createElement('a');item.className='fztv-bench-player';
+   item.href=p.id?'#/player/team_'+p.id.replace(/-/g,''):'#/player/'+encodeURIComponent(p.slug||'');
+   if(p.photo_url){const avatar=document.createElement('img');avatar.src=p.photo_url;avatar.alt='';item.append(avatar);}
+   const name=document.createElement('span');name.textContent=p.nickname||'Игрок';item.append(name);
+   list.append(item);
+  });
+  panel.append(header,list);detail.append(panel);
+ }
+ detail.append(link);card.append(detail);list.append(card);
  });
  section.append(list);center.append(section);
  document.querySelectorAll('a[data-route="ranking"],a[href="#/ranking"]').forEach(link=>{if(!link.closest('.fztv-center-ranking'))link.remove();});
