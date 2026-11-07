@@ -55,7 +55,7 @@ export async function mountFragZoneTeams({client,root}) {
  item.append(select,button);
  }myTeams.append(item);
  if(team.status==='approved'){
- import('./team-player-editor.js').then(m=>m.mountTeamPlayerEditor({client,container:item,team,user})).catch(err=>{const p=el('p','Не удалось загрузить управление игроками: '+err.message);item.append(p);});
+ import('./team-player-editor.js?v=lineups-20261107').then(m=>m.mountTeamPlayerEditor({client,container:item,team,user})).catch(err=>{const p=el('p','Не удалось загрузить управление игроками: '+err.message);item.append(p);});
  }
  }
  }
