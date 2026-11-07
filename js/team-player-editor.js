@@ -25,7 +25,7 @@ export async function mountTeamPlayerEditor({client,container,team,user}){
  form.append(primary.l,secondary.l,faceit.l);
  for(const f of fields.slice(5))form.append(f.l);
  form.append(photo.l,upload.l,preview);
- const note=el('p','В команде может быть только один игрок с FACEIT 10. Призовые нового игрока — $0.');form.append(note);
+ const note=el('p','Максимум 10 игроков в команде: 5 в основе и до 5 в запасе. В команде может быть только один FACEIT 10. Призовые нового игрока — $0.');form.append(note);
  const save=el('button','Сохранить игрока');save.type='submit';save.className='auth-submit';form.append(save);
  
  function resetEditor(){
@@ -52,24 +52,70 @@ export async function mountTeamPlayerEditor({client,container,team,user}){
  }
  open.onclick=()=>{if(form.hidden)showEditor();else resetEditor();};
  async function refresh(){
- const {data,error}=await client.from('fztv_team_players').select('*').eq('team_id',team.id).order('created_at',{ascending:true});
+ const {data,error}=await client.from('fztv_team_players').select('*').eq('team_id',team.id).order('lineup_position',{ascending:true});
  roster.replaceChildren();
  if(error){roster.append(el('p','Ошибка загрузки: '+error.message));return;}
  if(!data?.length)roster.append(el('p','Игроков пока нет.'));
- for(const p of data||[]){
+ const starters=(data||[]).filter(x=>Number(x.lineup_position)<=5);
+ const bench=(data||[]).filter(x=>Number(x.lineup_position)>5);
+ open.disabled=(data||[]).length>=10;
+ open.textContent=open.disabled?'Команда заполнена (10/10)':'＋ Добавить игрока ('+(data||[]).length+'/10)';
+ const makeSection=(label,items)=>{
+   const h=el('h4',label+' ('+items.length+(label==='Основной состав'?'/5':'/5')+')');
+   h.style.cssText='margin:16px 0 5px;color:#e7effc';
+   roster.append(h);
+   if(!items.length)roster.append(el('p','Пока нет игроков'));
+ };
+ makeSection('Основной состав',starters);
+ for(const p of starters){
  const row=el('div');row.className='fztv-player-row';
  if(p.photo_url){const img=el('img');img.src=p.photo_url;img.alt='';row.append(img);}
  const text=el('span',p.nickname+' · '+(p.country||'—')+' · '+(p.primary_role||'Rifler')+(p.faceit_level?' · FACEIT '+p.faceit_level:''));row.append(text);
- const edit=el('button','Редактировать');edit.type='button';edit.className='toolbtn';
+ // Switch a starter with a reserve; a roster change never deletes player history.
+ const opposite=bench;
+ if(opposite.length){
+   const swapSel=el('select');swapSel.style.cssText='background:#0c1625;color:#eaf1fd;padding:8px;border:1px solid #40526d;border-radius:7px';
+   for(const other of opposite){const option=el('option',other.nickname);option.value=other.id;swapSel.append(option);}
+   const swap=el('button','Заменить на →');swap.type='button';swap.className='toolbtn';
+   swap.onclick=async()=>{swap.disabled=true;status.textContent='Меняем состав…';
+    const {error}=await client.rpc('fztv_swap_team_lineup',{p_team_id:team.id,p_first:p.id,p_second:swapSel.value});
+    status.textContent=error?'Ошибка: '+error.message:'Состав обновлён';
+    await refresh();
+   };
+   row.append(swapSel,swap);
+ }
+  const edit=el('button','Редактировать');edit.type='button';edit.className='toolbtn';
  edit.onclick=()=>showEditor(p);row.append(edit);
  const kick=el('button','Исключить из команды');kick.type='button';kick.className='toolbtn';
  kick.onclick=async()=>{if(!confirm('Исключить '+p.nickname+' из состава? Профиль и статистика сохранятся, игрок станет свободным агентом.'))return;kick.disabled=true;const {error}=await client.rpc('fztv_kick_player',{p_player_id:p.id});status.textContent=error?'Ошибка: '+error.message:'Игрок исключён и стал свободным агентом';await refresh();};row.append(kick);
  const remove=el('button','Удалить навсегда');remove.type='button';remove.className='toolbtn';
  remove.onclick=async()=>{if(!confirm('Безвозвратно удалить анкету '+p.nickname+'? Вместо этого можно исключить игрока, сохранив профиль.'))return;remove.disabled=true;const {error}=await client.from('fztv_team_players').delete().eq('id',p.id).eq('team_id',team.id);status.textContent=error?'Ошибка: '+error.message:'Анкета удалена';await refresh();};row.append(remove);roster.append(row);
  }
+ makeSection('Замена',bench);
+ for(const p of bench){
+  const row=el('div');row.className='fztv-player-row';
+  if(p.photo_url){const img=el('img');img.src=p.photo_url;img.alt='';row.append(img);}
+  row.append(el('span',p.nickname+' · Запасной'));
+  const select=el('select');select.style.cssText='background:#0c1625;color:#eaf1fd;padding:8px;border:1px solid #40526d;border-radius:7px';
+  for(const starter of starters){const opt=el('option',starter.nickname);opt.value=starter.id;select.append(opt);}
+  const swap=el('button','В основу ↗');swap.type='button';swap.className='toolbtn';swap.disabled=!starters.length;
+  swap.onclick=async()=>{swap.disabled=true;status.textContent='Меняем состав…';
+   const {error}=await client.rpc('fztv_swap_team_lineup',{p_team_id:team.id,p_first:p.id,p_second:select.value});
+   status.textContent=error?'Ошибка: '+error.message:'Игрок переведён в основу';
+   await refresh();
+  };
+  row.append(select,swap);
+  const edit=el('button','Редактировать');edit.type='button';edit.className='toolbtn';edit.onclick=()=>showEditor(p);row.append(edit);
+  roster.append(row);
+ }
  }
  form.onsubmit=async e=>{e.preventDefault();save.disabled=true;status.textContent='Сохраняем игрока…';
  try{
+ if(!editingId){
+  const {count,error:countError}=await client.from('fztv_team_players').select('id',{count:'exact',head:true}).eq('team_id',team.id);
+  if(countError)throw countError;
+  if(count>=10)throw Error('В команде уже 10 игроков. Сначала исключите кого-то из состава.');
+ }
  const payload=editingId?{}:{team_id:team.id,prize_usd:0};
  for(const f of fields){if(f.i.name!=='birth_date')payload[f.i.name]=f.i.value.trim();else payload.birth_date=f.i.value||null;}
  payload.primary_role=primary.select.value;payload.secondary_role=secondary.select.value;
@@ -98,11 +144,15 @@ export async function mountTeamPlayerEditor({client,container,team,user}){
   const items=el('div'),message=el('p');message.setAttribute('role','status');
   section.append(items,message);container.append(section);
   async function refreshLegacy(){
-   const result=await client.from('fztv_roster_players').select('player_slug,nickname,photo_url,age,team_name').eq('team_name','Team Woods').order('created_at');
+   const result=await client.from('fztv_roster_players').select('player_slug,nickname,photo_url,age,team_name,lineup_position').eq('team_name','Team Woods').order('lineup_position');
    items.replaceChildren();
    if(result.error){items.append(el('p',result.error.message));return;}
    if(!result.data?.length){items.append(el('p','В составе нет игроков.'));return;}
-   for(const p of result.data){
+   const legacyMain=(result.data||[]).filter(x=>Number(x.lineup_position)<=5);
+   const legacyBench=(result.data||[]).filter(x=>Number(x.lineup_position)>5);
+   items.append(el('h4','Основной состав ('+legacyMain.length+'/5)'));
+   for(const p of [...legacyMain,...legacyBench]){
+    if(p===legacyBench[0])items.append(el('h4','Замена ('+legacyBench.length+'/5)'));
     const wrap=el('div');wrap.style.cssText='padding:12px;margin:10px 0;border:1px solid #35465c;border-radius:9px';
     const label=el('strong',p.nickname+' · '+p.player_slug);wrap.append(label);
     const form=el('form');form.className='fztv-player-form';form.hidden=true;
@@ -142,6 +192,19 @@ export async function mountTeamPlayerEditor({client,container,team,user}){
       await refreshLegacy();
      }catch(err){message.textContent='Ошибка: '+err.message}finally{saveButton.disabled=false;}
     };
+    const alternative=Number(p.lineup_position)<=5?legacyBench:legacyMain;
+    if(alternative.length){
+     const select=el('select');select.style.cssText='background:#0c1625;color:#eaf1fd;padding:8px;border:1px solid #40526d;border-radius:7px';
+     for(const other of alternative){const opt=el('option',other.nickname);opt.value=other.player_slug;select.append(opt);}
+     const swap=el('button',Number(p.lineup_position)<=5?'Заменить на →':'В основу ↗');
+     swap.type='button';swap.className='toolbtn';
+     swap.onclick=async()=>{swap.disabled=true;message.textContent='Меняем состав…';
+      const result=await client.rpc('fztv_swap_legacy_lineup',{p_team_name:'Team Woods',p_first:p.player_slug,p_second:select.value});
+      message.textContent=result.error?'Ошибка: '+result.error.message:'Состав обновлён';
+      await refreshLegacy();
+     };
+     wrap.append(select,swap);
+    }
     wrap.append(openButton,kick,form);items.append(wrap);
    }
   }
