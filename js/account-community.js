@@ -9,6 +9,22 @@ function initStyle(){
  document.head.append(style);
 }
 const dateFmt = iso => iso ? new Date(iso).toLocaleDateString('ru-RU') : '—';
+const joinedFmt = iso => {
+ if (!iso) return 'дата регистрации неизвестна';
+ const d=new Date(iso);
+ return Number.isNaN(d.getTime())?'дата регистрации неизвестна':d.toLocaleDateString('ru-RU',{month:'long',year:'numeric'});
+};
+const activityLabel = iso => {
+ if (!iso) return '⚪ Не в сети · Последняя активность пока неизвестна';
+ const delta=Date.now()-new Date(iso).getTime();
+ if (delta>=0 && delta<150000) return '🟢 В сети';
+ return '⚪ Не в сети · Последняя активность: '+new Date(iso).toLocaleString('ru-RU',{dateStyle:'medium',timeStyle:'short'});
+};
+async function showActivity(client,root,uid) {
+ const {data,error}=await client.from('fztv_member_activity').select('last_seen').eq('user_id',uid).maybeSingle();
+ const label=root.querySelector('[data-fztv-member-activity]');
+ if(label && !error)label.textContent=activityLabel(data?.last_seen);
+}
 
 export async function mountAccount({client,root,user,onUpdated}){
  if(!root || !user)return;
@@ -17,7 +33,7 @@ export async function mountAccount({client,root,user,onUpdated}){
  const avatar=pic(user.avatar_url);
  const initial=esc(String(user.login||'U').slice(0,1).toUpperCase());
  root.innerHTML='<div class="fztv-account"><div class="fztv-cover" data-banner-color="'+esc(['blue','red','green','purple','orange','cyan','gold','slate'].includes(user.banner_color)?user.banner_color:'blue')+'"></div>'+
- '<div class="fztv-profile-head"><div class="fztv-user-avatar" id="fztvMyAvatar">'+(avatar?'<img alt="Аватар" src="'+esc(avatar)+'">':initial)+'</div><div><h1>'+esc(user.login||'Игрок')+'</h1><p>'+esc(user.email||'')+'</p><p>🟢 Мой профиль · На сайте с '+esc(dateFmt(user.created_at))+'</p></div></div>'+
+ '<div class="fztv-profile-head"><div class="fztv-user-avatar" id="fztvMyAvatar">'+(avatar?'<img alt="Аватар" src="'+esc(avatar)+'">':initial)+'</div><div><h1>'+esc(user.login||'Игрок')+'</h1><p>'+esc(user.email||'')+'</p><p><span data-fztv-member-activity>⚪ Статус загружается…</span> · На FragZoneTV с '+esc(joinedFmt(user.created_at))+'</p></div></div>'+
  '<div class="fztv-profile-stat"><article>🛡️ <div><b id="fztvMyTeams">—</b><span>МОИХ КОМАНД</span></div></article><article>💬 <div><b id="fztvMyComments">—</b><span>КОММЕНТАРИЕВ</span></div></article><article>⭐ <div><b>'+esc(user.points||0)+'</b><span>БАЛЛОВ</span></div></article><article>📅 <div><b>'+esc(dateFmt(user.created_at))+'</b><span>ДАТА РЕГИСТРАЦИИ</span></div></article></div>'+
  '<div class="fztv-profile-tabs"><button type="button" data-fztv-tab="overview">Обзор</button><button type="button" data-fztv-tab="teams">Команды</button><button type="button" data-fztv-tab="settings" class="active">Настройки профиля</button></div>'+
  '<section class="fztv-profile-panel" data-fztv-panel="overview"><div class="fztv-settings-card"><h3>👤 Обо мне</h3><p id="fztvAbout">'+esc(user.bio||'Описание ещё не добавлено.')+'</p><button type="button" data-fztv-tab-open="settings" class="toolbtn">Редактировать профиль</button></div></section>'+
@@ -25,6 +41,7 @@ export async function mountAccount({client,root,user,onUpdated}){
  '<section class="fztv-profile-panel active" data-fztv-panel="settings"><div class="fztv-settings-grid">'+
  '<div class="fztv-settings-card"><h3>🖼️ Аватар профиля</h3><form id="fztvAvatarForm"><label>Выберите изображение (JPG, PNG, WebP, до 3 МБ)<input name="avatar" type="file" accept="image/jpeg,image/png,image/webp" required></label><button type="submit">Сохранить аватарку</button><div class="fztv-profile-message" id="fztvAvatarMessage" role="status"></div></form><hr style="border:0;border-top:1px solid #26364a;margin:20px 0"><h3>🎨 Цвет фона шапки</h3><p class="fztv-profile-help">Выбери цвет фона своего профиля.</p><div class="fztv-banner-options" id="fztvBannerOptions"><button type="button" class="fztv-banner-choice" data-color="blue" style="background:#234d87" aria-label="Цвет blue" aria-pressed="'+(user.banner_color==='blue'?'true':'false')+'"></button><button type="button" class="fztv-banner-choice" data-color="red" style="background:#8b2935" aria-label="Цвет red" aria-pressed="'+(user.banner_color==='red'?'true':'false')+'"></button><button type="button" class="fztv-banner-choice" data-color="green" style="background:#1d7551" aria-label="Цвет green" aria-pressed="'+(user.banner_color==='green'?'true':'false')+'"></button><button type="button" class="fztv-banner-choice" data-color="purple" style="background:#713791" aria-label="Цвет purple" aria-pressed="'+(user.banner_color==='purple'?'true':'false')+'"></button><button type="button" class="fztv-banner-choice" data-color="orange" style="background:#ae5825" aria-label="Цвет orange" aria-pressed="'+(user.banner_color==='orange'?'true':'false')+'"></button><button type="button" class="fztv-banner-choice" data-color="cyan" style="background:#177d9b" aria-label="Цвет cyan" aria-pressed="'+(user.banner_color==='cyan'?'true':'false')+'"></button><button type="button" class="fztv-banner-choice" data-color="gold" style="background:#947128" aria-label="Цвет gold" aria-pressed="'+(user.banner_color==='gold'?'true':'false')+'"></button><button type="button" class="fztv-banner-choice" data-color="slate" style="background:#35445a" aria-label="Цвет slate" aria-pressed="'+(user.banner_color==='slate'?'true':'false')+'"></button></div><div class="fztv-profile-message" id="fztvBannerMessage" role="status"></div><hr style="border:0;border-top:1px solid #26364a;margin:20px 0"><h3>🙋 О себе</h3><form id="fztvBioForm"><label>Никнейм<input name="login" value="'+esc(user.login||'')+'" minlength="3" maxlength="24" pattern="[A-Za-zА-Яа-яЁё0-9_.-]{3,24}" title="От 3 до 24 символов: буквы, цифры, точка, дефис и подчёркивание" autocomplete="nickname" required></label><p class="fztv-profile-help">От 3 до 24 символов. Этот ник увидят другие игроки в комментариях и профиле.</p><label>Описание<textarea name="bio" rows="5" maxlength="500" placeholder="Расскажи о себе">'+esc(user.bio||'')+'</textarea></label><button type="submit">Сохранить описание</button><div class="fztv-profile-message" id="fztvBioMessage" role="status"></div></form></div>'+
  '<div class="fztv-settings-card"><h3>🔒 Смена пароля</h3><p class="fztv-profile-help">Можно установить новый пароль. Старый пароль посмотреть невозможно.</p><form id="fztvPasswordForm"><label>Новый пароль<input type="password" name="password" minlength="8" autocomplete="new-password" required></label><label>Повторите пароль<input type="password" name="confirm" minlength="8" autocomplete="new-password" required></label><label class="fztv-pw-check"><input type="checkbox" id="fztvShowPassword"> Показать вводимый пароль</label><button type="submit">Сохранить пароль</button><div class="fztv-profile-message" id="fztvPasswordMessage" role="status"></div></form><p style="margin-top:24px"><button type="button" class="auth-logout" id="fztvAccountLogout">Выйти из аккаунта</button></p></div></div></section></div>';
+ showActivity(client,root,uid);
  const setTab=name=>{
   root.querySelectorAll('[data-fztv-tab]').forEach(x=>x.classList.toggle('active',x.dataset.fztvTab===name));
   root.querySelectorAll('[data-fztv-panel]').forEach(x=>x.classList.toggle('active',x.dataset.fztvPanel===name));
@@ -180,7 +197,8 @@ export async function mountPublicMember({client,root,id}){
  const icon=avatar?'<img alt="Аватар" src="'+esc(avatar)+'">':esc((member.login||'И').slice(0,1).toUpperCase());
  root.innerHTML='<div class="fztv-account fztv-public-profile"><div class="fztv-cover" data-banner-color="'+color+'"></div>'+
   '<div class="fztv-profile-head"><div class="fztv-user-avatar">'+icon+'</div>'+
-  '<div><h1>'+esc(member.login||'Игрок')+'</h1><p>Участник FragZoneTV</p><p>На сайте с '+esc(dateFmt(member.created_at))+'</p></div></div>'+
+  '<div><h1>'+esc(member.login||'Игрок')+'</h1><p>Участник FragZoneTV</p><p>На FragZoneTV с '+esc(joinedFmt(member.created_at))+' · <span data-fztv-member-activity>⚪ Статус загружается…</span></p></div></div>'+
   '<div class="fztv-public-bio"><h3 style="margin:0 0 12px">О себе</h3>'+esc(member.bio||'Пользователь пока ничего о себе не рассказал.')+'</div>'+
   '<p style="margin-top:20px"><a class="toolbtn" href="#/news">← Вернуться к новостям</a></p></div>';
+ showActivity(client,root,id);
 }
