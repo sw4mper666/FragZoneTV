@@ -7,12 +7,18 @@ export function renderFragZoneLeaderboard(container, players = []) {
     (Number(b.rating ?? b.points) || 0) - (Number(a.rating ?? a.points) || 0) ||
     String(a.nickname ?? a.username ?? '').localeCompare(String(b.nickname ?? b.username ?? ''), 'ru')
   );
+  if (!document.getElementById('fztv-top-three-style')) {
+    const style = document.createElement('style');
+    style.id = 'fztv-top-three-style';
+    style.textContent = '.fztv-leaderboard__row.fztv-podium-1{border:2px solid #e9bd44!important;box-shadow:0 0 18px #e9bd4433;background:linear-gradient(90deg,#80631c25,transparent)}.fztv-leaderboard__row.fztv-podium-2{border:2px solid #acbed3!important;box-shadow:0 0 16px #b8c6d333;background:linear-gradient(90deg,#8c9cad25,transparent)}.fztv-leaderboard__row.fztv-podium-3{border:2px solid #bb7950!important;box-shadow:0 0 16px #b77b4b33;background:linear-gradient(90deg,#ab674025,transparent)}';
+    document.head.append(style);
+  }
   const list = document.createElement('ol');
   list.className = 'fztv-leaderboard';
   list.setAttribute('aria-label', 'Топ игроков по рейтингу');
   for (const [index, player] of sorted.entries()) {
     const row = document.createElement('li');
-    row.className = 'fztv-leaderboard__row';
+    row.className = 'fztv-leaderboard__row' + (index < 3 ? ' fztv-podium-' + (index + 1) : '');
     const name = String(player.nickname ?? player.username ?? 'Игрок');
     const rating = Number(player.rating ?? player.points) || 0;
     const rank = document.createElement('strong');
