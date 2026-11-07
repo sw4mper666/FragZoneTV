@@ -1,0 +1,39 @@
+name: Enable community enhancements 20261107
+on:
+  push:
+    paths:
+      - '.github/workflows/enable-community-enhancements-20261107.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: fztv-community-enhancements
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Include community module without overwriting existing page
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path('index.html')
+          html=p.read_text(encoding='utf-8')
+          if '</body>' not in html:
+              raise SystemExit('Missing body closing tag')
+          html=re.sub(r'<script[^>]*src=["\'](?:\./)?js/community-enhancements\.js(?:\?[^"\']*)?["\'][^>]*></script>\s*','',html)
+          tag='<script defer src="./js/community-enhancements.js?v=20261107-a1"></script>'
+          html=html.replace('</body>',tag+'\n</body>',1)
+          assert html.count(tag)==1
+          p.write_text(html,encoding='utf-8')
+          print('Attached community module safely; size:',p.stat().st_size)
+          PY
+      - name: Publish main page
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet || git commit -m "Connect team stats polls notifications transfers and search"
+          git push
