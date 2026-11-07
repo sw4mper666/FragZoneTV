@@ -310,7 +310,7 @@ function enhanceRankingLayout(route){
  const entries=[...staticTeams,...dynamic].sort((a,b)=>getTeamRP(b.name)-getTeamRP(a.name));
  entries.forEach((t,i)=>{
  const card=document.createElement('details');card.className='fztv-unified-team';if(i===0){card.open=true;card.classList.add('fztv-first-place');}
- const summary=document.createElement('summary');summary.className='fztv-unified-summary';if(i===0)summary.addEventListener('click',ev=>ev.preventDefault());
+ const summary=document.createElement('summary');summary.className='fztv-unified-summary';// First-place team uses native details toggle, just like other teams.
  const rank=document.createElement('b');rank.className='fztv-unified-place';rank.textContent='#'+(i+1);
  const logo=document.createElement('span');logo.className='fztv-unified-logo';
  if(t.logo_url){const img=document.createElement('img');img.src=t.logo_url;img.alt='';logo.append(img);}else if(t.logo)logo.append(t.logo);else logo.textContent='🏆';
@@ -511,5 +511,5 @@ render();refreshAuth();loadContent();loadApprovedTeams();loadPublicPlayers();loa
 <script src="./js/team-owner-edit.js?v=country-20261106"></script>
 <script src="./js/admin-delete-players.js?v=20261106-1"></script>
 <script defer src="./js/home-ranking-polish.js?v=20261107-live-3"></script>
-<script defer src="./js/community-enhancements.js?v=20261107-a1"></script>
+<script defer src="./js/community-enhancements.js?v=20261107-inline-v2"></script>
 </body></html>
