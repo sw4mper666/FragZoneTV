@@ -1,0 +1,39 @@
+name: Activate FragZoneTV home ranking polish
+on:
+  push:
+    paths:
+      - '.github/workflows/activate-home-ranking-polish.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  activate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Connect live ranking enhancement and refresh profile modules
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path('index.html')
+          html=p.read_text(encoding='utf-8')
+          if '</body>' not in html:
+              raise SystemExit('Cannot find closing body tag; no changes made')
+          # Explicit independent script: does not rely on optional ES module initialization.
+          html=re.sub(r'<script[^>]*src=["\'](?:\./)?js/home-ranking-polish\.js[^"\']*["\'][^>]*></script>\s*', '', html)
+          html=html.replace('</body>', '<script defer src="./js/home-ranking-polish.js?v=20261107-live-2"></script>\n</body>',1)
+          # Bump existing dynamic imports so older module caches cannot hide changes.
+          for module in ['site-presence','universal-profiles','account-community','player-leaderboard']:
+              html=re.sub(r"(\./js/"+module+r"\.js)(?:\?[^'\"\s)]*)?",r"\1?v=20261107-live-2",html)
+          p.write_text(html,encoding='utf-8')
+          assert 'home-ranking-polish.js?v=20261107-live-2' in p.read_text(encoding='utf-8')
+          print('Homepage enhancement script connected; HTML bytes:',p.stat().st_size)
+          PY
+      - name: Commit live index change
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet || git commit -m "Activate ranking enhancements in main page"
+          git push
