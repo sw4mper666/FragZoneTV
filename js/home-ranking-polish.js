@@ -1,50 +1,56 @@
-// FragZoneTV home-page ranking decoration. Independent of the legacy page renderer.
+// FragZoneTV homepage ranking — actual markup from enhanceRankingLayout().
 (() => {
-  if (window.__fztvHomeRankingPolish) return;
-  window.__fztvHomeRankingPolish = true;
+  if (window.__fztvHomeRankingPolishV3) return;
+  window.__fztvHomeRankingPolishV3 = true;
   const css = document.createElement('style');
-  css.id = 'fztv-home-ranking-polish-css';
+  css.id = 'fztv-home-ranking-polish-v3';
   css.textContent = [
-    '.fztv-home-top-1{border:2px solid #eec35a!important;box-shadow:0 0 0 1px #8b6927,0 0 25px #e3aa392e!important}',
-    '.fztv-home-top-2{border:2px solid #b8c6db!important;box-shadow:0 0 0 1px #6e7f95,0 0 20px #aebdcc30!important}',
-    '.fztv-home-top-3{border:2px solid #c78c69!important;box-shadow:0 0 0 1px #78513c,0 0 20px #ae6e4730!important}',
-    '.fztv-home-top-1,.fztv-home-top-2,.fztv-home-top-3{transition:border-color .2s,box-shadow .2s}'
+    '.fztv-unified-rank-list > .fztv-unified-team:nth-child(1){border:2px solid #f6c659!important;box-shadow:0 0 23px #d8aa3850!important}',
+    '.fztv-unified-rank-list > .fztv-unified-team:nth-child(2){border:2px solid #b7c8e0!important;box-shadow:0 0 20px #b7c8e033!important}',
+    '.fztv-unified-rank-list > .fztv-unified-team:nth-child(3){border:2px solid #c88965!important;box-shadow:0 0 20px #c8896533!important}',
+    '.fztv-igl-crown-live{margin-left:5px;display:inline!important;font-size:14px;vertical-align:middle}'
   ].join('');
   document.head.append(css);
-  const TEAM = {1:'Team Woods',2:'Taykans',3:'Woods Academy'};
-  const decorate = () => {
-    if (!document.body) return;
-    // Match only exact position labels, not statistics or text containing #1.
-    const labels = [...document.querySelectorAll('body *')].filter(el =>
-      el.children.length === 0 && /^#[123]$/.test((el.textContent || '').trim())
-    );
-    for (const [position, teamName] of Object.entries(TEAM)) {
-      const label = labels.find(el => (el.textContent || '').trim() === '#' + position);
-      if (!label) continue;
-      let candidate = null;
-      for (let node = label.parentElement, depth = 0; node && depth < 10; node = node.parentElement, depth++) {
-        const rect = node.getBoundingClientRect();
-        const text = node.textContent || '';
-        if (rect.width < 200 || rect.height < 42 || rect.height > 700 || text.length > 3500) continue;
-        if (!text.includes(teamName) || !text.includes('FZ')) continue;
-        if (Object.keys(TEAM).some(other => other !== position &&
-            text.includes('#' + other + ' '))) continue;
-        candidate = node;
-        // Prefer the narrowest enclosing box of the entire team entry.
-        if (rect.width > 500 && rect.height > 55) break;
-      }
-      if (candidate) candidate.classList.add('fztv-home-top-' + position);
-    }
+  let captainNames = new Set();
+  let busy = false;
+  const apply = () => {
+    busy = false;
+    if (!captainNames.size) return;
+    document.querySelectorAll('.fztv-unified-rank-list .fztv-unified-player > b').forEach(el => {
+      const name=(el.firstChild?.textContent||'').trim().toLowerCase();
+      if (!captainNames.has(name) || el.querySelector('.fztv-igl-crown-live')) return;
+      const crown=document.createElement('span');
+      crown.className='fztv-igl-crown-live';
+      crown.title='Капитан — IGL';
+      crown.textContent=' 👑';
+      el.append(crown);
+    });
   };
-  let queued = false;
-  const schedule = () => {
-    if (queued) return;
-    queued = true;
-    requestAnimationFrame(() => { queued = false; decorate(); });
+  const schedule=()=>{
+    if (busy) return;
+    busy=true;
+    requestAnimationFrame(apply);
   };
-  const observer = new MutationObserver(schedule);
-  observer.observe(document.documentElement, {childList:true, subtree:true});
+  new MutationObserver(schedule).observe(document.documentElement,{childList:true,subtree:true});
   window.addEventListener('hashchange',schedule);
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',schedule,{once:true});
+  const connect = () => {
+    // The legacy index script declares sb in the same global lexical environment.
+    const client = typeof sb !== 'undefined' ? sb : null;
+    if (!client) return;
+    Promise.all([
+      client.from('fztv_team_players').select('nickname,primary_role'),
+      client.from('fztv_legacy_player_profiles').select('player_slug,primary_role'),
+      client.from('fztv_roster_players').select('player_slug,nickname')
+    ]).then(([team,legacy,roster])=>{
+      const names=new Map((roster.data||[]).map(x=>[x.player_slug,String(x.nickname||x.player_slug)]));
+      captainNames=new Set([
+        ...(team.data||[]).filter(p=>String(p.primary_role||'').trim().toUpperCase()==='IGL').map(p=>String(p.nickname).toLowerCase()),
+        ...(legacy.data||[]).filter(p=>String(p.primary_role||'').trim().toUpperCase()==='IGL').map(p=>String(names.get(p.player_slug)||p.player_slug).toLowerCase())
+      ]);
+      schedule();
+    }).catch(console.warn);
+  };
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',connect,{once:true});
+  else connect();
   schedule();
 })();
