@@ -34,11 +34,16 @@ css.textContent=`
 .fzex-search-result:hover{background:#1e2b42}
 .fzex-search-result small{color:#93aacb;margin-left:8px}
 .fzex-empty{padding:15px;color:#9eb2ca}
-.fzex-team-form{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:9px 0 5px}
-.fzex-team-form span{font-weight:900;border-radius:5px;padding:4px 8px;background:#233249;color:#bdd0e9;font-size:11px}
-.fzex-team-form span.win{background:#14543f;color:#7bf0b8}
-.fzex-team-form span.loss{background:#5b2532;color:#ffa7b5}
-.fzex-streak{color:#ffbd72!important;border:1px solid #a46a32!important;background:#432922!important}
+.fztv-unified-summary .fzex-inline-meta{display:flex;align-items:center;justify-content:flex-end;gap:10px;flex:0 1 auto;min-width:0;max-width:55%;margin-left:auto;white-space:nowrap}
+.fzex-team-form{display:flex;align-items:center;gap:3px;flex-wrap:nowrap;margin:0;white-space:nowrap}
+.fzex-team-form .fzex-form-label{font-size:9px;color:#8ba3c3;font-weight:800;letter-spacing:.7px;margin-right:3px}
+.fzex-team-form .fzex-result{display:grid;place-items:center;width:22px;height:22px;padding:0;border-radius:3px;background:#26364b;color:#bdd0e9;font-size:10px;font-weight:900;line-height:1}
+.fzex-team-form .fzex-result.win{background:#167c52;color:#d4ffed}
+.fzex-team-form .fzex-result.loss{background:#803245;color:#ffe2e7}
+.fzex-team-form .fzex-result.draw{background:#45536a;color:#e4ebf6}
+.fztv-unified-summary .fzex-streak{background:#473222;border:1px solid #a7783e;border-radius:4px;color:#f5c37c;padding:5px 7px;font-size:10px;font-weight:900;white-space:nowrap}
+@media(max-width:1000px){.fztv-unified-summary{flex-wrap:wrap}.fztv-unified-summary .fzex-inline-meta{max-width:100%;order:3;margin-left:auto}.fztv-unified-summary .fztv-unified-points{margin-left:auto}}
+@media(max-width:650px){.fztv-unified-summary .fzex-inline-meta{gap:5px;margin:3px 0 0 0;flex-basis:100%;justify-content:flex-end}.fzex-team-form .fzex-form-label{font-size:8px}.fzex-team-form .fzex-result{width:19px;height:19px}.fztv-unified-summary .fzex-streak{font-size:9px}}
 .fzex-match-panels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;margin:15px 0}
 .fzex-box{background:#111b2a;border:1px solid #344962;padding:18px;border-radius:11px;color:#d8e6fa}
 .fzex-box h3{font-size:16px;margin:0 0 13px;color:#f3f7fe}
@@ -93,19 +98,30 @@ function decorateRanking(){
   const history=resultsFor(name).slice(0,5);
   const streak=resultsFor(name).findIndex(m=>m.outcome!=='W');
   const count=streak===-1?resultsFor(name).length:streak;
-  let block=$('.fzex-team-form',card);
-  if(!block){block=el('div','fzex-team-form');anchor.insertAdjacentElement('afterend',block);}
+  // The compact form belongs INSIDE the team header, between team name and FZ points.
+  // Old standalone rows are removed when upgrading the page in an existing tab.
+  card.querySelectorAll(':scope > .fzex-team-form').forEach(node=>node.remove());
+  let meta=$('.fzex-inline-meta',anchor);
+  if(!meta){
+   meta=el('div','fzex-inline-meta');
+   const points=$('.fztv-unified-points',anchor);
+   if(points)anchor.insertBefore(meta,points);
+   else anchor.append(meta);
+  }
   const signature=history.map(h=>h.match.id).join('|')+':'+count;
-  if(block.dataset.signature===signature)return;
-  block.dataset.signature=signature;
-  block.replaceChildren(el('small','', 'ФОРМА · '));
-  if(!history.length)block.append(el('span','','Матчей пока нет'));
+  if(meta.dataset.signature===signature)return;
+  meta.dataset.signature=signature;
+  meta.replaceChildren();
+  const form=el('div','fzex-team-form');
+  form.append(el('span','fzex-form-label','ФОРМА'));
+  if(!history.length)form.append(el('span','fzex-result','—'));
   else history.forEach(item=>{
-   const chip=el('span',item.outcome==='W'?'win':item.outcome==='L'?'loss':'',item.outcome);
+   const chip=el('span','fzex-result '+(item.outcome==='W'?'win':item.outcome==='L'?'loss':'draw'),item.outcome);
    chip.title=item.match.team_a+' — '+item.match.team_b+' · '+format(item.match.starts_at);
-   block.append(chip);
+   form.append(chip);
   });
-  if(count>0)block.append(el('span','fzex-streak','🔥 WIN STREAK ×'+count));
+  meta.append(form);
+  if(count>0)meta.append(el('span','fzex-streak','🔥 WIN STREAK ×'+count));
  });
 }
 function headToHead(m){
