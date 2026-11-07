@@ -80,6 +80,7 @@ export async function mountTeamPlayerEditor({client,container,team,user}){
    swap.onclick=async()=>{swap.disabled=true;status.textContent='Меняем состав…';
     const {error}=await client.rpc('fztv_swap_team_lineup',{p_team_id:team.id,p_first:p.id,p_second:swapSel.value});
     status.textContent=error?'Ошибка: '+error.message:'Состав обновлён';
+    if(!error)window.dispatchEvent(new Event('fztv-lineup-changed'));
     await refresh();
    };
    row.append(swapSel,swap);
@@ -102,10 +103,16 @@ export async function mountTeamPlayerEditor({client,container,team,user}){
   swap.onclick=async()=>{swap.disabled=true;status.textContent='Меняем состав…';
    const {error}=await client.rpc('fztv_swap_team_lineup',{p_team_id:team.id,p_first:p.id,p_second:select.value});
    status.textContent=error?'Ошибка: '+error.message:'Игрок переведён в основу';
+   if(!error)window.dispatchEvent(new Event('fztv-lineup-changed'));
    await refresh();
   };
   row.append(select,swap);
   const edit=el('button','Редактировать');edit.type='button';edit.className='toolbtn';edit.onclick=()=>showEditor(p);row.append(edit);
+  const kick=el('button','Исключить');kick.type='button';kick.className='toolbtn';
+  kick.onclick=async()=>{if(!confirm('Исключить '+p.nickname+' из команды? Профиль и статистика сохранятся.'))return;
+   kick.disabled=true;const {error}=await client.rpc('fztv_kick_player',{p_player_id:p.id});
+   status.textContent=error?'Ошибка: '+error.message:'Игрок исключён из команды';await refresh();
+  };row.append(kick);
   roster.append(row);
  }
  }
@@ -201,6 +208,7 @@ export async function mountTeamPlayerEditor({client,container,team,user}){
      swap.onclick=async()=>{swap.disabled=true;message.textContent='Меняем состав…';
       const result=await client.rpc('fztv_swap_legacy_lineup',{p_team_name:'Team Woods',p_first:p.player_slug,p_second:select.value});
       message.textContent=result.error?'Ошибка: '+result.error.message:'Состав обновлён';
+      if(!result.error)window.dispatchEvent(new Event('fztv-lineup-changed'));
       await refreshLegacy();
      };
      wrap.append(select,swap);
