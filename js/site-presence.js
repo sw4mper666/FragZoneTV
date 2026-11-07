@@ -47,6 +47,25 @@ export function startSitePresence({client}){
         node.textContent='—';
       }
     });
+  // Keep a private, ownership-checked heartbeat for signed-in members.
+  // A member is "online" only if a heartbeat was received recently.
+  let activityTimer;
+  const heartbeat=async()=>{
+    if(document.visibilityState!=='visible')return;
+    try {
+      const {data:{user}}=await client.auth.getUser();
+      if(!user)return;
+      await client.from('fztv_member_activity').upsert({
+        user_id:user.id,last_seen:new Date().toISOString()
+      },{onConflict:'user_id'});
+    } catch(_) { /* presence should not block the rest of the site */ }
+  };
+  heartbeat();
+  activityTimer=window.setInterval(heartbeat,60000);
+  document.addEventListener('visibilitychange',()=>{
+    if(document.visibilityState==='visible')heartbeat();
+  });
+  window.addEventListener('pagehide',()=>window.clearInterval(activityTimer),{once:true});
   document.addEventListener('visibilitychange',track);
   window.addEventListener('pagehide',()=>{
     channel.untrack().catch(()=>{});
