@@ -19,7 +19,7 @@ jobs:
           p=Path('index.html')
           content=p.read_text(encoding='utf-8')
           pattern=r"(\./js/account-community\.js)(?:\?[^'\"\s)]*)?"
-          content,n=re.subn(pattern,lambda m:m.group(1)+'?v=founder-badge-20261107',content)
+          content,n=re.subn(pattern,lambda m:m.group(1)+'?v=founder-premium-20261107-v2',content)
           if n<1:
               raise SystemExit('Account module import not found. Aborting.')
           p.write_text(content,encoding='utf-8')
