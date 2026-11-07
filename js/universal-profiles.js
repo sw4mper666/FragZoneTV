@@ -11,7 +11,7 @@ function statsHtml(rows){
 }
 async function playerPage(client,root,key,tab){
  const [p,r]=await Promise.all([
- client.from('fztv_team_players').select('*,fztv_teams(name,status,owner_id)'),
+ client.from('fztv_team_players').select('*,fztv_teams(name,status)'),
  client.from('fztv_roster_players').select('*')]);
  if(!location.hash.toLowerCase().startsWith('#/player/'+key))return;
  const item=(p.data||[]).find(x=>keyFor(x.id)===key);
@@ -19,9 +19,7 @@ async function playerPage(client,root,key,tab){
  if(!item&&!free){root.innerHTML='<div class="detail-empty">Игрок не найден. <a href="#/players">Все игроки</a></div>';return;}
  const name=item?.nickname||free.nickname,team=item?.fztv_teams?.name||free?.team_name||'Свободный агент',photo=item?.photo_url||free?.photo_url||fallback,slug=item?keyFor(item.id):free.player_slug;
  const [st, standings] = await Promise.all([client.from('fztv_player_match_stats').select('*').eq('player_slug',slug),client.from('fztv_roster_players').select('player_slug,rating').order('rating',{ascending:false})]);
- const ownerId=item?.fztv_teams?.owner_id;
- const captain=ownerId?await client.from('profiles').select('login').eq('id',ownerId).maybeSingle():null;
- const isCaptain=!!(captain?.data?.login && captain.data.login.toLowerCase()===String(name).toLowerCase());
+ const isCaptain=String(item?.primary_role||'').trim().toUpperCase()==='IGL';
  const registered=item?.created_at||free?.created_at;
  const memberSince=registered?new Date(registered).toLocaleDateString('ru-RU',{month:'long',year:'numeric'}):'—';
  const matchRows=st.data||[],wins=matchRows.filter(x=>x.won===true).length;
@@ -49,12 +47,11 @@ async function teamPage(client,root,id){
  const ordered=['Team Woods','Taykans',...listed.map(x=>x.name)].sort((a,b)=>(rp[b.toLowerCase()]||0)-(rp[a.toLowerCase()]||0));
  const rank=Math.max(1,ordered.findIndex(n=>n.toLowerCase()===team.name.toLowerCase())+1),level=tier(rank),roster=players.data||[];
  const currentRp=rp[team.name.toLowerCase()]||0;
- const owner=team.owner_id?await client.from('profiles').select('login').eq('id',team.owner_id).maybeSingle():null;
- const captainLogin=String(owner?.data?.login||'').toLowerCase();
+ const captainLogin='';
  const ages=roster.filter(p=>p.birth_date).map(p=>Math.floor((Date.now()-new Date(p.birth_date).getTime())/31557600000));
  const avg=ages.length?Math.round(ages.reduce((a,b)=>a+b,0)/ages.length):'—';
  const metrics=[['МИРОВОЙ РАНГ','#'+rank],['FZ',String(currentRp)],['ВИНРЕЙТ','0%'],['W–L','0–0'],['ВИНСТРИК','0'],['ПРИЗОВЫЕ','$0'],['ТИТУЛЫ','0'],['ЛУЧШАЯ ПОЗИЦИЯ','#'+rank],['СР. ВОЗРАСТ',avg]];
- const cards=roster.map(p=>'<a class="tw-player" href="#/player/'+keyFor(p.id)+'" style="color:inherit;text-decoration:none"><img src="'+esc(p.photo_url||fallback)+'" alt="'+esc(p.nickname)+'"><b>'+esc(p.nickname)+(captainLogin&&p.nickname.toLowerCase()===captainLogin?' 👑':'')+'</b><small class="tw-role">'+esc(p.primary_role||'Игрок')+'</small></a>').join('');
+ const cards=roster.map(p=>'<a class="tw-player" href="#/player/'+keyFor(p.id)+'" style="color:inherit;text-decoration:none"><img src="'+esc(p.photo_url||fallback)+'" alt="'+esc(p.nickname)+'"><b>'+esc(p.nickname)+(String(p.primary_role||'').trim().toUpperCase()==='IGL'?' 👑':'')+'</b><small class="tw-role">'+esc(p.primary_role||'Игрок')+'</small></a>').join('');
  const facts=[['Рейтинг (FZ)',String(currentRp)],['Позиция','#'+rank],['Тир','TIER '+level],['Лучшая позиция','#'+rank],['Игроков в составе',roster.length],['Средний возраст',avg],['Тренер',team.coach||'—']];
  const logo=team.logo_url?'<img src="'+esc(team.logo_url)+'" alt="'+esc(team.name)+'">':'★';
  root.innerHTML='<div class="crumb"><a href="#/ranking">Рейтинг</a> / '+esc(team.name)+'</div><section class="tw-profile fztv-universal-team"><div class="tw-top"><div class="tw-logo">'+logo+'</div><div class="tw-identity"><div class="tw-meta"><span>'+esc(team.country||'🌐 Международная')+'</span><span class="tw-tier">TIER '+level+'</span></div><h1>'+esc(team.name)+'</h1><span class="tw-tag">'+esc(team.tag)+'</span></div></div><div class="tw-metrics">'+metrics.map(([a,b])=>'<div class="tw-metric"><b>'+esc(b)+'</b><small>'+a+'</small></div>').join('')+'</div><div class="tw-roster">'+(cards||'<p style="padding:20px">Состав пока пуст</p>')+'</div><div class="tw-facts">'+facts.map(([a,b])=>'<div class="tw-fact"><span>'+esc(a)+'</span><b>'+esc(b)+'</b></div>').join('')+'</div></section>';
