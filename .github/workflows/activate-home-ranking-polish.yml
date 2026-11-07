@@ -22,12 +22,12 @@ jobs:
               raise SystemExit('Cannot find closing body tag; no changes made')
           # Explicit independent script: does not rely on optional ES module initialization.
           html=re.sub(r'<script[^>]*src=["\'](?:\./)?js/home-ranking-polish\.js[^"\']*["\'][^>]*></script>\s*', '', html)
-          html=html.replace('</body>', '<script defer src="./js/home-ranking-polish.js?v=20261107-live-2"></script>\n</body>',1)
+          html=html.replace('</body>', '<script defer src="./js/home-ranking-polish.js?v=20261107-live-3"></script>\n</body>',1)
           # Bump existing dynamic imports so older module caches cannot hide changes.
           for module in ['site-presence','universal-profiles','account-community','player-leaderboard']:
-              html=re.sub(r"(\./js/"+module+r"\.js)(?:\?[^'\"\s)]*)?",r"\1?v=20261107-live-2",html)
+              html=re.sub(r"(\./js/"+module+r"\.js)(?:\?[^'\"\s)]*)?",r"\1?v=20261107-live-3",html)
           p.write_text(html,encoding='utf-8')
-          assert 'home-ranking-polish.js?v=20261107-live-2' in p.read_text(encoding='utf-8')
+          assert 'home-ranking-polish.js?v=20261107-live-3' in p.read_text(encoding='utf-8')
           print('Homepage enhancement script connected; HTML bytes:',p.stat().st_size)
           PY
       - name: Commit live index change
