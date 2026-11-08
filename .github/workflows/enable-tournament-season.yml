@@ -1,41 +1,36 @@
-name: Enable 2026-2027 tournament season
+name: Restore original FragZoneTV calendar
 on:
   push:
     branches: [main]
     paths:
-      - 'js/tournament-season-2027.js'
       - '.github/workflows/enable-tournament-season.yml'
+      - 'js/tournament-season-2027.js'
   workflow_dispatch:
 permissions:
   contents: write
 jobs:
-  patch-site:
+  restore:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Safely add seasonal calendar script to index.html
+      - name: Remove replacement tournament calendar without touching original code
         run: |
           python3 - <<'PY'
           from pathlib import Path
           import re
           path=Path('index.html')
-          if not path.exists(): raise SystemExit('Missing index.html')
-          src=path.read_text(encoding='utf-8')
-          tag='<script defer src="./js/tournament-season-2027.js?v=20261108-framed-trophy-v6"></script>'
-          if tag not in src:
-              old=re.compile(r'<script[^>]+src=["\x27](?:\./)?js/tournament-season-2027\.js(?:\?[^"\x27]*)?["\x27][^>]*>\s*</script>',re.I)
-              if old.search(src):
-                  src=old.sub(tag,src,count=1)
-              else:
-                  if not re.search(r'</body\s*>',src,re.I):raise SystemExit('Missing body closing tag')
-                  src=re.sub(r'</body\s*>',lambda m:tag+'\n'+m.group(0),src,count=1,flags=re.I)
-              path.write_text(src,encoding='utf-8')
+          html=path.read_text(encoding='utf-8')
+          original=html
+          html,n=re.subn(r'<script[^>]+src=["\x27](?:\./)?js/tournament-season-2027\.js(?:\?[^"\x27]*)?["\x27][^>]*>\s*</script>\s*','',html,flags=re.I)
+          print('Removed season script tags:',n)
+          if not n and 'tournament-season-2027.js' in html:raise SystemExit('Unexpected calendar reference; abort safely')
+          if html!=original:path.write_text(html,encoding='utf-8')
           PY
-      - name: Commit updated index
+      - name: Commit restoration
         run: |
           if git diff --quiet -- index.html; then exit 0; fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
-          git commit -m "Enable 36 tournament calendar on site"
+          git commit -m "Restore original tournament calendar layout"
           git push
