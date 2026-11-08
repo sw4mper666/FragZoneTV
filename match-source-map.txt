@@ -1,0 +1,32 @@
+index.html len 1683538
+TERM Загрузить матч 1664197 TV</p><button type="button" id="fz-upload-match" class="fz-primary" style="background:#ed2638;color:#fff;border:1px solid #ff5063;border-radius:8px;padding:12px 18px;font-weight:800;cursor:pointer">＋ Загрузить матч</button></div></div><div id="fz-upload-match-anchor" style="margin:12px 0 18px"></div>'+(matchesCache.length?matchesCache.map(m=>'<a style="display:block;color:inherit;text-decoration:none" href="#/match/'+encodeURIComponent(m.id)+'">'+matchCard(m)+'</a>').join(''):'<section class="panel detail-empty">Матчи ещё не опубликованы</section>')} function newsPage(){return `<div class="pag
+js/fztv-finance.js len 13810
+js/team-tournament-workflow.js len 8202
+js/site-presence.js len 6123
+js/fztv-match-overview.js len 8244
+js/tournament-season-2027.js len 16055
+js/player-quick-editor.js len 6019
+js/tournament-registration.js len 6469
+js/fztv-profile-cosmetics.js len 3139
+js/admin-delete-players.js len 6011
+js/match-detail.js len 22803
+TERM match_submissions 17361 };  if(a.name.toLowerCase()==='team woods'&&!a.logo_url)a.logo_url=woodsLogo();  if(b.name.toLowerCase()==='team woods'&&!b.logo_url)b.logo_url=woodsLogo();  const submissions=await client.from('fztv_match_submissions').select('player_stats').eq('published_match_id',id).eq('status','approved').maybeSingle();  const sides=submissions.data?.player_stats||[];  const sideSlugs=code=>new Set(sides.filter(p=>p.side===code).map(p=>p.slug));  const [aPlayers,bPlayers]=await Promise.all([roster(client,a,legacy,stats.filter(x=>sideSlugs('a').has(x.player_slug))),roster(client,b,legacy,stats.filter(x=>si
+js/admin-anticheat.js len 5549
+js/admin-player-trophies.js len 34113
+js/fztv-player-map-averages.js len 5457
+js/team-player-editor.js len 16543
+js/fztv-admin-coins.js len 4367
+js/player-leaderboard.js len 2236
+js/fztv-week-home-archive.js len 5938
+js/account-community.js len 29591
+js/contracts.js len 6867
+js/community-enhancements.js len 20272
+js/fztv-player-of-week.js len 8445
+js/team-owner-edit.js len 7067
+js/fztv-cup-registration-fix.js len 3535
+js/home-ranking-polish.js len 2804
+js/match-submissions.js len 19282
+TERM match_submissions 12124 de,kills,deaths,assists,rounds:0,headshots:0}});    if(new Set(player_stats.map(x=>x.slug)).size!==player_stats.length)throw Error('Дубликат игрока в матче.');    const result=await client.from('fztv_match_submissions').insert({     created_by:user.id,team_a:ta.name,team_b:tb.name,team_a_id:ta.id,team_b_id:tb.id,event_name:event.x.value.trim()||tour.value||'',format:format.value,scheduled:scheduled.checked,     played_at:new Date(date.x.value+'T'+(time.x.value||'12:00')+':00').toISOString(),score_a:scheduled.checked?null:Number(scoreA.x.value),score_b:scheduled.checked?null:Number(scoreB.x.val
+TERM Опубликовать матч 16714 [approve,title] of [[true,'Подтвердить'],[false,'Отклонить']]){     const action=N('button',title);action.type='button';action.className='toolbtn';action.onclick=async()=>{      if(!confirm((approve?'Опубликовать матч и статистику?':'Отклонить матч?')+' '+item.team_a+' — '+item.team_b))return;      action.disabled=true;message.textContent='Сохранение…';      const reply=await client.rpc('fztv_review_match_submission',{p_submission_id:item.id,p_approve:approve});      if(reply.error){message.textContent='Ошибка: '+reply.error.message;action.disabled=false;return}if(typeof loadContent==='functio
+TERM Загрузить матч 6256 'style',styles+uploadStyles);style.id='fz-sub-style';document.head.append(style);}  if(route==='admin')return review(client,root);   const button=root.querySelector('#fz-upload-match')||N('button','＋ Загрузить матч');  button.className='fz-primary';button.id='fz-upload-match';  const overlay=N('div');overlay.className='fz-upload-overlay';overlay.hidden=true;  overlay.setAttribute('role','dialog');overlay.setAttribute('aria-modal','true');overlay.setAttribute('aria-label','Новый матч');  const dialog=N('div');dialog.className='fz-upload-dialog';  const top=N('div');top.className='fz-upload-head
+js/universal-profiles.js len 12041
