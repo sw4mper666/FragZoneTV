@@ -64,28 +64,46 @@
   function ensureTournamentPool(){
     if(!/^#\/tournament(?:\/|$)/i.test(location.hash))return;
     const app=document.querySelector('#app')||document.querySelector('main');
-    if(!app||app.querySelector('[data-fztv-overpass-tournament]'))return;
-    const labels=['Mirage','Dust 2','Cache','Inferno','Ancient','Nuke','Anubis','Overpass'];
-    const colors=['#ad64cf','#c4bc55','#56a6cd','#457bc3','#3f998c','#bd5851','#cb5386','#4b9d78'];
-    const section=document.createElement('section');
-    section.dataset.fztvOverpassTournament='1';
-    section.className='fztv-map-pool-panel';
-    section.innerHTML='<h2>МАП ПУЛ · ДЕЙСТВУЮЩИЙ</h2>'+labels.map((name,i)=>'<div class="fztv-map-pool-row" style="--pool-color:'+colors[i]+'">'+name+'</div>').join('');
-    const original=[...app.querySelectorAll('h1,h2,h3,strong')].find(e=>/мап\s*пул|map\s*pool/i.test(e.textContent.trim()));
-    if(original){
-      const outer=original.closest('section,article,.panel');
-      if(outer){
-        if(/\bmirage\b/i.test(outer.textContent)&&/\banubis\b/i.test(outer.textContent)){
-          const row=document.createElement('div');row.className='fztv-map-pool-row';row.style.setProperty('--pool-color','#4b9d78');row.textContent='Overpass';
-          if(!/\boverpass\b/i.test(outer.textContent)){outer.append(row);}
-          outer.dataset.fztvOverpassTournament='1';
-          return;
-        }
+    if(!app)return;
+    // Prefer the actual tournament map-pool panel, preserving its existing design.
+    const heading=[...app.querySelectorAll('h1,h2,h3,h4,strong')].find(e=>
+      /мап\s*пул|map\s*pool/i.test((e.textContent||'').trim()) &&
+      (e.textContent||'').length<100);
+    let panel=heading?.closest('section,.panel,article');
+    if(panel && panel===app)panel=null;
+    if(panel && /\bmirage\b/i.test(panel.textContent) && /\banubis\b/i.test(panel.textContent)){
+      // Ensure the eighth map exists only once.
+      if(!/\boverpass\b/i.test(panel.textContent)){
+        const bars=[...panel.querySelectorAll('div,li')].filter(e=>
+          e.children.length===0 && /^anubis$/i.test((e.textContent||'').trim()));
+        const last=bars[bars.length-1];
+        const row=document.createElement('div');
+        row.className=last?.className||'fztv-map-pool-row';
+        row.textContent='Overpass';
+        row.style.background='#488a6c';
+        if(last)last.insertAdjacentElement('afterend',row);
+        else panel.append(row);
       }
+      // Move the whole original panel AFTER the tournament's other content.
+      if(panel.parentElement===app && app.lastElementChild!==panel)app.append(panel);
+      else if(panel.parentElement && panel.parentElement!==app){
+        const parent=panel.parentElement;
+        if(parent.lastElementChild!==panel)parent.append(panel);
+      }
+      return;
     }
-    const title=app.querySelector('.page-title');
-    if(title)title.insertAdjacentElement('afterend',section);
-    else app.prepend(section);
+    // Fallback for a tournament template with no pre-existing map pool.
+    let section=app.querySelector('[data-fztv-overpass-tournament]');
+    if(!section){
+      const labels=['Mirage','Dust 2','Cache','Inferno','Ancient','Nuke','Anubis','Overpass'];
+      const colors=['#ad64cf','#c4bc55','#56a6cd','#457bc3','#3f998c','#bd5851','#cb5386','#4b9d78'];
+      section=document.createElement('section');
+      section.dataset.fztvOverpassTournament='1';
+      section.className='fztv-map-pool-panel';
+      section.innerHTML='<h2>МАП ПУЛ · ДЕЙСТВУЮЩИЙ</h2>'+labels.map((name,i)=>
+        '<div class="fztv-map-pool-row" style="--pool-color:'+colors[i]+'">'+name+'</div>').join('');
+    }
+    if(app.lastElementChild!==section)app.append(section);
   }
   function improveMapEntry(){
     document.querySelectorAll('textarea[name="maps"],textarea[placeholder*="Mirage"]').forEach(t=>{
