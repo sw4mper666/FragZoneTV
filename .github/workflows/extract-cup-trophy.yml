@@ -1,0 +1,32 @@
+name: Restore FZTV Cup trophy image
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/extract-cup-trophy.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  export-banner:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Export original FZTV CUP artwork from index CSS
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import base64,re
+          s=Path('index.html').read_text(encoding='utf-8')
+          m=re.search(r'\.fztv-banner\{[^}]*?url\(["\x27]?(data:image/png;base64,([A-Za-z0-9+/=]+))',s,re.S)
+          if not m: raise SystemExit('Original cup banner image missing; nothing modified')
+          out=Path('assets/tournaments/fztv-cup-original.png')
+          out.parent.mkdir(parents=True,exist_ok=True)
+          out.write_bytes(base64.b64decode(m.group(2)))
+          print(out,len(out.read_bytes()))
+          PY
+      - name: Commit original trophy artwork
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/tournaments/fztv-cup-original.png
+          git diff --cached --quiet || (git commit -m "Restore authentic FZTV CUP trophy artwork from site banner" && git push)
