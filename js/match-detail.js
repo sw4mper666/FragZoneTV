@@ -39,25 +39,30 @@ function table(players,statRows){
   const vals=st?[st.kills,st.deaths,st.assists,rating(st.kills,st.deaths,st.assists)]:['—','—','—','—'];
   return '<tr><td><div class="fz-player">'+(p.photo?'<img src="'+esc(p.photo)+'" alt="">':'')+esc(p.name)+'</div></td>'+vals.map((x,i)=>'<td'+(i===3?' class="fz-fztvr"':'')+'>'+esc(x)+'</td>').join('')+'</tr>';
  }).join('');
- return '<div class="fz-stats-overflow"><table class="fz-stats-table"><thead><tr><th>ИГРОК</th><th>K</th><th>D</th><th>A</th><th>FZTVR</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+(statRows.some(x=>players.some(p=>p.slug===x.player_slug))?'':'<p class="fz-no-stats">Для этих игроков K/D/A не внесены. Показатели появятся после публикации статистики.</p>');
+ return '<div class="fz-stats-overflow"><table class="fz-stats-table"><thead><tr><th>ИГРОК</th><th>K</th><th>D</th><th>A</th><th>FZTVR</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
 }
 async function roster(client,team,legacy,stats){
+ // Show only first-team players (lineup positions 1-5); bench stays out of match stats.
  const players=[];
  if(team.id){
-  const r=await client.from('fztv_team_players').select('id,nickname,photo_url').eq('team_id',team.id);
+  const r=await client.from('fztv_team_players')
+    .select('id,nickname,photo_url,lineup_position').eq('team_id',team.id)
+    .gte('lineup_position',1).lte('lineup_position',5)
+    .order('lineup_position',{ascending:true});
   if(r.error)console.warn('Match roster:',r.error);
-  for(const p of r.data||[])players.push({slug:'team_'+p.id.replace(/-/g,''),name:p.nickname,photo:p.photo_url});
+  for(const p of r.data||[]){
+   if(players.length>=5)break;
+   players.push({slug:'team_'+p.id.replace(/-/g,''),name:p.nickname,photo:p.photo_url});
+  }
  }
- for(const p of legacy.filter(x=>(x.team_name||'').toLowerCase()===team.name.toLowerCase())){
-  if(!players.some(x=>x.slug===p.player_slug))players.push({slug:p.player_slug,name:p.nickname,photo:p.photo_url||((team.name.toLowerCase()==='team woods'&&window.fztvWoodsPhoto)?window.fztvWoodsPhoto(p.player_slug):null)});
+ for(const p of legacy
+   .filter(x=>(x.team_name||'').toLowerCase()===team.name.toLowerCase() && Number(x.lineup_position)>=1 && Number(x.lineup_position)<=5)
+   .sort((a,b)=>Number(a.lineup_position)-Number(b.lineup_position))){
+  if(players.length>=5)break;
+  if(!players.some(x=>x.slug===p.player_slug))
+   players.push({slug:p.player_slug,name:p.nickname,photo:p.photo_url||((team.name.toLowerCase()==='team woods'&&window.fztvWoodsPhoto)?window.fztvWoodsPhoto(p.player_slug):null)});
  }
- // Historical match participants remain visible after team changes.
- for(const st of stats){
-  if(players.some(x=>x.slug===st.player_slug))continue;
-  const prev=legacy.find(x=>x.player_slug===st.player_slug);
-  players.push({slug:st.player_slug,name:prev?.nickname||st.player_slug,photo:prev?.photo_url||((team.name.toLowerCase()==='team woods'&&window.fztvWoodsPhoto)?window.fztvWoodsPhoto(st.player_slug):null)});
- }
- return players;
+ return players.slice(0,5);
 }
 export async function mount({client,root,id}){
  if(!client||!root||!id)return;
@@ -70,7 +75,7 @@ export async function mount({client,root,id}){
   client.from('fztv_match_maps').select('*').eq('match_id',id).order('map_order'),
   client.from('fztv_teams').select('id,name,country,logo_url').eq('status','approved'),
   client.from('fztv_player_match_stats').select('player_slug,kills,deaths,assists,won').eq('match_id',id),
-  client.from('fztv_roster_players').select('player_slug,nickname,photo_url,team_name')
+  client.from('fztv_roster_players').select('player_slug,nickname,photo_url,team_name,lineup_position')
  ]);
  if(!location.hash.startsWith('#/match/'+id))return;
  if(!mr.data||mr.error){root.innerHTML='<section class="panel detail-empty">Матч не найден. <a href="#/matches">К списку матчей</a></section>';return;}
