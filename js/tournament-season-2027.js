@@ -1,4 +1,4 @@
-/* FragZoneTV 2026–2027 tournament calendar and admin editor */
+/* FragZoneTV 2026–2027 tournament calendar and admin editor — restored CUP registration */
 (()=>{
 'use strict';
 if(window.__fztvSeason2027)return;window.__fztvSeason2027=true;
