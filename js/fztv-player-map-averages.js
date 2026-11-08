@@ -11,10 +11,10 @@ const num=n=>String(Math.round(Number(n)));
 const ratingLabel=n=>Number(n).toFixed(2);
 const el=(tag,t)=>{const e=document.createElement(tag);if(t!==undefined)e.textContent=t;return e;};
 async function load(){
- const route=location.hash.split('/');if(route[1]!=='player'||route[3]==='stats')return;
+ const route=location.hash.split('/');if(route[1]!=='player')return;
  const root=document.getElementById('app'),client=db(),slug=decodeURIComponent(route[2]||'').toLowerCase();
  if(!root||!client||!slug)return;
- const parent=root.querySelector('.fztv-trophies')||root.querySelector('.fztv-player-profile')||root.querySelector('.tw-profile')||root.querySelector('.detail-card');
+ const parent=root.querySelector('.fztv-trophies')||root.querySelector('.fztv-player-profile')||root.querySelector('.tw-profile')||root.querySelector('.detail-card')||root.querySelector('.fztv-player-card');
  if(!parent||root.querySelector('.fzps-panel'))return;
  const q=await client.from('fztv_player_map_stats').select('map_id,match_id,kills,deaths,assists').eq('player_slug',slug);
  if(q.error){console.warn('Map player stats:',q.error);return;}
@@ -27,6 +27,20 @@ async function load(){
  const totals={kills:0,deaths:0,assists:0},ratings=[];
  for(const r of ordered){totals.kills+=r.kills;totals.deaths+=r.deaths;totals.assists+=r.assists;ratings.push(fztvr(r));}
  const avg=(ratings.reduce((a,b)=>a+b,0)/ratings.length);
+ // The match spans three maps: show average per map in the prominent counters,
+ // not the full BO3 totals (58 kills from one BO3 is not 58 per map).
+ for(const [needle,label,value] of [
+  ['Убийств / матч','Убийств / карту',num(totals.kills/rows.length)],
+  ['Смертей / матч','Смертей / карту',num(totals.deaths/rows.length)],
+  ['Ассистов / матч','Ассистов / карту',num(totals.assists/rows.length)],
+  ['Убийства / матч','Убийства / карту',num(totals.kills/rows.length)],
+  ['Смерти / матч','Смерти / карту',num(totals.deaths/rows.length)],
+  ['Ассисты / матч','Ассисты / карту',num(totals.assists/rows.length)]
+ ]){
+  const stat=[...root.querySelectorAll('.fztv-stat')].find(e=>e.querySelector('small')?.textContent.trim()===needle);
+  if(stat){const number=stat.querySelector('strong'),caption=stat.querySelector('small');if(number)number.textContent=value;if(caption)caption.textContent=label;}
+ }
+
  const panel=el('section');panel.className='fzps-panel';panel.append(el('h3','СТАТИСТИКА ПО КАРТАМ'));
  const summary=el('div');summary.className='fzps-summary';
  const values=[['Средний FZTVR',ratingLabel(avg)],['Карт сыграно',String(rows.length)],['Средние K/D/A',num(totals.kills/rows.length)+' / '+num(totals.deaths/rows.length)+' / '+num(totals.assists/rows.length)],['Общий K/D',num(totals.kills/Math.max(totals.deaths,1))]];
