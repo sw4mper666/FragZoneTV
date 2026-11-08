@@ -1,12 +1,15 @@
 // Live FZTV CUP #1 registration and participant slots.
 export async function mountTournamentRegistration({client,root}){
+ if(!root||!client||root.dataset.fzCupRegistrationMounted==='1')return;
+ root.dataset.fzCupRegistrationMounted='1';
+ root.querySelectorAll('.fztv-tournament-registration').forEach(e=>e.remove());
  const {data:tournaments,error:te}=await client.from('tournaments').select('id,name,status,max_teams,registration_opens_at,starts_at').eq('name','FZTV CUP #1').limit(1);
  if(te||!tournaments?.length)return;
  const tournament=tournaments[0];
  const slots=root.querySelector('.fztv-slots');if(!slots)return;
  if(!root.querySelector('#fztv-square-slots-style')){const style=document.createElement('style');style.id='fztv-square-slots-style';style.textContent=`.fztv-slots{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:12px!important}.fztv-slots .fztv-slot{box-sizing:border-box!important;aspect-ratio:1/1!important;width:100%!important;min-width:0!important;height:auto!important;min-height:0!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:7px!important;text-align:center!important;padding:12px!important;border:1px solid #364961!important;border-radius:10px!important;background:#172338!important;overflow:hidden!important}.fztv-slots .fztv-slot>img{width:56%!important;height:56%!important;max-height:110px!important;object-fit:contain!important;border-radius:8px!important}.fztv-slots .fztv-slot>strong{font-size:clamp(11px,1.3vw,16px)!important;line-height:1.2!important;overflow-wrap:anywhere!important}.fztv-slots .fztv-slot>span{font-size:clamp(28px,4vw,52px)!important;line-height:1!important}.fztv-slots .fztv-slot>small{color:#f5c36b;font-size:11px!important}.fztv-slots .fztv-slot-filled{border-color:#507bb4!important;background:#1c304a!important}@media(max-width:650px){.fztv-slots{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}.fztv-slots .fztv-slot{padding:8px!important}}`;root.append(style);}
  const el=(tag,txt)=>{const e=document.createElement(tag);if(txt!==undefined)e.textContent=txt;return e;};
- root.querySelector('.fztv-tournament-registration')?.remove();const controls=el('div');controls.className='fztv-tournament-registration';
+ root.querySelectorAll('.fztv-tournament-registration').forEach(e=>e.remove());const controls=el('div');controls.className='fztv-tournament-registration';
  const title=el('h3','РЕГИСТРАЦИЯ КОМАНД');controls.append(title);
  const status=el('p');status.setAttribute('role','status');
  const {data:{user}}=await client.auth.getUser();
@@ -39,7 +42,7 @@ export async function mountTournamentRegistration({client,root}){
  if(available.length){const select=el('select');for(const t of available){const option=el('option',t.name);option.value=t.id;select.append(option);}controls.append(select);
  const btn=el('button','Зарегистрировать команду');btn.type='button';btn.className='toolbtn';btn.disabled=!open||teams.length>=capacity;
  if(!open)controls.append(el('p',now<opens?'Регистрация ещё не открыта.':'Регистрация закрыта.'));else controls.append(el('p','Свободных мест: '+Math.max(0,capacity-teams.length)+' из '+capacity+'.'));
- btn.onclick=async()=>{btn.disabled=true;const {error}=await client.rpc('fztv_register_cup_team',{p_team_id:select.value});if(error){status.textContent='Ошибка: '+error.message;btn.disabled=false;}else{status.textContent='Заявка на турнир успешно отправлена и ожидает одобрения.';btn.remove();select.remove();await mountTournamentRegistration({client,root});}};
+ btn.onclick=async()=>{btn.disabled=true;const {error}=await client.rpc('fztv_register_cup_team',{p_team_id:select.value});if(error){status.textContent='Ошибка: '+error.message;btn.disabled=false;}else{status.textContent='Заявка на турнир успешно отправлена и ожидает одобрения.';btn.remove();select.remove();delete root.dataset.fzCupRegistrationMounted;await mountTournamentRegistration({client,root});}};
  controls.append(btn);
  }
  }
