@@ -1,0 +1,37 @@
+name: Inspect CUP runtime wiring
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/cup-runtime-debug.yml']
+permissions:
+  contents: write
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Extract page wiring
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          s=Path('index.html').read_text(encoding='utf-8')
+          terms=["const sb=","let sb=","var sb=","function tournamentDetail(","mountTournamentRegistration","tournament-registration.js","fztv-slots","function render()","addEventListener('hashchange'"]
+          data=[]
+          for term in terms:
+              start=0
+              hits=[]
+              while True:
+                  i=s.find(term,start)
+                  if i<0: break
+                  hits.append(i)
+                  data.append('\nMATCH '+repr(term)+' at '+str(i)+'\n'+s[max(0,i-300):min(len(s),i+4000)])
+                  start=i+len(term)
+                  if len(hits)>=6: break
+          Path('cup-runtime-debug.txt').write_text('\n'.join(data)[:130000],encoding='utf-8')
+          PY
+      - name: Commit
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add cup-runtime-debug.txt
+          git diff --cached --quiet || (git commit -m 'Capture CUP runtime wiring for repair' && git push)
