@@ -20,13 +20,15 @@ jobs:
           import re
           p=Path('index.html')
           s=p.read_text(encoding='utf-8')
-          tag='<script defer src="./js/fztv-player-of-week.js?v=20261108-beta04-week1"></script>'
+          tag='<script defer src="./js/fztv-player-of-week.js?v=20261108-beta04-week2"></script>'
           pat=r'<script[^>]*src=["\x27](?:\./)?js/fztv-player-of-week\.js(?:\?[^"\x27]*)?["\x27][^>]*>\s*</script>'
           if re.search(pat,s,re.I):
               s=re.sub(pat,tag,s,count=1,flags=re.I)
           else:
               if '</body>' not in s:raise SystemExit('Missing closing body; safe abort')
               s=s.replace('</body>',tag+'\n</body>',1)
+          # Refresh the existing admin trophy script so profile-ID corrections load.
+          s=s.replace('./js/admin-player-trophies.js?v=flags-20261106','./js/admin-player-trophies.js?v=20261108-week-achievements')
           p.write_text(s,encoding='utf-8')
           PY
       - name: Publish versioned script
