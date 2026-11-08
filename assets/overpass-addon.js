@@ -7,7 +7,7 @@
   const css=document.createElement('style');
   css.textContent=`
   .fztv-overpass-pool{display:flex!important;align-items:center;justify-content:center;min-height:19px;margin:4px 0;padding:3px 10px;color:#fff!important;font-size:12px;font-weight:800;text-align:center;background:linear-gradient(100deg,#487f64,#4eab92 40%,#235749 70%,#31745c);border:1px solid rgba(255,255,255,.18);border-radius:2px;text-shadow:0 1px 2px #111}
-  .fztv-overpass-image{display:block;width:100%;height:auto;aspect-ratio:956/465;object-fit:cover;border-radius:5px;margin:6px 0}
+  .fztv-map-pool-panel{padding:14px;background:#101824;border:1px solid #334155;border-radius:10px;margin:12px 0 20px}.fztv-map-pool-panel h2{font-weight:900;font-size:15px;margin:0 0 10px}.fztv-map-pool-row{font-size:12px;font-weight:800;text-align:center;padding:5px;margin:4px 0;background:linear-gradient(90deg,color-mix(in srgb,var(--pool-color),#222 20%),var(--pool-color),color-mix(in srgb,var(--pool-color),#222 20%));color:white;text-shadow:0 1px 3px #000}.fztv-overpass-image{display:block;width:100%;height:auto;aspect-ratio:956/465;object-fit:cover;border-radius:5px;margin:6px 0}
   `;document.head.appendChild(css);
   function leaf(el){return el && el.children.length===0 && (el.textContent||'').trim();}
   function addToSelects(root){
@@ -59,8 +59,45 @@
       e.insertAdjacentElement('afterend',im);
     });
   }
+
+  function ensureTournamentPool(){
+    if(!/^#\/tournament(?:\/|$)/i.test(location.hash))return;
+    const app=document.querySelector('#app')||document.querySelector('main');
+    if(!app||app.querySelector('[data-fztv-overpass-tournament]'))return;
+    const labels=['Mirage','Dust 2','Cache','Inferno','Ancient','Nuke','Anubis','Overpass'];
+    const colors=['#ad64cf','#c4bc55','#56a6cd','#457bc3','#3f998c','#bd5851','#cb5386','#4b9d78'];
+    const section=document.createElement('section');
+    section.dataset.fztvOverpassTournament='1';
+    section.className='fztv-map-pool-panel';
+    section.innerHTML='<h2>МАП ПУЛ · ДЕЙСТВУЮЩИЙ</h2>'+labels.map((name,i)=>'<div class="fztv-map-pool-row" style="--pool-color:'+colors[i]+'">'+name+'</div>').join('');
+    const original=[...app.querySelectorAll('h1,h2,h3,strong')].find(e=>/мап\s*пул|map\s*pool/i.test(e.textContent.trim()));
+    if(original){
+      const outer=original.closest('section,article,.panel');
+      if(outer){
+        if(/\bmirage\b/i.test(outer.textContent)&&/\banubis\b/i.test(outer.textContent)){
+          const row=document.createElement('div');row.className='fztv-map-pool-row';row.style.setProperty('--pool-color','#4b9d78');row.textContent='Overpass';
+          if(!/\boverpass\b/i.test(outer.textContent)){outer.append(row);}
+          outer.dataset.fztvOverpassTournament='1';
+          return;
+        }
+      }
+    }
+    const title=app.querySelector('.page-title');
+    if(title)title.insertAdjacentElement('afterend',section);
+    else app.prepend(section);
+  }
+  function improveMapEntry(){
+    document.querySelectorAll('textarea[name="maps"],textarea[placeholder*="Mirage"]').forEach(t=>{
+      if(t.dataset.fztvOverpassHint)return;
+      t.dataset.fztvOverpassHint='1';
+      t.placeholder=(t.placeholder||'Mirage,13,9')+'\nOverpass,13,9';
+      const label=t.closest('label');
+      if(label){const text=label.firstChild;if(text&&text.nodeType===3)text.textContent=text.textContent.replace('Mirage,13,9','Mirage,13,9 / Overpass,13,9');}
+    });
+  }
+
   let busy=false;
-  const run=()=>{if(busy)return;busy=true;requestAnimationFrame(()=>{busy=false;addToSelects(document);addPool(document);addMatchImages(document);});};
+  const run=()=>{if(busy)return;busy=true;requestAnimationFrame(()=>{busy=false;addToSelects(document);addPool(document);addMatchImages(document);ensureTournamentPool();improveMapEntry();});};
   new MutationObserver(run).observe(document.documentElement,{childList:true,subtree:true});
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run);else run();
 })();
