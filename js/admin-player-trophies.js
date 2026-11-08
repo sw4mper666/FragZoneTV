@@ -2,7 +2,7 @@
 (()=>{
  const legacy=['sw4mper','loytaber','skrizzi','fladar','bosskpec'];
  const $=(tag,text)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;return e;};
- const slugOf=p=>p.id?'team:'+p.id:p.nickname.toLowerCase();
+ const slugOf=p=>p.id?'team_'+p.id.replace(/-/g,''):p.nickname.toLowerCase();
  const fields=[['first_name','Имя'],['last_name','Фамилия'],['country','Страна'],['flag_background_url','Флаг на фоне (HTTPS-ссылка)'],['primary_role','Основная роль'],['secondary_role','Дополнительная роль'],['steam_url','Steam'],['telegram','Telegram'],['discord','Discord'],['birth_date','Дата рождения'],['faceit_level','FACEIT уровень'],['prize_usd','Призовые ($)']];
  async function mount(){
   if(typeof sb==='undefined')return;
