@@ -24,9 +24,14 @@ jobs:
           path=Path('index.html')
           if not path.exists(): raise SystemExit('index.html missing - aborting safely')
           html=path.read_text(encoding='utf-8')
-          snippet='<script defer src="assets/overpass-addon.js"></script>'
+          snippet='<script defer src="assets/overpass-addon.js?v=20261108-overpass-fix"></script>'
+          previous='<script defer src="assets/overpass-addon.js"></script>'
           if snippet in html:
               print('Overpass already enabled')
+          elif previous in html:
+              html=html.replace(previous,snippet)
+              path.write_text(html,encoding='utf-8')
+              print('Overpass asset cache refreshed')
           else:
               if not re.search(r'</body\s*>',html,re.I):
                   raise SystemExit('No closing body tag - aborting safely')
