@@ -49,7 +49,7 @@ function draw(container){
  const info=make('div'),link=make('a',w.player.name);link.href='#/player/'+encodeURIComponent(w.player_slug);
  link.onclick=e=>e.stopPropagation();info.append(link);
  info.append(make('small',w.player.team||'Игрок недели'));name.append(info);container.append(name);
- if(w.stats)container.append(Object.assign(make('div','K/D: '+(w.stats.k/Math.max(w.stats.d,1)).toFixed(2)+' · '+w.stats.k+'/'+w.stats.d+'/'+w.stats.a),{className:'fzw-number'}));
+ if(w.stats)container.append(Object.assign(make('div','K/D: '+String(Math.round(w.stats.k/Math.max(w.stats.d,1)))+' · '+w.stats.k+'/'+w.stats.d+'/'+w.stats.a),{className:'fzw-number'}));
 }
 async function mount(){
  const root=document.querySelector('#app');if(!root||!db())return;
