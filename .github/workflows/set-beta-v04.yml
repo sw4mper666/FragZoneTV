@@ -1,0 +1,40 @@
+name: Set beta v0.4 site version
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/set-beta-v04.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  update-version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Update visible beta version in existing website
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path('index.html')
+          old=p.read_text(encoding='utf-8')
+          new=old.replace('beta v.0.3','beta v.0.4')
+          new=new.replace('<span class="site-version-number">v.0.3</span>', '<span class="site-version-number">v.0.4</span>')
+          if new==old:
+              if 'beta v.0.4' in old and 'site-version-number">v.0.4' in old:
+                  print('Version already beta v.0.4')
+              else:
+                  raise SystemExit('Previous version markup not found; no changes made')
+          else:
+              p.write_text(new,encoding='utf-8')
+              print('Updated beta version v.0.3 -> v.0.4')
+          PY
+      - name: Commit version bump
+        run: |
+          if git diff --quiet -- index.html; then exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Bump FragZoneTV website to beta v.0.4"
+          git push
