@@ -79,7 +79,7 @@ export async function mount({client,root,id}){
   client.from('fztv_site_matches').select('*').eq('id',id).maybeSingle(),
   client.from('fztv_match_maps').select('*').eq('match_id',id).order('map_order'),
   client.from('fztv_teams').select('id,name,country,logo_url').eq('status','approved'),
-  client.from('fztv_player_match_stats').select('player_slug,kills,deaths,assists,won').eq('match_id',id),
+  client.from('fztv_player_match_stats').select('player_slug,kills,deaths,assists,side,won').eq('match_id',id),
   client.from('fztv_roster_players').select('player_slug,nickname,photo_url,team_name,lineup_position'),
   client.from('fztv_player_map_stats').select('map_id,player_slug,kills,deaths,assists').eq('match_id',id)
  ]);
@@ -96,7 +96,7 @@ export async function mount({client,root,id}){
  if(b.name.toLowerCase()==='team woods'&&!b.logo_url)b.logo_url=woodsLogo();
  const submissions=await client.from('fztv_match_submissions').select('player_stats').eq('published_match_id',id).eq('status','approved').maybeSingle();
  const sides=submissions.data?.player_stats||[];
- const sideSlugs=code=>new Set(sides.filter(p=>p.side===code).map(p=>p.slug));
+ const sideSlugs=code=>new Set([...sides.filter(p=>p.side===code).map(p=>p.slug),...stats.filter(p=>p.side===code).map(p=>p.player_slug)]);
  const [aPlayers,bPlayers]=await Promise.all([roster(client,a,legacy,stats.filter(x=>sideSlugs('a').has(x.player_slug))),roster(client,b,legacy,stats.filter(x=>sideSlugs('b').has(x.player_slug)))]);
  if(!location.hash.startsWith('#/match/'+id))return;
  const result=String(m.result_overall||'').match(/(\d+)\s*[:–-]\s*(\d+)/);
@@ -125,6 +125,13 @@ export async function mount({client,root,id}){
  const best=top?'<div class="fz-best"><div><small>ИГРОК МАТЧА</small><h3>'+esc([...aPlayers,...bPlayers].find(x=>x.slug===top.player_slug)?.name||top.player_slug)+'</h3><span>'+esc(top.kills)+' / '+esc(top.deaths)+' / '+esc(top.assists)+'</span></div><strong>'+Number(avgRatings.get(top.player_slug)??rating(top.kills,top.deaths,top.assists)).toFixed(2)+' FZTVR</strong></div>':'';
  if(!document.getElementById('fz-permap-css')){const extra=document.createElement('style');extra.id='fz-permap-css';extra.textContent='.fz-single-map-stats{padding:12px 15px;border-top:1px solid #344760}.fz-single-map-stats h3{margin:2px 0 12px;font-size:18px;color:#e9f4ff}.fz-map-rating-note{padding:0 18px;color:#9fb6d0;font-size:12px}.fz-map-perplayer{margin-top:18px}';document.head.append(extra);}
  root.innerHTML='<div class="fz-new-match"><div class="fz-detail-crumb"><a href="#/matches">Матчи</a> / '+esc(m.title||m.team_a+' — '+m.team_b)+'</div>'+hero+mapSection+statSection+perMapSection+best+'</div>';
+ const demoBar=document.createElement('div');demoBar.style.cssText='display:flex;gap:12px;align-items:center;padding:14px 18px;margin:10px 0 18px;background:#152339;border:1px solid #364c69;border-radius:9px';
+ const demoTitle=document.createElement('strong');demoTitle.textContent='Демозапись матча';demoBar.append(demoTitle);
+ if(m.demo_path){
+   const demo=document.createElement('a');demo.textContent='Скачать демку';demo.href=client.storage.from('fztv-match-demos').getPublicUrl(m.demo_path).data.publicUrl;
+   demo.download='match-demo';demo.target='_blank';demo.rel='noopener';demo.style.cssText='margin-left:auto;background:#213c5b;padding:9px 14px;border:1px solid #4d759b;border-radius:8px;color:#fff;text-decoration:none;font-weight:800';demoBar.append(demo);
+ }else{const missing=document.createElement('small');missing.textContent='Демка пока не загружена';missing.style.color='#9cb4d4';demoBar.append(missing);}
+ root.querySelector('.fz-match-hero')?.insertAdjacentElement('afterend',demoBar);
  const share=root.querySelector('#fz-share');
  if(share)share.onclick=async()=>{try{if(navigator.share)await navigator.share({title:m.team_a+' — '+m.team_b,url:location.href});else if(navigator.clipboard){await navigator.clipboard.writeText(location.href);share.textContent='Ссылка скопирована';}else window.prompt('Ссылка на матч',location.href)}catch(err){if(err.name!=='AbortError')window.prompt('Ссылка на матч',location.href)}};
 }
