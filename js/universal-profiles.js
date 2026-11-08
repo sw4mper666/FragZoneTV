@@ -6,7 +6,7 @@ const fallback='data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.
 function statsHtml(rows){
  const sum=k=>rows.reduce((n,r)=>n+Number(r[k]||0),0),m=rows.length,k=sum('kills'),d=sum('deaths');
  const fztvr=m?((sum('kills')+0.5*sum('assists'))/Math.max(1,sum('deaths'))).toFixed(2):'—';
- const vals=[['FZTVR',fztvr],['Матчи',m||'—'],['K/D',m?(d?Math.round(k/d):k?'∞':0):'—'],['Винрейт',m?Math.round(rows.filter(x=>x.won===true).length/m*100)+'%':'—'],['Убийства',m?k:'—'],['Смерти',m?d:'—'],['Ассисты',m?sum('assists'):'—'],['Хедшоты',m?sum('headshots'):'—']];
+ const vals=[['FZTVR',fztvr],['Матчи',m||'—'],['K/D',m?(d?Math.round(k/d):k?'∞':0):'—'],['Винрейт',m?Math.round(rows.filter(x=>x.won===true).length/m*100)+'%':'—'],['Убийства / матч',m?Math.round(k/m):'—'],['Смерти / матч',m?Math.round(d/m):'—'],['Ассисты / матч',m?Math.round(sum('assists')/m):'—'],['Хедшоты / матч',m?Math.round(sum('headshots')/m):'—']];
  return '<div class="fztv-stat-grid">'+vals.map(([a,b])=>'<div class="fztv-stat"><strong>'+esc(b)+'</strong><small>'+a+'</small></div>').join('')+'</div>'+(m?'':'<div class="fztv-stat-empty">Статистика появится после внесения результатов матчей.</div>');
 }
 async function playerPage(client,root,key,tab){
