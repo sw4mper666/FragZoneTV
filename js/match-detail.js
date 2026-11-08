@@ -41,7 +41,7 @@ function table(players,statRows,avgRatings=null){
   return {p,st,raw,i};
  }).sort((a,b)=>b.raw-a.raw||a.i-b.i);
  const rows=ordered.map(({p,st,raw})=>{
-  const vals=st?[Math.round(Number(st.kills)),Math.round(Number(st.deaths)),Math.round(Number(st.assists)),Math.round(raw)]:['—','—','—','—'];
+  const vals=st?[Math.round(Number(st.kills)),Math.round(Number(st.deaths)),Math.round(Number(st.assists)),raw.toFixed(2)]:['—','—','—','—'];
   return '<tr><td><div class="fz-player">'+(p.photo?'<img src="'+esc(p.photo)+'" alt="">':'')+esc(p.name)+'</div></td>'+vals.map((x,i)=>'<td'+(i===3?' class="fz-fztvr"':'')+'>'+esc(x)+'</td>').join('')+'</tr>';
  }).join('');
  return '<div class="fz-stats-overflow"><table class="fz-stats-table"><thead><tr><th>ИГРОК</th><th>K</th><th>D</th><th>A</th><th>FZTVR ↓</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
@@ -122,7 +122,7 @@ export async function mount({client,root,id}){
   return '<article class="fz-single-map-stats"><h3>'+esc(map.map_name)+' · '+esc(map.score_a)+' : '+esc(map.score_b)+'</h3><div class="fz-match-stat-grid"><div class="fz-match-stat-team"><div class="fz-team-header"><span>'+esc(m.team_a)+'</span><span>FZTVR карты</span></div>'+table(aPlayers,left)+'</div><div class="fz-match-stat-team"><div class="fz-team-header"><span>'+esc(m.team_b)+'</span><span>FZTVR карты</span></div>'+table(bPlayers,right)+'</div></div></article>';
  }).join('')+'</section>':'';
  const top=stats.length?stats.slice().sort((x,y)=>Number(avgRatings.get(y.player_slug)||rating(y.kills,y.deaths,y.assists))-Number(avgRatings.get(x.player_slug)||rating(x.kills,x.deaths,x.assists)))[0]:null;
- const best=top?'<div class="fz-best"><div><small>ИГРОК МАТЧА</small><h3>'+esc([...aPlayers,...bPlayers].find(x=>x.slug===top.player_slug)?.name||top.player_slug)+'</h3><span>'+esc(top.kills)+' / '+esc(top.deaths)+' / '+esc(top.assists)+'</span></div><strong>'+Math.round(avgRatings.get(top.player_slug)??rating(top.kills,top.deaths,top.assists))+' FZTVR</strong></div>':'';
+ const best=top?'<div class="fz-best"><div><small>ИГРОК МАТЧА</small><h3>'+esc([...aPlayers,...bPlayers].find(x=>x.slug===top.player_slug)?.name||top.player_slug)+'</h3><span>'+esc(top.kills)+' / '+esc(top.deaths)+' / '+esc(top.assists)+'</span></div><strong>'+Number(avgRatings.get(top.player_slug)??rating(top.kills,top.deaths,top.assists)).toFixed(2)+' FZTVR</strong></div>':'';
  if(!document.getElementById('fz-permap-css')){const extra=document.createElement('style');extra.id='fz-permap-css';extra.textContent='.fz-single-map-stats{padding:12px 15px;border-top:1px solid #344760}.fz-single-map-stats h3{margin:2px 0 12px;font-size:18px;color:#e9f4ff}.fz-map-rating-note{padding:0 18px;color:#9fb6d0;font-size:12px}.fz-map-perplayer{margin-top:18px}';document.head.append(extra);}
  root.innerHTML='<div class="fz-new-match"><div class="fz-detail-crumb"><a href="#/matches">Матчи</a> / '+esc(m.title||m.team_a+' — '+m.team_b)+'</div>'+hero+mapSection+statSection+perMapSection+best+'</div>';
  const share=root.querySelector('#fz-share');
