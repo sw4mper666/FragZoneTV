@@ -36,12 +36,19 @@ jobs:
           import re
           p=Path('index.html')
           html=p.read_text(encoding='utf-8')
-          tag='<script defer src="./js/fztv-cup-registration-fix.js?v=20261108-cup-clean-v3"></script>'
+          tag='<script defer src="./js/fztv-cup-registration-fix.js?v=20261108-cup-single-v4"></script>'
           old=re.compile(r'<script[^>]*src=["\x27](?:\./)?js/fztv-cup-registration-fix\.js(?:\?[^"\x27]*)?["\x27][^>]*>\s*</script>',re.I)
           if old.search(html):html=old.sub(tag,html,count=1)
           else:
             if '</body>' not in html: raise SystemExit('Closing body not found')
             html=html.replace('</body>',tag+'\n</body>',1)
+          # Remove legacy duplicate registration hook from inline renderer.
+          legacy="if(route==='tournament'&&location.hash.toUpperCase().includes('FZTV')){import('./js/tournament-registration.js').then(m=>m.mountTournamentRegistration({client:sb,root:app})).catch(e=>console.warn('Tournament registration:',e));}"
+          if legacy in html:
+            html=html.replace(legacy,'')
+            print('Removed duplicated registration hook')
+          elif "mountTournamentRegistration({client:sb,root:app})" in html:
+            raise SystemExit('Unexpected registration hook format, abort safely')
           p.write_text(html,encoding='utf-8')
           PY
       - name: Commit exact restoration patch
