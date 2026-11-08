@@ -44,7 +44,7 @@ async function admin(root,client){
   }catch(err){status.textContent='Ошибка: '+err.message;}finally{btn.disabled=false;}
  });
 }
-const awardImage='./assets/trophies/fztv-player-of-week.svg';
+const awardImage='./assets/trophies/fztv-player-of-week.svg?v=20261108-user-trophy';
 async function profile(root,client,slug){
  const box=root.querySelector('.fztv-trophies')||[...root.querySelectorAll('h2,h3,h4')].find(e=>e.textContent.trim()==='Трофеи')?.parentElement;
  if(!box||box.dataset.fzpwRendered==='1')return;box.dataset.fzpwRendered='1';
