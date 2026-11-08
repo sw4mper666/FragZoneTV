@@ -25,7 +25,7 @@ const top=node('section','fzse-panel');top.append(hero(t),node('h1','',t.name),n
 const info=node('div','fzse-details');for(const [key,val] of [['Начало',date(t.starts_at)],['Завершение',date(t.ends_at)],['Формат',formats[t.format]||t.format],['Команды',String(t.max_teams||8)],['Статус',t.status==='registration'?'Регистрация':t.status==='finished'?'Завершён':t.status==='in_progress'?'Идёт':'Запланирован']]){const chip=node('div','fzse-chip');chip.append(node('small','',key),node('strong','',val));info.append(chip);}page.append(info);
 if(t.format==='swiss_playoff'){const c=t.stage_config||{},p=node('section','fzse-panel');p.append(node('h2','','ШВЕЙЦАРСКАЯ СИСТЕМА + ПЛЕЙ-ОФФ'),node('p','',String(c.swiss_teams||16)+' команд, '+String(c.swiss_rounds||5)+' швейцарских раундов. Топ-'+String(c.playoff_teams||8)+' выходит в плей-офф. Матчи '+(c.best_of||'BO3')+', гранд-финал '+(c.grand_final||'BO5')+'.'),node('p','fzse-message','Жеребьёвка, пары, сетка и результаты будут добавлены после старта турнира.'));page.append(p);}
 const reg=node('section','fzse-panel');
-if(t.name==='FZTV CUP #1'){
+if(true){
  const slotsTitle=node('h2','','УЧАСТНИКИ (0/'+(t.max_teams||8)+')');
  const infoBox=node('div','info-box');infoBox.append(node('span','','УЧАСТНИКИ '),node('b','','0 / '+(t.max_teams||8)+' команд'));
  const slots=node('div','fztv-slots');
@@ -35,8 +35,8 @@ if(t.name==='FZTV CUP #1'){
  const team=node('a','fzse-link','Управление моей командой →');team.href='#/teams';reg.append(team);
 }
 page.append(reg);root.replaceChildren(page);
-if(t.name==='FZTV CUP #1') {
- import('./tournament-registration.js?v=20261108-restore-cup1').then(m=>m.mountTournamentRegistration({client:db(),root:reg})).catch(err=>{console.error('FZTV CUP registration restore',err);reg.append(node('p','fzse-message','Ошибка загрузки регистрации: '+err.message));});
+if(true) {
+ import('./tournament-registration.js?v=20261108-general-registration-v4').then(m=>m.mountTournamentRegistration({client:db(),root:reg,tournamentId:t.id})).catch(err=>{console.error('FZTV CUP registration restore',err);reg.append(node('p','fzse-message','Ошибка загрузки регистрации: '+err.message));});
 }
 }
 function field(title,name,kind,value,values){const wrapper=node('label','',title),x=node(kind==='select'?'select':kind==='textarea'?'textarea':'input');x.name=name;if(kind==='select'){for(const [key,label] of values){const op=node('option','',label);op.value=key;x.append(op);}x.value=value||'';}else{x.type=kind;x.value=value??'';}wrapper.append(x);return wrapper;}
