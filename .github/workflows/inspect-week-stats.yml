@@ -1,0 +1,31 @@
+name: Inspect weekly home and match interface
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/inspect-week-stats.yml']
+permissions:
+  contents: write
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Extract weekly home widget source
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          s=Path('index.html').read_text(encoding='utf-8')
+          lines=s.splitlines()
+          words=['ИГРОКИ МЕСЯЦА','ИГРОК НЕДЕЛИ','Игрок недели','top-week','player-week','players-of-the','week-player','Игрок месяца','fztv_player_week_awards']
+          hit=[i for i,line in enumerate(lines) if any(t.lower() in line.lower() for t in words)]
+          idx=set()
+          for i in hit:
+              idx.update(range(max(0,i-9),min(len(lines),i+12)))
+          Path('week-stats-debug.txt').write_text('MATCHES='+str(len(hit))+'\n'+'\n'.join(str(i+1)+': '+lines[i][:2400] for i in sorted(idx))[:110000],encoding='utf-8')
+          PY
+      - name: Commit inspection
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add week-stats-debug.txt
+          git diff --cached --quiet || (git commit -m "Inspect home player weekly display hooks" && git push)
