@@ -1,4 +1,4 @@
-/* FragZoneTV: Overpass map-pool and match-preview extension. Published update trigger. */
+/* FragZoneTV: Overpass map-pool and match-preview extension. Bottom pool and first-team patch. */
 (() => {
   'use strict';
   const NAME='Overpass';
