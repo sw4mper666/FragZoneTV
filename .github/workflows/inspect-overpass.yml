@@ -1,0 +1,44 @@
+name: Inspect Overpass integration
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/inspect-overpass.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Collect relevant index references
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path("index.html")
+          lines=p.read_text(encoding="utf-8").splitlines()
+          hit=re.compile(r'(?i)map.pool|мап.пул|overpass|mirage|anubis|cache|route.*tournament|tournament.*route|match.map|map.image|maps/')
+          found=[i for i,l in enumerate(lines) if hit.search(l)]
+          idx=set()
+          for i in found:
+              idx.update(range(max(0,i-2),min(len(lines),i+3)))
+          output=[f"INDEX LINES={len(lines)}; MATCHES={len(found)}"]
+          output.extend(f"{i+1:04}: {lines[i][:1500]}" for i in sorted(idx))
+          for file in Path('js').glob('*.js'):
+              ss=file.read_text(encoding='utf-8',errors='replace').splitlines()
+              hits=[i for i,l in enumerate(ss) if hit.search(l)]
+              if hits:
+                  output.append(f"\nFILE {file}, matches {len(hits)}")
+                  for i in hits[:50]: output.append(f"{i+1}: {ss[i][:1000]}")
+          Path('overpass-debug.txt').write_text('\n'.join(output)[:90000],encoding='utf-8')
+          PY
+      - name: Commit reference snapshot
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add overpass-debug.txt
+          git diff --cached --quiet && exit 0
+          git commit -m "Capture Overpass UI reference points"
+          git push
