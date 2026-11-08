@@ -1,4 +1,4 @@
-/* FragZoneTV: Overpass map-pool and match-preview extension. */
+/* FragZoneTV: Overpass map-pool and match-preview extension. Published update trigger. */
 (() => {
   'use strict';
   const NAME='Overpass';
