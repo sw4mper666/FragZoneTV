@@ -1,0 +1,31 @@
+name: Inspect match source files
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/match-source-map.yml']
+permissions: {contents: write}
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Detect match forms
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          output=[]
+          for path in [Path('index.html'),*Path('js').glob('*.js')]:
+            s=path.read_text(encoding='utf-8',errors='replace')
+            output.append(str(path)+' len '+str(len(s)))
+            for term in ['match_submissions','submitMatch','match-submit','Опубликовать матч','Отправить матч','Загрузить матч']:
+              if term.lower() in s.lower():
+                i=s.lower().index(term.lower())
+                output.append('TERM '+term+' '+str(i)+' '+s[max(0,i-200):i+400].replace('\n',' ')[:600])
+          Path('match-source-map.txt').write_text('\n'.join(output),encoding='utf-8')
+          PY
+      - name: Commit source map
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add match-source-map.txt
+          git diff --cached --quiet || (git commit -m 'Locate match upload source modules' && git push)
