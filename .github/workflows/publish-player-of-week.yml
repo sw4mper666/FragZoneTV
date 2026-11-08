@@ -1,0 +1,39 @@
+name: Publish player-of-week trophy and admin editor
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/publish-player-of-week.yml'
+      - 'js/fztv-player-of-week.js'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Insert module into existing site safely
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          tag='<script defer src="./js/fztv-player-of-week.js?v=20261108-beta04-week1"></script>'
+          pat=r'<script[^>]*src=["\x27](?:\./)?js/fztv-player-of-week\.js(?:\?[^"\x27]*)?["\x27][^>]*>\s*</script>'
+          if re.search(pat,s,re.I):
+              s=re.sub(pat,tag,s,count=1,flags=re.I)
+          else:
+              if '</body>' not in s:raise SystemExit('Missing closing body; safe abort')
+              s=s.replace('</body>',tag+'\n</body>',1)
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Publish versioned script
+        run: |
+          if git diff --quiet -- index.html; then exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Enable Player of the Week trophy and admin controls on site"
+          git push
