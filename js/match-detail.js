@@ -32,11 +32,11 @@ function mapBox(mp,i,m){
  const image=imgMap(mp.map_name);
  return '<article class="fz-map-card">'+(image?'<img src="'+esc(image)+'" loading="lazy" alt="">':'')+'<span class="number">#'+(i+1)+'</span><div class="inside"><h3>'+esc(mp.map_name)+'</h3><strong>'+esc(mp.score_a??'—')+' : '+esc(mp.score_b??'—')+'</strong><small><span>'+esc(m.team_a)+'</span><span>'+esc(m.team_b)+'</span></small></div></article>';
 }
-function table(players,statRows){
+function table(players,statRows,avgRatings=null){
  const bySlug=new Map(statRows.map(x=>[x.player_slug,x]));
  const rows=players.map(p=>{
   const st=bySlug.get(p.slug);
-  const vals=st?[st.kills,st.deaths,st.assists,rating(st.kills,st.deaths,st.assists)]:['—','—','—','—'];
+  const vals=st?[st.kills,st.deaths,st.assists,avgRatings?.get(p.slug)??rating(st.kills,st.deaths,st.assists)]:['—','—','—','—'];
   return '<tr><td><div class="fz-player">'+(p.photo?'<img src="'+esc(p.photo)+'" alt="">':'')+esc(p.name)+'</div></td>'+vals.map((x,i)=>'<td'+(i===3?' class="fz-fztvr"':'')+'>'+esc(x)+'</td>').join('')+'</tr>';
  }).join('');
  return '<div class="fz-stats-overflow"><table class="fz-stats-table"><thead><tr><th>ИГРОК</th><th>K</th><th>D</th><th>A</th><th>FZTVR</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
@@ -70,16 +70,21 @@ export async function mount({client,root,id}){
   const style=document.createElement('style');style.id='fz-match-page-styles';style.textContent=css;document.head.append(style);
  }
  root.innerHTML='<section class="panel detail-empty">Загружаем матч…</section>';
- const [mr,mapr,tr,sr,lr]=await Promise.all([
+ const [mr,mapr,tr,sr,lr,pr]=await Promise.all([
   client.from('fztv_site_matches').select('*').eq('id',id).maybeSingle(),
   client.from('fztv_match_maps').select('*').eq('match_id',id).order('map_order'),
   client.from('fztv_teams').select('id,name,country,logo_url').eq('status','approved'),
   client.from('fztv_player_match_stats').select('player_slug,kills,deaths,assists,won').eq('match_id',id),
-  client.from('fztv_roster_players').select('player_slug,nickname,photo_url,team_name,lineup_position')
+  client.from('fztv_roster_players').select('player_slug,nickname,photo_url,team_name,lineup_position'),
+  client.from('fztv_player_map_stats').select('map_id,player_slug,kills,deaths,assists').eq('match_id',id)
  ]);
  if(!location.hash.startsWith('#/match/'+id))return;
  if(!mr.data||mr.error){root.innerHTML='<section class="panel detail-empty">Матч не найден. <a href="#/matches">К списку матчей</a></section>';return;}
- const m=mr.data,teams=tr.data||[],maps=mapr.data||[],stats=sr.data||[],legacy=lr.data||[];
+ const m=mr.data,teams=tr.data||[],maps=mapr.data||[],stats=sr.data||[],legacy=lr.data||[],perMap=pr.data||[];
+ const avgRatings=new Map();
+ const playerRatings=new Map();
+ for(const p of perMap){const values=playerRatings.get(p.player_slug)||[];values.push(Number(rating(p.kills,p.deaths,p.assists)));playerRatings.set(p.player_slug,values);}
+ for(const [slug,values] of playerRatings)avgRatings.set(slug,(values.reduce((a,b)=>a+b,0)/values.length).toFixed(2));
  const a={...(teams.find(x=>x.name.toLowerCase()===m.team_a.toLowerCase())||{}),name:m.team_a};
  const b={...(teams.find(x=>x.name.toLowerCase()===m.team_b.toLowerCase())||{}),name:m.team_b};
  if(a.name.toLowerCase()==='team woods'&&!a.logo_url)a.logo_url=woodsLogo();
@@ -103,10 +108,18 @@ export async function mount({client,root,id}){
  const matchLabel=m.title||'Товарищеский матч';
  const hero='<section class="fz-match-hero"><div class="fz-faceoff">'+face(a,result?.[1])+'<div class="fz-score-mid"><span class="fz-center-title">'+esc(matchLabel)+'</span><strong class="fz-match-clock">'+esc(timeLabel)+'</strong><span class="fz-center-date">'+esc(dateLabel)+'</span><span class="fz-center-state">'+(m.status==='finished'?'Матч окончен':esc(state))+'</span><span class="fz-series-score">'+score+'</span></div>'+face(b,result?.[2])+'</div><div class="fz-match-bottom"><span>FragZoneTV · Counter-Strike 2</span><button id="fz-share" class="fz-share">Поделиться</button></div></section>';
  const mapSection='<section class="fz-match-maps"><h2 class="fz-title">КАРТЫ МАТЧА</h2><div class="fz-map-strip">'+thumbs+'</div><div class="fz-map-grid">'+(maps.length?maps.map((map,i)=>mapBox(map,i,m)).join(''):'<p class="fz-no-stats">Карты пока не указаны.</p>')+'</div></section>';
- const statSection='<section class="fz-match-stats"><h2 class="fz-title">СТАТИСТИКА ИГРОКОВ</h2><div class="fz-match-stat-grid"><div class="fz-match-stat-team"><div class="fz-team-header"><span>'+esc(m.team_a)+'</span><span>FZTVR</span></div>'+table(aPlayers,stats.filter(x=>sideSlugs('a').has(x.player_slug)))+'</div><div class="fz-match-stat-team"><div class="fz-team-header"><span>'+esc(m.team_b)+'</span><span>FZTVR</span></div>'+table(bPlayers,stats.filter(x=>sideSlugs('b').has(x.player_slug)))+'</div></div></section>';
- const top=stats.length?stats.slice().sort((x,y)=>Number(rating(y.kills,y.deaths,y.assists))-Number(rating(x.kills,x.deaths,x.assists)))[0]:null;
- const best=top?'<div class="fz-best"><div><small>ИГРОК МАТЧА</small><h3>'+esc([...aPlayers,...bPlayers].find(x=>x.slug===top.player_slug)?.name||top.player_slug)+'</h3><span>'+esc(top.kills)+' / '+esc(top.deaths)+' / '+esc(top.assists)+'</span></div><strong>'+rating(top.kills,top.deaths,top.assists)+' FZTVR</strong></div>':'';
- root.innerHTML='<div class="fz-new-match"><div class="fz-detail-crumb"><a href="#/matches">Матчи</a> / '+esc(m.title||m.team_a+' — '+m.team_b)+'</div>'+hero+mapSection+statSection+best+'</div>';
+ const statSection='<section class="fz-match-stats"><h2 class="fz-title">СТАТИСТИКА ИГРОКОВ</h2><div class="fz-match-stat-grid"><div class="fz-match-stat-team"><div class="fz-team-header"><span>'+esc(m.team_a)+'</span><span>FZTVR</span></div>'+table(aPlayers,stats.filter(x=>sideSlugs('a').has(x.player_slug)),avgRatings)+'</div><div class="fz-match-stat-team"><div class="fz-team-header"><span>'+esc(m.team_b)+'</span><span>FZTVR</span></div>'+table(bPlayers,stats.filter(x=>sideSlugs('b').has(x.player_slug)),avgRatings)+'</div></div></section>';
+
+ const perMapSection=perMap.length?'<section class="fz-match-stats fz-map-perplayer"><h2 class="fz-title">СТАТИСТИКА ПО КАРТАМ · FZTVR</h2><p class="fz-map-rating-note">Рейтинг карты = (K + 0.5 × A) / max(D, 1). Средний рейтинг матча — среднее арифметическое рейтингов карт.</p>'+maps.map(map=>{
+  const rows=perMap.filter(x=>x.map_id===map.id),bySlug=new Set(rows.map(x=>x.player_slug));
+  const left=rows.filter(x=>sideSlugs('a').has(x.player_slug));
+  const right=rows.filter(x=>sideSlugs('b').has(x.player_slug));
+  return '<article class="fz-single-map-stats"><h3>'+esc(map.map_name)+' · '+esc(map.score_a)+' : '+esc(map.score_b)+'</h3><div class="fz-match-stat-grid"><div class="fz-match-stat-team"><div class="fz-team-header"><span>'+esc(m.team_a)+'</span><span>FZTVR карты</span></div>'+table(aPlayers,left)+'</div><div class="fz-match-stat-team"><div class="fz-team-header"><span>'+esc(m.team_b)+'</span><span>FZTVR карты</span></div>'+table(bPlayers,right)+'</div></div></article>';
+ }).join('')+'</section>':'';
+ const top=stats.length?stats.slice().sort((x,y)=>Number(avgRatings.get(y.player_slug)||rating(y.kills,y.deaths,y.assists))-Number(avgRatings.get(x.player_slug)||rating(x.kills,x.deaths,x.assists)))[0]:null;
+ const best=top?'<div class="fz-best"><div><small>ИГРОК МАТЧА</small><h3>'+esc([...aPlayers,...bPlayers].find(x=>x.slug===top.player_slug)?.name||top.player_slug)+'</h3><span>'+esc(top.kills)+' / '+esc(top.deaths)+' / '+esc(top.assists)+'</span></div><strong>'+(avgRatings.get(top.player_slug)||rating(top.kills,top.deaths,top.assists))+' FZTVR</strong></div>':'';
+ if(!document.getElementById('fz-permap-css')){const extra=document.createElement('style');extra.id='fz-permap-css';extra.textContent='.fz-single-map-stats{padding:12px 15px;border-top:1px solid #344760}.fz-single-map-stats h3{margin:2px 0 12px;font-size:18px;color:#e9f4ff}.fz-map-rating-note{padding:0 18px;color:#9fb6d0;font-size:12px}.fz-map-perplayer{margin-top:18px}';document.head.append(extra);}
+ root.innerHTML='<div class="fz-new-match"><div class="fz-detail-crumb"><a href="#/matches">Матчи</a> / '+esc(m.title||m.team_a+' — '+m.team_b)+'</div>'+hero+mapSection+statSection+perMapSection+best+'</div>';
  const share=root.querySelector('#fz-share');
  if(share)share.onclick=async()=>{try{if(navigator.share)await navigator.share({title:m.team_a+' — '+m.team_b,url:location.href});else if(navigator.clipboard){await navigator.clipboard.writeText(location.href);share.textContent='Ссылка скопирована';}else window.prompt('Ссылка на матч',location.href)}catch(err){if(err.name!=='AbortError')window.prompt('Ссылка на матч',location.href)}};
 }
