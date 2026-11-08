@@ -36,7 +36,7 @@ jobs:
           import re
           p=Path('index.html')
           html=p.read_text(encoding='utf-8')
-          tag='<script defer src="./js/fztv-cup-registration-fix.js?v=20261108-cup-final-v2"></script>'
+          tag='<script defer src="./js/fztv-cup-registration-fix.js?v=20261108-cup-clean-v3"></script>'
           old=re.compile(r'<script[^>]*src=["\x27](?:\./)?js/fztv-cup-registration-fix\.js(?:\?[^"\x27]*)?["\x27][^>]*>\s*</script>',re.I)
           if old.search(html):html=old.sub(tag,html,count=1)
           else:
