@@ -21,7 +21,7 @@ jobs:
           path=Path('index.html')
           if not path.exists(): raise SystemExit('Missing index.html')
           src=path.read_text(encoding='utf-8')
-          tag='<script defer src="./js/tournament-season-2027.js?v=20261108-season36-v1"></script>'
+          tag='<script defer src="./js/tournament-season-2027.js?v=20261108-cup-registration-restore-v2"></script>'
           if tag not in src:
               old=re.compile(r'<script[^>]+src=["\x27](?:\./)?js/tournament-season-2027\.js(?:\?[^"\x27]*)?["\x27][^>]*>\s*</script>',re.I)
               if old.search(src):
