@@ -1,0 +1,41 @@
+name: Set FragZoneTV beta v.0.5
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/set-beta-v05.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  bump-version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Change visible site version
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          path=Path('index.html')
+          source=path.read_text(encoding='utf-8')
+          result=source.replace('beta v.0.4','beta v.0.5')
+          result=result.replace('Beta v.0.4','Beta v.0.5')
+          result=result.replace('BETA v.0.4','BETA v.0.5')
+          result=result.replace('<span class="site-version-number">v.0.4</span>','<span class="site-version-number">v.0.5</span>')
+          if result==source and 'beta v.0.5' not in source:
+              raise SystemExit('Version beta v.0.4 not found; no website files changed')
+          if result!=source:
+              path.write_text(result,encoding='utf-8')
+              print('FragZoneTV version updated to beta v.0.5')
+          else:
+              print('Already beta v.0.5')
+          PY
+      - name: Commit website version
+        run: |
+          if git diff --quiet -- index.html; then exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Bump FragZoneTV website to beta v.0.5"
+          git push
