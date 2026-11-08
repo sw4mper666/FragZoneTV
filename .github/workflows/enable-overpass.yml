@@ -1,0 +1,44 @@
+name: Enable Overpass on FragZoneTV
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'assets/overpass-addon.js'
+      - 'assets/overpass.svg'
+      - '.github/workflows/enable-overpass.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  enable-overpass:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Add Overpass extension to existing site without replacing it
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          path=Path('index.html')
+          if not path.exists(): raise SystemExit('index.html missing - aborting safely')
+          html=path.read_text(encoding='utf-8')
+          snippet='<script defer src="assets/overpass-addon.js"></script>'
+          if snippet in html:
+              print('Overpass already enabled')
+          else:
+              if not re.search(r'</body\s*>',html,re.I):
+                  raise SystemExit('No closing body tag - aborting safely')
+              html=re.sub(r'</body\s*>',lambda m:snippet+'\n'+m.group(0),html,count=1,flags=re.I)
+              path.write_text(html,encoding='utf-8')
+              print('Overpass extension enabled')
+          PY
+      - name: Commit patched index.html
+        run: |
+          if git diff --quiet -- index.html; then exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Enable Overpass map pool and match preview"
+          git push
