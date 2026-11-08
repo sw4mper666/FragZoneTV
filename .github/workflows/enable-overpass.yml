@@ -42,7 +42,7 @@ jobs:
           # Bust browser cache for the updated main-team match stats module, too.
           import re
           original=html
-          html=re.sub(r'(\\./js/match-detail\\.js)(?:\\?v=[A-Za-z0-9._-]+)?',r'\\1?v=20261108-lineup5',html)
+          html=re.sub(r'(\./js/match-detail\.js)(?:\?v=[A-Za-z0-9._-]+)?',r'\1?v=20261108-lineup5',html)
           if html!=original:path.write_text(html,encoding='utf-8')
           PY
       - name: Commit patched index.html
