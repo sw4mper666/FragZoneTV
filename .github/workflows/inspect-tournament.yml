@@ -1,0 +1,31 @@
+name: Inspect tournament markup
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/inspect-tournament.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Extract tournament section
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          s=Path('index.html').read_text(encoding='utf-8')
+          for token in ['function tournamentDetail','function tournamentCalendar','function matchCard','function adminPage']:
+              i=s.find(token); print(token,i)
+          start=s.find('function tournamentDetail')
+          if start<0: raise SystemExit('not found')
+          result=s[max(0,start-1200):start+16000]
+          Path('overpass-tournament-debug.txt').write_text(result,encoding='utf-8')
+          PY
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add overpass-tournament-debug.txt
+          git diff --cached --quiet || (git commit -m "Snapshot tournament view for Overpass fix" && git push)
