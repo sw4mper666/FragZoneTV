@@ -24,12 +24,13 @@ jobs:
           path=Path('index.html')
           if not path.exists(): raise SystemExit('index.html missing - aborting safely')
           html=path.read_text(encoding='utf-8')
-          snippet='<script defer src="assets/overpass-addon.js?v=20261108-overpass-fix"></script>'
-          previous='<script defer src="assets/overpass-addon.js"></script>'
+          snippet='<script defer src="assets/overpass-addon.js?v=20261108-pool-bottom-v2"></script>'
+          previous='<script defer src="assets/overpass-addon.js?v=20261108-overpass-fix"></script>'
+          oldest='<script defer src="assets/overpass-addon.js"></script>'
           if snippet in html:
               print('Overpass already enabled')
-          elif previous in html:
-              html=html.replace(previous,snippet)
+          elif previous in html or oldest in html:
+              html=html.replace(previous,snippet).replace(oldest,snippet)
               path.write_text(html,encoding='utf-8')
               print('Overpass asset cache refreshed')
           else:
@@ -38,6 +39,11 @@ jobs:
               html=re.sub(r'</body\s*>',lambda m:snippet+'\n'+m.group(0),html,count=1,flags=re.I)
               path.write_text(html,encoding='utf-8')
               print('Overpass extension enabled')
+          # Bust browser cache for the updated main-team match stats module, too.
+          import re
+          original=html
+          html=re.sub(r'(\\./js/match-detail\\.js)(?:\\?v=[A-Za-z0-9._-]+)?',r'\\1?v=20261108-lineup5',html)
+          if html!=original:path.write_text(html,encoding='utf-8')
           PY
       - name: Commit patched index.html
         run: |
