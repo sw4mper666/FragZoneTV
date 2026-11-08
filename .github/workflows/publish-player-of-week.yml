@@ -20,7 +20,7 @@ jobs:
           import re
           p=Path('index.html')
           s=p.read_text(encoding='utf-8')
-          tag='<script defer src="./js/fztv-player-of-week.js?v=20261108-beta04-week2"></script>'
+          tag='<script defer src="./js/fztv-player-of-week.js?v=20261108-beta04-week3"></script>'
           pat=r'<script[^>]*src=["\x27](?:\./)?js/fztv-player-of-week\.js(?:\?[^"\x27]*)?["\x27][^>]*>\s*</script>'
           if re.search(pat,s,re.I):
               s=re.sub(pat,tag,s,count=1,flags=re.I)
