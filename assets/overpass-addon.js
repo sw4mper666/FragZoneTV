@@ -24,6 +24,7 @@
     });
   }
   function addPool(root){
+    if(/^#\/tournament(?:\/|$)/i.test(location.hash))return;
     const titles=[...root.querySelectorAll('h1,h2,h3,h4,h5,div,span,strong')].filter(e=>{
       const s=(e.textContent||'').trim();
       return s.length<110 && /мап\s*пул|map\s*pool/i.test(s) && !e.closest('[data-fztv-overpass]');
