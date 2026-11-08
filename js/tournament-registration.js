@@ -27,19 +27,19 @@ export async function mountTournamentRegistration({client,root}){
  const count=[...root.querySelectorAll('h2,h3,h4')].find(n=>n.textContent.includes('УЧАСТНИКИ'));if(count)count.textContent='УЧАСТНИКИ ('+teams.length+'/'+capacity+')';
  const info=[...root.querySelectorAll('.info-box')].find(x=>x.textContent.includes('УЧАСТНИКИ'));if(info){const b=info.querySelector('b');if(b)b.textContent=teams.length+' / '+capacity+' команд';}
  if(ae)status.textContent='Не удалось загрузить участников: '+ae.message;
- if(!user){controls.append(el('p','Войди в аккаунт, чтобы зарегистрировать команду.'));const a=el('a','Войти');a.href='#/auth';controls.append(a);}
+ if(!user){controls.append(el('p','Войди в аккаунт владельца команды, чтобы подать заявку.'));const a=el('a','Войти');a.href='#/auth';controls.append(a);}
  else{
  const {data:owned,error:oe}=await client.from('fztv_teams').select('id,name').eq('owner_id',user.id).eq('status','approved');
  const {data:mine}=await client.from('fztv_tournament_applications').select('team_id,status').eq('tournament_id',tournament.id).eq('owner_id',user.id);
  const available=(owned||[]).filter(t=>!(mine||[]).some(a=>a.team_id===t.id));
  if(oe)controls.append(el('p','Ошибка загрузки команд: '+oe.message));
- else if(!owned?.length){controls.append(el('p','Для участия нужно создать команду и дождаться одобрения.'));const a=el('a','Создать команду');a.href='#/teams';controls.append(a);}
+ else if(!owned?.length){controls.append(el('p','Для регистрации войди под аккаунтом владельца одобренной команды. Если команда ещё не одобрена — дождись модерации.'));const a=el('a','Создать команду');a.href='#/teams';controls.append(a);}
  else{
  for(const a of mine||[]){const t=owned.find(x=>x.id===a.team_id);if(t)controls.append(el('p',t.name+': '+({pending:'заявка на рассмотрении',approved:'участие подтверждено',rejected:'заявка отклонена'}[a.status]||a.status)));}
  if(available.length){const select=el('select');for(const t of available){const option=el('option',t.name);option.value=t.id;select.append(option);}controls.append(select);
  const btn=el('button','Зарегистрировать команду');btn.type='button';btn.className='toolbtn';btn.disabled=!open||teams.length>=capacity;
- if(!open)controls.append(el('p',now<opens?'Регистрация ещё не открыта.':'Регистрация закрыта.'));
- btn.onclick=async()=>{btn.disabled=true;const {error}=await client.from('fztv_tournament_applications').insert({tournament_id:tournament.id,team_id:select.value,owner_id:user.id,status:'pending'});if(error){status.textContent='Ошибка: '+error.message;btn.disabled=false;}else{status.textContent='Команда зарегистрирована и заняла слот.';btn.remove();select.remove();await mountTournamentRegistration({client,root});}};
+ if(!open)controls.append(el('p',now<opens?'Регистрация ещё не открыта.':'Регистрация закрыта.'));else controls.append(el('p','Свободных мест: '+Math.max(0,capacity-teams.length)+' из '+capacity+'.'));
+ btn.onclick=async()=>{btn.disabled=true;const {error}=await client.rpc('fztv_register_cup_team',{p_team_id:select.value});if(error){status.textContent='Ошибка: '+error.message;btn.disabled=false;}else{status.textContent='Заявка на турнир успешно отправлена и ожидает одобрения.';btn.remove();select.remove();await mountTournamentRegistration({client,root});}};
  controls.append(btn);
  }
  }
