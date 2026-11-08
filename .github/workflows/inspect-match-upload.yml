@@ -1,0 +1,31 @@
+name: Inspect match submission markup
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/inspect-match-upload.yml']
+permissions:
+  contents: write
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Write match snippets
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          s=Path('index.html').read_text(encoding='utf8')
+          terms=['fztv_match_submissions','createMatchSubmission','matchSubmit','match-submit','submitMatch','Матчи на модерации','Отправить матч','Опубликовать матч']
+          parts=[]
+          for term in terms:
+              for m in list(re.finditer(re.escape(term),s,re.I))[:12]:
+                  parts.append(f'\n###### {term}: {m.start()}\n'+s[max(0,m.start()-2300):m.start()+4500])
+          Path('match-upload-inspection.txt').write_text('\n'.join(parts)[:145000],encoding='utf8')
+          PY
+      - name: Commit
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add match-upload-inspection.txt
+          git diff --cached --quiet || (git commit -m 'Inspect match submission handlers' && git push)
