@@ -7,7 +7,7 @@ const css=document.createElement('style');
 css.textContent='.fzps-panel{margin:17px 0;padding:17px;background:#122035;border:1px solid #435773;border-radius:12px;color:#e8f2ff}.fzps-panel h3{margin:0 0 12px}.fzps-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(115px,1fr));gap:9px;margin-bottom:15px}.fzps-stat{border-radius:8px;background:#1b2e47;padding:11px}.fzps-stat strong{font-size:19px;display:block}.fzps-stat span{font-size:11px;color:#acc0df}.fzps-table{width:100%;border-collapse:collapse;min-width:420px}.fzps-table th,.fzps-table td{padding:9px;border-top:1px solid #32445f;text-align:center;font-size:12px}.fzps-overflow{overflow-x:auto}.fzps-note{font-size:12px;color:#9baec9}';
 document.head.append(css);
 const fztvr=(p)=>((Number(p.kills||0)+0.5*Number(p.assists||0))/Math.max(1,Number(p.deaths||0)));
-const num=n=>Number(n).toFixed(2);
+const num=n=>String(Math.round(Number(n)));
 const el=(tag,t)=>{const e=document.createElement(tag);if(t!==undefined)e.textContent=t;return e;};
 async function load(){
  const route=location.hash.split('/');if(route[1]!=='player'||route[3]==='stats')return;
