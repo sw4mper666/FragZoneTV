@@ -77,6 +77,11 @@ function form(client,panel,data,user){
  const tour=sel([['','Не привязан'],...data.tournaments.map(x=>[x.name,x.name])]),tourLabel=N('label','Турнир');tourLabel.append(tour);f.append(tourLabel);
  const event=field('Название турнира / ивента'),date=field('Дата','date'),time=field('Время','time');date.x.required=true;date.x.value=new Date().toISOString().slice(0,10);for(const x of [event,date,time])f.append(x.l);
  const mapLabel=N('label','Карты (по одной строке: Mirage,13,9)'),maps=N('textarea');maps.rows=3;maps.placeholder='Mirage,13,9\nDust2,11,13';mapLabel.className='fz-full';mapLabel.append(maps);f.append(mapLabel);
+ const demoLabel=N('label','Демка матча (.dem, .zip, .gz, до 50 МБ)');demoLabel.className='fz-full';
+ const demoInput=N('input');demoInput.type='file';demoInput.accept='.dem,.zip,.gz,.bz2,.7z';demoInput.required=true;
+ const demoHint=N('small','Демка обязательна для завершённого матча. Запланированный матч можно создать без неё.');demoHint.style.color='#a6bad6';
+ demoLabel.append(demoInput,demoHint);f.append(demoLabel);
+ scheduled.addEventListener('change',()=>{demoInput.required=!scheduled.checked;});
  const lists=N('div');lists.className='fz-full';f.append(lists);
  const explain=N('p','FZTVR = (K + 0,5 × A) / max(D, 1), округление до 2 знаков. Рейтинг и статистика публикуются только после подтверждения администратором.');explain.className='fz-full';explain.style.color='#96abc7';f.append(explain);
  const send=N('button','Отправить на проверку');send.className='fz-primary fz-full';send.type='submit';f.append(send);
@@ -100,11 +105,22 @@ function form(client,panel,data,user){
    const m=maps.value.split(/\n/).map(x=>x.trim()).filter(Boolean).map((line,i)=>{const [name,sa,sb]=line.split(',').map(x=>x.trim());if(!name||!/^\d{1,2}$/.test(sa)||!/^\d{1,2}$/.test(sb))throw Error('Формат карты: Mirage,13,9');return {name,a:Number(sa),b:Number(sb),order:i+1}});
    const player_stats=scheduled.checked?[]:stats.filter(x=>x.check.checked).map(x=>{const [kills,deaths,assists]=x.vals.map(v=>Number(v.value));if(![kills,deaths,assists].every(n=>Number.isInteger(n)&&n>=0&&n<=200))throw Error('K/D/A: целые значения 0–200.');return {slug:x.slug,side:x.side,kills,deaths,assists,rounds:0,headshots:0}});
    if(new Set(player_stats.map(x=>x.slug)).size!==player_stats.length)throw Error('Дубликат игрока в матче.');
+   const file=demoInput.files?.[0]||null;
+   if(!scheduled.checked&&!file)throw Error('Чтобы отправить завершённый матч, прикрепи демку.');
+   if(file&&file.size>50*1024*1024)throw Error('Размер демки превышает 50 МБ. Сожми файл в ZIP.');
+   if(file&&!/\.(dem|zip|gz|bz2|7z)$/i.test(file.name))throw Error('Допустимы файлы .dem, .zip, .gz, .bz2 и .7z.');
+   let demoPath=null;
+   if(file){
+     const ext=file.name.split('.').pop().toLowerCase();
+     demoPath=user.id+'/'+crypto.randomUUID()+'.'+ext;
+     const uploaded=await client.storage.from('fztv-match-demos').upload(demoPath,file,{upsert:false,contentType:'application/octet-stream'});
+     if(uploaded.error)throw Error('Не удалось загрузить демку: '+uploaded.error.message);
+   }
    const result=await client.from('fztv_match_submissions').insert({
     created_by:user.id,team_a:ta.name,team_b:tb.name,team_a_id:ta.id,team_b_id:tb.id,event_name:event.x.value.trim()||tour.value||'',format:format.value,scheduled:scheduled.checked,
-    played_at:new Date(date.x.value+'T'+(time.x.value||'12:00')+':00').toISOString(),score_a:scheduled.checked?null:Number(scoreA.x.value),score_b:scheduled.checked?null:Number(scoreB.x.value),maps:m,player_stats
+    played_at:new Date(date.x.value+'T'+(time.x.value||'12:00')+':00').toISOString(),score_a:scheduled.checked?null:Number(scoreA.x.value),score_b:scheduled.checked?null:Number(scoreB.x.value),maps:m,player_stats,demo_path:demoPath
    }).select('id').single();
-   if(result.error)throw result.error;
+   if(result.error){if(demoPath)await client.storage.from('fztv-match-demos').remove([demoPath]);throw result.error;}
    panel.replaceChildren(N('h2','Матч отправлен'),N('p','Ожидает проверки администратором. До одобрения статистика и результаты не отображаются.'));
   }catch(err){status.textContent='Ошибка: '+err.message}finally{send.disabled=false}
  };
@@ -146,6 +162,7 @@ async function review(client,root){
   list.replaceChildren();if(result.error){list.append(N('p',result.error.message));return}if(!result.data?.length){list.append(N('p','Ожидающих матчей нет.'));return}
   for(const item of result.data){
    const card=N('div');card.className='fz-review';card.append(N('h3',item.team_a+' — '+item.team_b),N('p',(item.event_name||'Товарищеский матч')+' · '+item.format+' · '+new Date(item.played_at).toLocaleString('ru-RU')),N('p',item.scheduled?'Запланирован':'Счёт: '+item.score_a+' : '+item.score_b));
+   if(item.demo_path){const a=N('a','Скачать демку');a.href=client.storage.from('fztv-match-demos').getPublicUrl(item.demo_path).data.publicUrl;a.target='_blank';a.rel='noopener';a.style.color='#64b5ff';card.append(a);}
    if(item.maps?.length)card.append(N('p','Карты: '+item.maps.map(x=>x.name+' '+x.a+':'+x.b).join(' / ')));
    for(const side of ['a','b']){const rows=(item.player_stats||[]).filter(x=>x.side===side);if(rows.length)card.append(N('p',(side==='a'?item.team_a:item.team_b)+': '+rows.map(x=>x.slug+' K'+x.kills+' D'+x.deaths+' A'+x.assists+' FZTVR '+calc(x.kills,x.deaths,x.assists)).join('; ')))}
    const message=N('p');
