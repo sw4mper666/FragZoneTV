@@ -83,7 +83,7 @@ export async function mount({client,root,id}){
  const m=mr.data,teams=tr.data||[],maps=mapr.data||[],stats=sr.data||[],legacy=lr.data||[],perMap=pr.data||[];
  const avgRatings=new Map();
  const playerRatings=new Map();
- for(const p of perMap){const values=playerRatings.get(p.player_slug)||[];values.push(Number(rating(p.kills,p.deaths,p.assists)));playerRatings.set(p.player_slug,values);}
+ for(const p of perMap){const values=playerRatings.get(p.player_slug)||[];values.push((Number(p.kills||0)+0.5*Number(p.assists||0))/Math.max(1,Number(p.deaths||0)));playerRatings.set(p.player_slug,values);}
  for(const [slug,values] of playerRatings)avgRatings.set(slug,(values.reduce((a,b)=>a+b,0)/values.length).toFixed(2));
  const a={...(teams.find(x=>x.name.toLowerCase()===m.team_a.toLowerCase())||{}),name:m.team_a};
  const b={...(teams.find(x=>x.name.toLowerCase()===m.team_b.toLowerCase())||{}),name:m.team_b};
