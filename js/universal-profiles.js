@@ -17,7 +17,7 @@ async function playerPage(client,root,key,tab){
  const item=(p.data||[]).find(x=>keyFor(x.id)===key);
  const free=(r.data||[]).find(x=>x.player_slug===key);
  if(!item&&!free){root.innerHTML='<div class="detail-empty">Игрок не найден. <a href="#/players">Все игроки</a></div>';return;}
- const name=item?.nickname||free.nickname,team=item?.fztv_teams?.name||free?.team_name||'Свободный агент',photo=item?.photo_url||free?.photo_url||(typeof window.fztvWoodsPhoto==='function'?window.fztvWoodsPhoto(slug):null)||fallback,slug=item?keyFor(item.id):free.player_slug;
+ const name=item?.nickname||free.nickname,team=item?.fztv_teams?.name||free?.team_name||'Свободный агент',photo=item?.photo_url||free?.photo_url||(typeof window.fztvWoodsPhoto==='function'?window.fztvWoodsPhoto(item?keyFor(item.id):free.player_slug):null)||fallback,slug=item?keyFor(item.id):free.player_slug;
  const [st, standings] = await Promise.all([client.from('fztv_player_match_stats').select('*').eq('player_slug',slug),client.from('fztv_roster_players').select('player_slug,rating').order('rating',{ascending:false})]);
  const legacyRole=!item?await client.from('fztv_legacy_player_profiles').select('*').eq('player_slug',slug).maybeSingle():null;
  const isCaptain=String(item?.primary_role||legacyRole?.data?.primary_role||'').trim().toUpperCase()==='IGL';
