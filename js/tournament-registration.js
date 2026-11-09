@@ -30,6 +30,13 @@ export async function mountTournamentRegistration({client,root}){
  const count=[...root.querySelectorAll('h2,h3,h4')].find(n=>n.textContent.includes('УЧАСТНИКИ'));if(count)count.textContent='УЧАСТНИКИ ('+teams.length+'/'+capacity+')';
  const info=[...root.querySelectorAll('.info-box')].find(x=>x.textContent.includes('УЧАСТНИКИ'));if(info){const b=info.querySelector('b');if(b)b.textContent=teams.length+' / '+capacity+' команд';}
  if(ae)status.textContent='Не удалось загрузить участников: '+ae.message;
+ if(!open){
+  title.textContent='РЕГИСТРАЦИЯ ЗАКРЫТА';
+  controls.append(el('p','Состав FZTV CUP #1 утверждён. Формат Final Four: 4 команды, 2 полуфинала и финал.'));
+  controls.append(status);
+  slots.insertAdjacentElement('beforebegin',controls);
+  return;
+ }
  if(!user){controls.append(el('p','Войди в аккаунт владельца команды, чтобы подать заявку.'));const a=el('a','Войти');a.href='#/auth';controls.append(a);}
  else{
  const {data:owned,error:oe}=await client.from('fztv_teams').select('id,name').eq('owner_id',user.id).eq('status','approved');
