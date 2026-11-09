@@ -1,0 +1,63 @@
+TERM: function render( POS: 1676718
+dy')).trim()},String(f.get('id')||'')||null);alert('Новость опубликована');location.hash='#/news'}catch(err){document.getElementById('newsMessage').textContent=err.message}};document.getElementById('deleteNews').onclick=async()=>{const id=nf.elements.id.value;if(!id||!confirm('Удалить новость?'))return;const {error}=await sb.from('fztv_news').delete().eq('id',id);if(error)alert(error.message);else{await loadContent();location.hash='#/admin'}}}
+}
+function render(){const route=(location.hash||'#/home').replace(/^#\/?/,'').split('/')[0];let html;if(route==='home')html=home()+`<div class="page-title"><h2>Последние матчи</h2></div>${matchesCache.slice(0,3).map(matchCard).join('')}`;else if(route==='auth')html=authPage();else if(route==='admin')html=adminPage();else if(route==='matches')html=matches();else if(route==='match')html='<div class="page-title"><h1>Матч</h1></div>';else if(route==='news')html=newsPage();else if(route==='member')html='<div id="fztv-member-view" style="min-height:220px">Загрузка профиля…</div>';else if(route==='bank'||route==='market')html='<div id="fztv-finance-root" style="min-height:360px"></div>';else if(route==='ranking')html=home();else if(route==='team-created')html=createdTeamDetail();else if(route==='team')html=location.hash.toLowerCase().includes('/taykans')?taykansDetail():teamDetail();else if(route==='tournaments')html=tournamentCalendar();else if(route==='tournament'){const parts=location.hash.split('/');html=tournamentDetail(decodeURIComponent(parts[2]||'Турнир'),decodeURIComponent(parts[3]||'Дата уточняется'))}else if(route==='teams')html='<div class="page-title"><h1>Команды и турниры</h1></div><section class="panel" style="padding:20px" id="teams-workflow">Загрузка…</section>';else if(route==='players')html=playersPage();else if(route==='player')html=fztvPlayerProfile();else if(route==='rules')html=rulesPage();else if(route==='stats')html=home();else html=home();app.innerHTML=html;enhanceRankingLayout(route);if(route==='bank'||route==='market'){import('./js/fztv-finance.js?v=20261107-fz-market-v1').then(m=>m.mountFinance({client:sb,root:document.getElementById('fztv-finance-root'),route})).catch(e=>{const node=document.getElementById('fztv-finance-root');if(node)node.textContent='Ошибка загрузки банка: '+e.message;console.error(e)});}if(['players','player','admin'].includes(route)){import('./js/contracts.js').then(m=>m.mount({client:sb,root:app,route})).catch(err=>console.warn('Contracts:',err));}if(route==='auth'&&currentUser()){import('./js/account-community.js?v=founder-premium-20261107-v2').then(m=>m.mountAccount({client:sb,root:document.getElementById('fztv-account-dashboard'),user:currentUser(),onUpdated:refreshAuth})).catch(e=>console.error('Account:',e))}if(route==='member'){import('./js/account-community.js?v=founder-premium-20261107-v2').then(m=>m.mountPublicMember({client:sb,root:document.getElementById('fztv-member-view'),id:decodeURIComponent(location.hash.split('/')[2]||'')})).catch(e=>console.error('Member:',e))}if(route==='news'){import('./js/account-community.js?v=founder-premium-20261107-v2').then(m=>m.mountNewsComments({client:sb,root:app,user:currentUser()})).catch(e=>console.error('News comments:',e))}if(route==='match'){import('./js/match-detail.js?v=20261109-unified-profiles-contract-v2').then(m=>m.mount({client:sb,root:app,id:decod
+
+TERM: teamWoodsRoster POS: 1211897
+ide class="stack right"><a class="panel panel-link" href="#/matches"><div class="head"><h2>БЛИЖАЙШИЕ МАТЧИ</h2><small>SCHEDULE ↗</small></div>${empty('◷','Матчей пока что нету','Расписание появится после добавления матчей.')}</a><div class="panel promo"><b>FZ<span>TV</span></b><p>FRAGZONE TV<br>ТВОЙ ИСТОЧНИК НОВОСТЕЙ И СТАТИСТИКИ CS2.</p></div></aside></section>`}
+const teamWoodsPlayers=['sw4mper','Skrizzi','Loytaber','bosskpec','fladar'];
+const teamWoodsRoster=[["sw4mper","[EMBEDDED IMAGE]
+
+TERM: teamWoodsRoster POS: 1610067
+Skpt1nKs1bENDgR5DBHXYdVJa/PX2fM82rdm7+KeLM9FApeCyXTZjztFzkaSvbbgGnznKVCJZ7bjkkU319JxmYfcX5HTRgNFVdKRoWnCp4Jl7HWEtaZkgTPpBc2SEqBZwOOI5SxxiIJgUAbx4gpTYzKPOcs57DvI6HimAZcMHJ8DfbKeJHAuRCYJfCslQxCfML2QvSQZrUlbVkttBKgp8aUxDP2JSacCAMuwnGVKcMYV0mTv6bLHTaEC/FJtd4ciwgPhJx9IXAa44RE8sZ3/u3fKYuS3mKfQb8gWZxltSmXmqMBBPM0zRi3gJhHLr6cJefYcdFG1q9ZjZN4bovNAKPMS7wPIELVH+DLEl/mcUNkcaWZ1KtxEcX7CF7QJIZnAP4/BYyDaFRBOacAAAAASUVORK5CYII="]];
+window.fztvWoodsPhoto=(slug)=>teamWoodsRoster.find(([name])=>name.toLowerCase()===String(slug||'').toLowerCase())?.[1]||null;
+let approvedTeamsCache=[];
+let teamRpCache={};
+let legacyRosterCache=[];
+function getTeamRP(name){return teamRpCache[String(name||'').toLowerCase()]||0;}
+function woodsRosterNow(){return teamWoodsRoster.filter(([name])=>{if(window.fztvRemovedPlayers?.has(name.toLowerCase()))return false;const p=legacyRosterCache.find(x=>x.player_slug===name.toLowerCase());return !p||p.team_name?.toLowerCase()==='team woods';}).map(([name,photo])=>{const p=legacyRosterCache.find(x=>x.player_slug===name.toLowerCase());return [p?.nickname||name,p?.photo_url||photo,name.toLowerCase(),p?.lineup_position||10];}).sort((a,b)=>a[3]-b[3]);}
+async function loadLegacyRoster(){const {data,error}=await sb.from('fztv_roster_players').select('player_slug,nickname,photo_url,age,team_name,lineup_position');if(error){console.warn('Woods roster:',error.message);return;}legacyRosterCache=data||[];if(['home','ranking','team','players','player'].includes((location.hash||'#/home').split('/')[1]))render();}
+async function loadTeamRP(){const {data,error}=await sb.from('fztv_team_rp').select('name,rp');if(error){console.warn('FZ RP:',error.message);return;}teamRpCache=Object.fromEntries((data||[]).map(x=>[x.name.toLowerCase(),Number(x.rp)||0]));if(['home','ranking','team','team-created'].includes((location.hash||'#/home').split('/')[1]))render();}
+
+let approvedRosterCache={};
+const countryFlags={'россия':'🇷🇺','russia':'🇷🇺','ru':'🇷🇺','украина':'🇺🇦','ukraine':'🇺🇦','ua':'🇺🇦','беларусь':'🇧🇾','belarus':'🇧🇾','by':'🇧🇾','казахстан':'🇰🇿','kazakhstan':'🇰🇿','kz':'🇰🇿','швеция':'🇸🇪','sweden':'🇸🇪','se':'🇸🇪','сша':'🇺🇸','usa':'🇺🇸','us':'🇺🇸','польша':'🇵🇱','poland':'🇵🇱','pl':'🇵🇱','германия':'🇩🇪','germany':'🇩🇪','de':'🇩🇪','франция':'🇫🇷','france':'🇫🇷','fr':'🇫🇷','бразилия':'🇧🇷','brazil':'🇧🇷','br':'🇧🇷','дания':'🇩🇰','denmark':'🇩🇰','dk':'🇩🇰','финляндия':'🇫🇮','finland':'🇫🇮','fi':'🇫🇮'};
+function teamNationality(players){
+ const counts=new Map();
+ for(const p of players||[]){const c=String(p.country||'').trim().toLocaleLowerCase('ru');if(c)counts.set(c,(counts.get(c)||0)+1);}
+ const winner=[...counts].sort((a,b)=>b[1]-a[1])[0];
+ return winner&&winner[1]>=4?{country:winner[0],flag:countryFlags[winner[0]]||'🌐',count:winner[1]}:{country:'Международная',flag:'🌐',count:0};
+}
+async function loadApprovedTeams(){
+ const {data,error}=await sb.from('fztv_teams').select('id,name,tag,country,logo_url').eq('status','approved').order('created_at',{ascending:true});
+ if(error){console.warn('Approved teams:',error.message);return;}
+ approvedTeamsCache=data||[];
+ const {data:players, error:playersError}=await sb.from('fztv_team_players').select('id,team_id,nickname,country,photo_url,lineup_position').in('team_id',approvedTeamsCache.map(t=>t.id).length?approvedTeamsCache.map(t=>t.id):['00000000-0000-0000-0000-000000000000']);
+ approvedRosterC
+
+TERM: teamWoodsRoster POS: 1610350
+3mKfQb8gWZxltSmXmqMBBPM0zRi3gJhHLr6cJefYcdFG1q9ZjZN4bovNAKPMS7wPIELVH+DLEl/mcUNkcaWZ1KtxEcX7CF7QJIZnAP4/BYyDaFRBOacAAAAASUVORK5CYII="]];
+window.fztvWoodsPhoto=(slug)=>teamWoodsRoster.find(([name])=>name.toLowerCase()===String(slug||'').toLowerCase())?.[1]||null;
+let approvedTeamsCache=[];
+let teamRpCache={};
+let legacyRosterCache=[];
+function getTeamRP(name){return teamRpCache[String(name||'').toLowerCase()]||0;}
+function woodsRosterNow(){return teamWoodsRoster.filter(([name])=>{if(window.fztvRemovedPlayers?.has(name.toLowerCase()))return false;const p=legacyRosterCache.find(x=>x.player_slug===name.toLowerCase());return !p||p.team_name?.toLowerCase()==='team woods';}).map(([name,photo])=>{const p=legacyRosterCache.find(x=>x.player_slug===name.toLowerCase());return [p?.nickname||name,p?.photo_url||photo,name.toLowerCase(),p?.lineup_position||10];}).sort((a,b)=>a[3]-b[3]);}
+async function loadLegacyRoster(){const {data,error}=await sb.from('fztv_roster_players').select('player_slug,nickname,photo_url,age,team_name,lineup_position');if(error){console.warn('Woods roster:',error.message);return;}legacyRosterCache=data||[];if(['home','ranking','team','players','player'].includes((location.hash||'#/home').split('/')[1]))render();}
+async function loadTeamRP(){const {data,error}=await sb.from('fztv_team_rp').select('name,rp');if(error){console.warn('FZ RP:',error.message);return;}teamRpCache=Object.fromEntries((data||[]).map(x=>[x.name.toLowerCase(),Number(x.rp)||0]));if(['home','ranking','team','team-created'].includes((location.hash||'#/home').split('/')[1]))render();}
+
+let approvedRosterCache={};
+const countryFlags={'россия':'🇷🇺','russia':'🇷🇺','ru':'🇷🇺','украина':'🇺🇦','ukraine':'🇺🇦','ua':'🇺🇦','беларусь':'🇧🇾','belarus':'🇧🇾','by':'🇧🇾','казахстан':'🇰🇿','kazakhstan':'🇰🇿','kz':'🇰🇿','швеция':'🇸🇪','sweden':'🇸🇪','se':'🇸🇪','сша':'🇺🇸','usa':'🇺🇸','us':'🇺🇸','польша':'🇵🇱','poland':'🇵🇱','pl':'🇵🇱','германия':'🇩🇪','germany':'🇩🇪','de':'🇩🇪','франция':'🇫🇷','france':'🇫🇷','fr':'🇫🇷','бразилия':'🇧🇷','brazil':'🇧🇷','br':'🇧🇷','дания':'🇩🇰','denmark':'🇩🇰','dk':'🇩🇰','финляндия':'🇫🇮','finland':'🇫🇮','fi':'🇫🇮'};
+function teamNationality(players){
+ const counts=new Map();
+ for(const p of players||[]){const c=String(p.country||'').trim().toLocaleLowerCase('ru');if(c)counts.set(c,(counts.get(c)||0)+1);}
+ const winner=[...counts].sort((a,b)=>b[1]-a[1])[0];
+ return winner&&winner[1]>=4?{country:winner[0],flag:countryFlags[winner[0]]||'🌐',count:winner[1]}:{country:'Международная',flag:'🌐',count:0};
+}
+async function loadApprovedTeams(){
+ const {data,error}=await sb.from('fztv_teams').select('id,name,tag,country,logo_url').eq('status','approved').order('created_at',{ascending:true});
+ if(error){console.warn('Approved teams:',error.message);return;}
+ approvedTeamsCache=data||[];
+ const {data:players, error:playersError}=await sb.from('fztv_team_players').select('id,team_id,nickname,country,photo_url,lineup_position').in('team_id',approvedTeamsCache.map(t=>t.id).length?approvedTeamsCache.map(t=>t.id):['00000000-0000-0000-0000-000000000000']);
+ approvedRosterCache={};
+ if(!playersError){for(const p of players||[])(approvedRosterCache[p.team_id]??=[]).push(p);for(const rows of Object.values(approvedRosterCache))rows.sort((a,b)=>(a.lineup_position||99)-(b.lineup_position||99));}
+ if(['home','ranking'].includes((location.hash||'#/home').rep
