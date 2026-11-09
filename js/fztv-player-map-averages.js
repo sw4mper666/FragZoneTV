@@ -11,7 +11,7 @@ const num=n=>String(Math.round(Number(n)));
 const ratingLabel=n=>Number(n).toFixed(2);
 const el=(tag,t)=>{const e=document.createElement(tag);if(t!==undefined)e.textContent=t;return e;};
 async function load(){
- const route=location.hash.split('/');if(route[1]!=='player')return;
+ const route=location.hash.split('/');if(route[1]!=='player'||route[3]==='stats')return; // unified stats tab renders classic dashboard and map cards
  const root=document.getElementById('app'),client=db(),slug=decodeURIComponent(route[2]||'').toLowerCase();
  if(!root||!client||!slug)return;
  const parent=root.querySelector('.fztv-trophies')||root.querySelector('.fztv-player-profile')||root.querySelector('.tw-profile')||root.querySelector('.detail-card')||root.querySelector('.fztv-player-card');
