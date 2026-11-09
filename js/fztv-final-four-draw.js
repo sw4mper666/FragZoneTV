@@ -41,7 +41,7 @@ function display(root,ids,teams){
  if(!Array.isArray(ids)||ids.length!==4||new Set(ids).size!==4){root.replaceChildren(make('p','fz4-note','Жеребьёвка ещё не запущена. Пары появятся здесь после запуска администратором.'));return;}
  const byId=new Map((teams||[]).map(t=>[t.id,t]));
  const board=make('div','fz4-board'),semis=make('div','fz4-round'),final=make('div','fz4-round');
- semis.append(make('h3','','ПОЛУФИНАЛЫ'),match('Полуфинал №1',ids.slice(0,2),byId),match('Полуфинал №2',ids.slice(2,4),byId));
+ semis.append(make('h3','','ПОЛУФИНАЛ'),match('Полуфинал №1',ids.slice(0,2),byId),match('Полуфинал №2',ids.slice(2,4),byId));
  final.append(make('h3','','ФИНАЛ'),match('Финал',['TBD','TBD'],new Map()));
  board.append(semis,final);root.replaceChildren(board);
 }
