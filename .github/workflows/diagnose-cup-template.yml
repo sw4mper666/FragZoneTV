@@ -1,0 +1,35 @@
+name: Diagnose old CUP page renderer
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/diagnose-cup-template.yml'
+permissions: {contents: write}
+jobs:
+  trace:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Examine real index and script imports
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          src=Path('index.html').read_text(encoding='utf-8')
+          words=['ПРИЗОВЫЕ МЕСТА','100</b>','FZTV CUP #1 — первый турнир','Регистрация команд откроется','<script','js/tournament-season-2027.js','js/fztv-final-four-draw.js','js/admin-player-trophies.js','fztv-transfer-preview','function tournamentDetail','function home(','function render','Запуск турнира']
+          out=['index length: '+str(len(src))+' line count '+str(src.count(chr(10)))+'\n']
+          for term in words:
+            hits=list(re.finditer(re.escape(term),src,re.I))
+            out.append('\nTERM '+term+' count='+str(len(hits)))
+            for h in hits[-8:]:
+              snippet=src[max(0,h.start()-950):min(len(src),h.start()+1600)]
+              snippet=re.sub(r'data:image/[a-z+]+;base64,[A-Za-z0-9+/=]+','[image]',snippet)
+              out.append('OFFSET '+str(h.start())+'\n'+snippet[:2600])
+          Path('cup-template-diagnostic.txt').write_text('\n'.join(out)[-107000:],encoding='utf8')
+          PY
+      - name: Commit report
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add cup-template-diagnostic.txt
+          git diff --cached --quiet || (git commit -m 'Inspect actual live CUP renderer and scripts' && git push)
