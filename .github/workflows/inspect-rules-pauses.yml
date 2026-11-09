@@ -1,0 +1,27 @@
+name: Inspect FragZoneTV Rules page
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/inspect-rules-pauses.yml']
+permissions: {contents: write}
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Extract rules render
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          s=Path('index.html').read_text(encoding='utf-8')
+          import re
+          matches=list(re.finditer(r'function\s+rulesPage\s*\(',s))
+          out='\n'.join(f'AT {m.start()}\n{s[m.start():m.start()+13000]}' for m in matches)
+          Path('rules-render-inspection.txt').write_text(out[:33000],encoding='utf-8')
+          PY
+      - name: Commit report
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add rules-render-inspection.txt
+          git diff --cached --quiet || (git commit -m 'Inspect current FragZoneTV rules rendering' && git push)
