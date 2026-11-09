@@ -191,7 +191,7 @@
         // Remove obsolete legacy summary panels to avoid duplicate headers.
         root.querySelector('#fztv-roster-profile')?.remove();
         root.querySelector('#fztv-player-team-status')?.remove();
-      }else{
+      }else if(!hash.startsWith('#/tournament/')&&!hash.startsWith('#/season-tournament/')){
         if(hash==='#/home'||hash===''||hash==='#/home/'){
           // The requested Final Four bracket occupies the previous home transfers position.
           root.querySelector('#fztv-transfer-preview')?.remove();
