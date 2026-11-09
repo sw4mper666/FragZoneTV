@@ -192,9 +192,19 @@
         root.querySelector('#fztv-roster-profile')?.remove();
         root.querySelector('#fztv-player-team-status')?.remove();
       }else{
-        if(!document.getElementById('fztv-transfer-preview')){
+        if(hash==='#/home'||hash===''||hash==='#/home/'){
+          // The requested Final Four bracket occupies the previous home transfers position.
+          root.querySelector('#fztv-transfer-preview')?.remove();
+          if(!root.querySelector('#fztv-final-four-home')){
+            const panel=el('section');panel.id='fztv-final-four-home';panel.className='fztv-move-panel';
+            panel.append(el('h3','FZTV CUP #1 · СЕТКА FINAL FOUR'),el('p','Сетка появится после запуска жеребьёвки администратором.'));
+            const stats=[...root.querySelectorAll('h2,h3,h4')].find(x=>x.textContent.trim().toLowerCase().includes('статистика'));
+            const statsBox=stats?.closest('section,aside,.panel,.card');
+            if(statsBox?.parentElement)statsBox.insertAdjacentElement('afterend',panel);
+            else root.append(panel);
+          }
+        }else if(!document.getElementById('fztv-transfer-preview')){
           const panel=transferPanel(false);panel.id='fztv-transfer-preview';
-          // Show next to the statistics section if possible; otherwise at the end of the page.
           const stats=[...root.querySelectorAll('h2,h3,h4')].find(x=>x.textContent.trim().toLowerCase().includes('статистика'));
           const statsBox=stats?.closest('section,aside,.panel,.card');
           if(statsBox?.parentElement)statsBox.insertAdjacentElement('afterend',panel);
