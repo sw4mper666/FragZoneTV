@@ -84,9 +84,9 @@ if(true) {
 }
 }
 function field(title,name,kind,value,values){const wrapper=node('label','',title),x=node(kind==='select'?'select':kind==='textarea'?'textarea':'input');x.name=name;if(kind==='select'){for(const [key,label] of values){const op=node('option','',label);op.value=key;x.append(op);}x.value=value||'';}else{x.type=kind;x.value=value??'';}wrapper.append(x);return wrapper;}
-async function admin(root){let panel=$('#fzse-admin',root);if(!panel){panel=node('section','fzse-panel');panel.id='fzse-admin';root.prepend(panel);}panel.replaceChildren(node('h2','','УПРАВЛЕНИЕ ТУРНИРАМИ'));
+async function admin(root){let panel=$('#fzse-admin',root);if(panel?.dataset.fzseEditorMounted==='1')return;if(!panel){panel=node('section','fzse-panel');panel.id='fzse-admin';root.prepend(panel);}panel.dataset.fzseEditorMounted='1';panel.replaceChildren(node('h2','','УПРАВЛЕНИЕ ТУРНИРАМИ'));
 const choose=node('select','fzse-admin-select');choose.style.width='100%';for(const t of records){const op=node('option','',date(t.starts_at)+' · '+t.name);op.value=t.id;choose.append(op);}panel.append(choose);const content=node('div'),message=node('p','fzse-message');panel.append(content,message);
-function draw(){const t=records.find(x=>x.id===choose.value);if(!t)return;content.replaceChildren();const form=node('form','fzse-form');
+function draw(){const t=records.find(x=>x.id===choose.value);if(!t)return;panel.querySelector('.fzse-final-four-admin')?.remove();content.replaceChildren();const form=node('form','fzse-form');
 for(const [label,key,kind,val] of [['Название','name','text',t.name],['Начало (Москва)','starts_at','datetime-local',editable(t.starts_at)],['Конец (Москва)','ends_at','datetime-local',editable(t.ends_at)],['Открытие регистрации (Москва)','registration_opens_at','datetime-local',editable(t.registration_opens_at)],['Количество команд','max_teams','number',String(t.max_teams||8)],['Ссылка на баннер HTTPS','banner_url','url',t.banner_url||''],['Описание','description','textarea',t.description||'']])form.append(field(label,key,kind,val));
 form.append(field('Формат','format','select',t.format,[['single_elimination','Плей-офф'],['swiss_playoff','Швейцарка + плей-офф'],['round_robin','Круговая'],['final_four','Final Four']]));
 form.append(field('Статус','status','select',t.status,[['scheduled','Запланирован'],['registration','Регистрация'],['closed','Регистрация закрыта'],['in_progress','Идёт'],['finished','Завершён'],['cancelled','Отменён']]));
@@ -147,7 +147,7 @@ if(t.id==='be494a78-0d63-4ebd-8d29-f7ea9cb48a1b'&&t.format==='final_four'){
   }catch(error){msg.textContent='Ошибка: '+error.message;}
   finally{launch.disabled=false;}
  };
- controls.append(launch,msg,display);content.append(controls);
+ controls.append(launch,msg,display);panel.insertBefore(controls,content);
 }
 
 const actions=node('div');actions.style.gridColumn='1/-1';const save=node('button','fzse-btn','Сохранить изменения');save.type='submit';actions.append(save);const link=node('a','fzse-link','Открыть турнир');link.href='#/season-tournament/'+t.id;link.style.marginLeft='16px';actions.append(link);form.append(actions);content.append(form);
