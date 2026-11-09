@@ -22,10 +22,10 @@ function addTable(root,team,side,scheduled){
  const table=N('table');table.className='fz-stat-table';const h=N('thead');h.innerHTML='<tr><th>Игрок</th><th>K</th><th>D</th><th>A</th><th>FZTVR</th></tr>';table.append(h);
  const body=N('tbody');
  for(const p of team.players){
-  const tr=N('tr'),name=N('td'),label=N('label',p.nickname),check=N('input');check.type='checkbox';check.checked=!scheduled;label.prepend(check);name.append(label);tr.append(name);
-  const vals=[];for(const labelText of ['K','D','A']){const td=N('td'),input=N('input');input.type='number';input.min='0';input.max='200';input.step='1';input.value='0';input.disabled=scheduled;input.setAttribute('aria-label',p.nickname+' '+labelText);td.append(input);tr.append(td);vals.push(input)}
-  const result=N('td',scheduled?'—':'100');result.className='fz-rating';tr.append(result);
-  const refresh=()=>{vals.forEach(x=>x.disabled=!check.checked);result.textContent=check.checked?String(calc(...vals.map(x=>x.value))):'—';};check.onchange=refresh;vals.forEach(x=>x.oninput=refresh);
+  const tr=N('tr'),name=N('td'),label=N('label',p.nickname),check=N('input');check.type='checkbox';check.checked=false;label.prepend(check);name.append(label);tr.append(name);
+  const vals=[];for(const labelText of ['K','D','A']){const td=N('td'),input=N('input');input.type='number';input.min='0';input.max='200';input.step='1';input.value='';input.placeholder='—';input.disabled=true;input.setAttribute('aria-label',p.nickname+' '+labelText);td.append(input);tr.append(td);vals.push(input)}
+  const result=N('td','—');result.className='fz-rating';tr.append(result);
+  const refresh=()=>{vals.forEach(x=>x.disabled=scheduled||!check.checked);result.textContent=!scheduled&&check.checked&&vals.every(x=>x.value.trim()!=='')?String(calc(...vals.map(x=>x.value))):'—';};check.onchange=refresh;vals.forEach(x=>x.oninput=refresh);
   body.append(tr);rows.push({slug:p.slug,side,check,vals});
  }
  table.append(body);container.append(table);return {container,rows};
@@ -78,20 +78,23 @@ function form(client,panel,data,user){
  const event=field('Название турнира / ивента'),date=field('Дата','date'),time=field('Время','time');date.x.required=true;date.x.value=new Date().toISOString().slice(0,10);for(const x of [event,date,time])f.append(x.l);
  const mapLabel=N('label','Карты (по одной строке: Mirage,13,9)'),maps=N('textarea');maps.rows=3;maps.placeholder='Mirage,13,9\nDust2,11,13';mapLabel.className='fz-full';mapLabel.append(maps);f.append(mapLabel);
  const demoLabel=N('label','Демка матча (.dem, .zip, .gz, до 50 МБ)');demoLabel.className='fz-full';
- const demoInput=N('input');demoInput.type='file';demoInput.accept='.dem,.zip,.gz,.bz2,.7z';demoInput.required=true;
- const demoHint=N('small','Демка обязательна для завершённого матча. Запланированный матч можно создать без неё.');demoHint.style.color='#a6bad6';
+ const demoInput=N('input');demoInput.type='file';demoInput.accept='.dem,.zip,.gz,.bz2,.7z';demoInput.required=false;
+ const demoHint=N('small','Демка обязательна только для завершённого матча с заполненной статистикой игроков. Если статистика не внесена — демка необязательна.');demoHint.style.color='#a6bad6';
  demoLabel.append(demoInput,demoHint);f.append(demoLabel);
- scheduled.addEventListener('change',()=>{demoInput.required=!scheduled.checked;});
+ 
  const lists=N('div');lists.className='fz-full';f.append(lists);
  const explain=N('p','FZTVR = (K + 0,5 × A) / max(D, 1), округление до 2 знаков. Рейтинг и статистика публикуются только после подтверждения администратором.');explain.className='fz-full';explain.style.color='#96abc7';f.append(explain);
  const send=N('button','Отправить на проверку');send.className='fz-primary fz-full';send.type='submit';f.append(send);
  const status=N('p');status.className='fz-status fz-full';status.setAttribute('role','status');f.append(status);
  const selected=s=>data.teams[Number(s.value)];
+ const syncDemo=()=>{const filled=!scheduled.checked&&stats.some(x=>x.check.checked);demoInput.required=filled;demoHint.textContent=filled?'Статистика игроков выбрана: для завершённого матча демка обязательна.':'Без статистики игроков демка необязательна. Если отметишь игроков для статистики, демка станет обязательной.';};
  let stats=[];
  const refresh=()=>{
   preview.children[0].textContent=a.value===''?'Команда 1':selected(a)?.name||'Команда 1';preview.children[2].textContent=b.value===''?'Команда 2':selected(b)?.name||'Команда 2';
   lists.replaceChildren();stats=[];if(a.value!==''&&a.value===b.value){lists.append(N('p','Выбери разные команды.'));return}
   for(const [s,side] of [[a,'a'],[b,'b']])if(s.value!==''){const t=addTable(lists,selected(s),side,scheduled.checked);lists.append(t.container);stats.push(...t.rows)}
+  for(const x of stats){x.check.addEventListener('change',syncDemo);x.vals.forEach(v=>v.addEventListener('input',syncDemo));}
+  syncDemo();
  };
  a.onchange=refresh;b.onchange=refresh;
  scheduled.onchange=()=>{scoreA.x.disabled=scheduled.checked;scoreB.x.disabled=scheduled.checked;refresh()};
@@ -103,10 +106,10 @@ function form(client,panel,data,user){
    const ta=selected(a),tb=selected(b);
    if(scheduled.checked&&!time.x.value)throw Error('Укажи время запланированного матча.');
    const m=maps.value.split(/\n/).map(x=>x.trim()).filter(Boolean).map((line,i)=>{const [name,sa,sb]=line.split(',').map(x=>x.trim());if(!name||!/^\d{1,2}$/.test(sa)||!/^\d{1,2}$/.test(sb))throw Error('Формат карты: Mirage,13,9');return {name,a:Number(sa),b:Number(sb),order:i+1}});
-   const player_stats=scheduled.checked?[]:stats.filter(x=>x.check.checked).map(x=>{const [kills,deaths,assists]=x.vals.map(v=>Number(v.value));if(![kills,deaths,assists].every(n=>Number.isInteger(n)&&n>=0&&n<=200))throw Error('K/D/A: целые значения 0–200.');return {slug:x.slug,side:x.side,kills,deaths,assists,rounds:0,headshots:0}});
+   const player_stats=scheduled.checked?[]:stats.filter(x=>x.check.checked).map(x=>{if(x.vals.some(v=>v.value.trim()===''))throw Error('Для выбранных игроков заполни K/D/A полностью.');const [kills,deaths,assists]=x.vals.map(v=>Number(v.value));if(![kills,deaths,assists].every(n=>Number.isInteger(n)&&n>=0&&n<=200))throw Error('K/D/A: целые значения 0–200.');return {slug:x.slug,side:x.side,kills,deaths,assists,rounds:0,headshots:0}});
    if(new Set(player_stats.map(x=>x.slug)).size!==player_stats.length)throw Error('Дубликат игрока в матче.');
    const file=demoInput.files?.[0]||null;
-   if(!scheduled.checked&&!file)throw Error('Чтобы отправить завершённый матч, прикрепи демку.');
+   if(!scheduled.checked&&player_stats.length>0&&!file)throw Error('Для завершённого матча с заполненной статистикой игроков нужна демка.');
    if(file&&file.size>50*1024*1024)throw Error('Размер демки превышает 50 МБ. Сожми файл в ZIP.');
    if(file&&!/\.(dem|zip|gz|bz2|7z)$/i.test(file.name))throw Error('Допустимы файлы .dem, .zip, .gz, .bz2 и .7z.');
    let demoPath=null;
