@@ -1,0 +1,56 @@
+name: Repair live CUP #1 template and load tournament admin
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/repair-cup-live-template.yml']
+permissions: {contents: write}
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fix legacy CUP detail and enable tournament admin script
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          file=Path('index.html')
+          s=file.read_text(encoding='utf8')
+          changes=[
+           ('ПРИЗОВЫЕ МЕСТА · 200 FZTV POINTS','ПРИЗОВЫЕ МЕСТА · 110 FZ POINTS'),
+           ('<small>🥇 1 МЕСТО</small><b>100</b>','<small>🥇 1 МЕСТО</small><b>50</b>'),
+           ('<small>🥈 2 МЕСТО</small><b>50</b>','<small>🥈 2 МЕСТО</small><b>30</b>'),
+           ('<small>🥉 3 МЕСТО</small><b>30</b>','<small>🥉 3 МЕСТО</small><b>20</b>'),
+           ('<small>4 МЕСТО</small><b>20</b>','<small>4 МЕСТО</small><b>10</b>'),
+           ('РЕГИСТРАЦИЯ ОТКРОЕТСЯ 7 НОЯБРЯ','РЕГИСТРАЦИЯ ЗАКРЫТА'),
+           ('<b style="color:#ff6875">С 7 ноября 2026</b>','<b style="color:#ff6875">Закрыта · 4 команды</b>'),
+           ('<small>ФОРМАТ</small><b>Плей-офф</b>','<small>ФОРМАТ</small><b>Final Four</b>'),
+           ('<small>УЧАСТНИКИ</small><b>0 / 8 команд</b>','<small>УЧАСТНИКИ</small><b>4 / 4 команды</b>'),
+           ('УЧАСТНИКИ (0/8)','УЧАСТНИКИ (4/4)'),
+           ('Array.from({length:8},(_,i)=>','Array.from({length:4},(_,i)=>'),
+           ('Регистрация команд откроется 7 ноября. Всего доступно 8 мест.','Регистрация закрыта. Четыре команды утверждены. Формат Final Four: два полуфинала и финал.')
+          ]
+          for old,new in changes:
+           count=s.count(old)
+           if count!=1:raise RuntimeError('Expected exactly one '+repr(old)+'; found '+str(count))
+           s=s.replace(old,new,1)
+          # This module previously never loaded, so the admin button could not exist.
+          if not re.search(r'<script[^>]+src=["\x27](?:\./)?js/tournament-season-2027\.js',s,re.I):
+           tag='<script defer src="./js/tournament-season-2027.js?v=20261109-cup-core-fix-v5"></script>'
+           s=s.replace('</body>',tag+'\n</body>',1)
+          else:
+           s=re.sub(r'(\./js/tournament-season-2027\.js)(?:\?v=[A-Za-z0-9._-]+)?',r'\g<1>?v=20261109-cup-core-fix-v5',s)
+          # Force the changed transfers integration to load on existing clients.
+          s=re.sub(r'(\./js/admin-player-trophies\.js)(?:\?v=[A-Za-z0-9._-]+)?',r'\g<1>?v=20261109-cup-core-fix-v5',s)
+          s=re.sub(r'(\./js/fztv-final-four-draw\.js)(?:\?v=[A-Za-z0-9._-]+)?',r'\g<1>?v=20261109-cup-core-fix-v5',s)
+          file.write_text(s,encoding='utf8')
+          assert 'ПРИЗОВЫЕ МЕСТА · 110 FZ POINTS' in s
+          assert 'tournament-season-2027.js?v=20261109-cup-core-fix-v5' in s
+          print('Live CUP page and admin script repaired.')
+          PY
+      - name: Commit fixed live page
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git diff --cached --quiet || (git commit -m 'Fix real FZTV CUP page prizes, Final Four and admin launch module' && git push)
