@@ -1,0 +1,33 @@
+name: Inspect Final Four tournament UI
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/inspect-final-four.yml']
+permissions: {contents: write}
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Find tournament presentation and registration condition
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          result=[]
+          for path in [Path('index.html'),*Path('js').glob('*.js')]:
+           s=path.read_text(encoding='utf8',errors='replace')
+           for term in ['function tournamentDetail(','tournament_registrations','fztv_tournament_applications','status===\'registration\'','max_teams','registration_opens_at','Зарегистрировать команду','Регистрация закрыта']:
+            matches=list(re.finditer(re.escape(term),s,re.I))
+            for m in matches[:5]:
+             sample=s[max(0,m.start()-600):m.start()+1900]
+             sample=re.sub(r'data:image/[^\s"\x27<>]+','[IMAGE]',sample)
+             result.append(str(path)+' :: '+term+' :: '+str(m.start())+'\n'+sample[:2200]+'\n')
+          Path('final-four-inspection.txt').write_text('\n'.join(result)[:95000],encoding='utf8')
+          PY
+      - name: Commit report
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add final-four-inspection.txt
+          git diff --cached --quiet || (git commit -m 'Inspect Final Four tournament registration interface' && git push)
