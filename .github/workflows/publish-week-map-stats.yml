@@ -31,7 +31,7 @@ jobs:
           p=Path('index.html')
           s=p.read_text(encoding='utf-8')
           for filename in ['fztv-week-home-archive.js','fztv-player-map-averages.js','fztv-admin-coins.js','fztv-admin-match-editor.js','fztv-final-four-draw.js']:
-              tag='<script defer src="./js/'+filename+'?v=20261109-final-four-heading-v9"></script>'
+              tag='<script defer src="./js/'+filename+'?v=20261109-conditional-demo-v10"></script>'
               pattern=r'<script[^>]+src=["\x27](?:\./)?js/'+re.escape(filename)+r'(?:\?[^"\x27]*)?["\x27][^>]*>\s*</script>'
               if re.search(pattern,s,re.I):s=re.sub(pattern,tag,s,count=1,flags=re.I)
               else:
@@ -39,16 +39,16 @@ jobs:
                   s=re.sub(r'</body\s*>',lambda m:tag+'\n'+m.group(0),s,count=1,flags=re.I)
           # Keep the public tournament module fresh after closing FZTV CUP #1.
           s=re.sub(r'(\./js/tournament-season-2027\.js)(?:\?v=[A-Za-z0-9._-]+)?',
-                   lambda m:m.group(1)+'?v=20261109-final-four-heading-v9',s)
+                   lambda m:m.group(1)+'?v=20261109-conditional-demo-v10',s)
           # Update the match renderer import so new per-map stats are not cached out.
           s=re.sub(r'(\./js/match-detail\.js)(?:\?v=[A-Za-z0-9._-]+)?',
-                   lambda m:m.group(1)+'?v=20261109-final-four-heading-v9',s)
+                   lambda m:m.group(1)+'?v=20261109-conditional-demo-v10',s)
           # Update the submission importer cache as well.
-          s=re.sub(r'(\./js/match-submissions\.js)(?:\?v=[A-Za-z0-9._-]+)?',lambda m:m.group(1)+'?v=20261109-final-four-heading-v9',s)
+          s=re.sub(r'(\./js/match-submissions\.js)(?:\?v=[A-Za-z0-9._-]+)?',lambda m:m.group(1)+'?v=20261109-conditional-demo-v10',s)
           # Bust browser caches for existing profile and match modules too.
           for module in ['universal-profiles.js','community-enhancements.js','admin-player-trophies.js']:
               s=re.sub(r'(\./js/'+re.escape(module)+r')(?:\?v=[A-Za-z0-9._-]+)?',
-                       lambda m:m.group(1)+'?v=20261109-final-four-heading-v9',s)
+                       lambda m:m.group(1)+'?v=20261109-conditional-demo-v10',s)
           p.write_text(s,encoding='utf-8')
           PY
       - name: Commit updated site
@@ -57,5 +57,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
-          git commit -m "Publish Final Four singular heading"
+          git commit -m "Publish conditional match demo upload requirement"
           git push
