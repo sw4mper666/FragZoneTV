@@ -3,12 +3,33 @@ const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const keyFor=id=>'team_'+String(id).replace(/-/g,'');
 const tier=r=>r<=10?1:r<=20?2:3;
 const fallback='data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="160" height="200"><rect width="160" height="200" fill="#233147"/><circle cx="80" cy="62" r="30" fill="#596b84"/><path d="M16 182c0-100 128-100 128 0" fill="#596b84"/></svg>');
-function statsHtml(rows){
- const sum=k=>rows.reduce((n,r)=>n+Number(r[k]||0),0),m=rows.length,k=sum('kills'),d=sum('deaths');
- const fztvr=m?((sum('kills')+0.5*sum('assists'))/Math.max(1,sum('deaths'))).toFixed(2):'—';
- const vals=[['FZTVR',fztvr],['Матчи',m||'—'],['K/D',m?(d?Math.round(k/d):k?'∞':0):'—'],['Винрейт',m?Math.round(rows.filter(x=>x.won===true).length/m*100)+'%':'—'],['Убийства / матч',m?Math.round(k/m):'—'],['Смерти / матч',m?Math.round(d/m):'—'],['Ассисты / матч',m?Math.round(sum('assists')/m):'—'],['Хедшоты / матч',m?Math.round(sum('headshots')/m):'—']];
- return '<div class="fztv-stat-grid">'+vals.map(([a,b])=>'<div class="fztv-stat"><strong>'+esc(b)+'</strong><small>'+a+'</small></div>').join('')+'</div>'+(m?'':'<div class="fztv-stat-empty">Статистика появится после внесения результатов матчей.</div>');
+function statsHtml(rows,mapRows=[]){
+ const sum=k=>rows.reduce((n,r)=>n+Number(r[k]||0),0),matches=rows.length,k=sum('kills'),d=sum('deaths'),a=sum('assists');
+ const perMap=mapRows.length>0;
+ const mr=(x)=>(Number(x.kills||0)+0.5*Number(x.assists||0))/Math.max(1,Number(x.deaths||0));
+ const rating=perMap?mapRows.reduce((total,x)=>total+mr(x),0)/mapRows.length:(matches?(k+0.5*a)/Math.max(1,d):null);
+ const kd=matches?(d?Math.round(k/d):k?'∞':'0'):'—';
+ const wins=rows.filter(x=>x.won===true).length,winrate=matches?Math.round(wins/matches*100)+'%':'—';
+ const divisor=perMap?mapRows.length:matches,avg=v=>divisor?Math.round(v/divisor):'—';
+ const kills=perMap?mapRows.reduce((v,x)=>v+Number(x.kills||0),0):k;
+ const deaths=perMap?mapRows.reduce((v,x)=>v+Number(x.deaths||0),0):d;
+ const assists=perMap?mapRows.reduce((v,x)=>v+Number(x.assists||0),0):a;
+ const stats=[
+  ['K/D',kd,''],
+  ['FZTVR',rating===null?'—':rating.toFixed(2),'fzsv-rating'],
+  ['Винрейт',winrate,''],
+  [perMap?'Убийств / карту':'Убийств / матч',avg(kills),'fzsv-green'],
+  [perMap?'Смертей / карту':'Смертей / матч',avg(deaths),''],
+  [perMap?'Ассистов / карту':'Ассистов / матч',avg(assists),'fzsv-green']
+ ];
+ const cards=stats.map(([label,value,kind],i)=>{
+   const center=i===1;
+   const upper=center?'<div class="fzsv-gauge" style="--progress:'+Math.min(100,Math.max(0,Number(rating||0)/2*100))+'%"><span>'+esc(value)+'</span></div>':'<strong>'+esc(value)+'</strong>';
+   return '<div class="fzsv-metric '+kind+'">'+upper+'<small>'+esc(label)+'</small></div>';
+ }).join('');
+ return '<div class="fzsv-panel"><div class="fzsv-grid">'+cards+'</div><div class="fzsv-meta">'+matches+' матч(ей)'+(perMap?' · '+mapRows.length+' карт(ы)':'')+'</div></div>';
 }
+
 async function playerPage(client,root,key,tab){
  const [p,r]=await Promise.all([
  client.from('fztv_team_players').select('*,fztv_teams(name,status)'),
@@ -28,19 +49,14 @@ async function playerPage(client,root,key,tab){
  }
  const mapRating=x=>(Number(x.kills||0)+0.5*Number(x.assists||0))/Math.max(1,Number(x.deaths||0));
  const detailedStats=()=>{
-  if(!mapRows.length)return '<section class="fzps-panel"><h3>СТАТИСТИКА ПО КАРТАМ</h3><p class="fzps-note">Статистика по отдельным картам ещё не внесена.</p></section>';
+  if(!mapRows.length)return '<div class="fzsv-map-list"><h3>Статистика по картам</h3><p>Результаты по картам пока не внесены.</p></div>';
   const list=mapRows.slice().sort((a,b)=>String(a.match_id).localeCompare(String(b.match_id))||((mapNames.get(a.map_id)?.map_order||0)-(mapNames.get(b.map_id)?.map_order||0)));
-  const totals=list.reduce((o,x)=>({k:o.k+Number(x.kills||0),d:o.d+Number(x.deaths||0),a:o.a+Number(x.assists||0)}),{k:0,d:0,a:0});
-  const avg=list.reduce((v,x)=>v+mapRating(x),0)/list.length;
-  const rounded=n=>Math.round(n);
-  const cards=[['СРЕДНИЙ FZTVR',avg.toFixed(2)],['КАРТ СЫГРАНО',list.length],['УБИЙСТВА / КАРТУ',rounded(totals.k/list.length)],['СМЕРТИ / КАРТУ',rounded(totals.d/list.length)],['АССИСТЫ / КАРТУ',rounded(totals.a/list.length)]];
-  const best=Math.max(1,...list.map(x=>mapRating(x)));
-  const rows=list.map(x=>{
-   const name=mapNames.get(x.map_id)?.map_name||'Карта';
-   const score=mapRating(x);
-   return '<tr><td><strong>'+esc(name)+'</strong></td><td>'+rounded(x.kills)+'</td><td>'+rounded(x.deaths)+'</td><td>'+rounded(x.assists)+'</td><td><strong>'+score.toFixed(2)+'</strong><div class="fzps-rating-track"><i style="width:'+Math.max(3,Math.min(100,score/best*100))+'%"></i></div></td></tr>';
+  const cards=list.map(x=>{
+    const name=mapNames.get(x.map_id)?.map_name||'Карта';
+    const num=n=>Math.round(Number(n||0));
+    return '<div class="fzsv-map-card"><div class="fzsv-map-title"><strong>'+esc(name)+'</strong><span>FZTVR <b>'+mapRating(x).toFixed(2)+'</b></span></div><div class="fzsv-map-numbers"><span>'+num(x.kills)+'<small>K</small></span><span>'+num(x.deaths)+'<small>D</small></span><span>'+num(x.assists)+'<small>A</small></span></div></div>';
   }).join('');
-  return '<section class="fzps-panel"><h3>СТАТИСТИКА ПО КАРТАМ</h3><div class="fzps-summary">'+cards.map(([label,value])=>'<div class="fzps-stat"><strong>'+esc(value)+'</strong><span>'+esc(label)+'</span></div>').join('')+'</div><div class="fzps-overflow"><table class="fzps-table"><thead><tr><th>Карта</th><th>K</th><th>D</th><th>A</th><th>FZTVR</th></tr></thead><tbody>'+rows+'</tbody></table></div><p class="fzps-note">FZTVR считается отдельно для каждой карты. Средний рейтинг — среднее арифметическое по сыгранным картам без предварительного округления.</p></section>';
+  return '<div class="fzsv-map-list"><h3>Статистика по картам</h3><div class="fzsv-maps">'+cards+'</div></div>';
  };
 
  const legacyRole=!item?await client.from('fztv_legacy_player_profiles').select('*').eq('player_slug',slug).maybeSingle():null;
@@ -57,7 +73,7 @@ async function playerPage(client,root,key,tab){
  const details=[['На FragZoneTV с',memberSince],['Возраст',age],['Команда',team],['Роль',item?.primary_role||legacyRole?.data?.primary_role||'—'],['Страна',item?.country||legacyRole?.data?.country||'Россия'],['Рейтинг',free?.rating??'—'],['Призовые','$'+Number(item?.prize_usd??legacyRole?.data?.prize_usd??0)]];
  const tabs='<div class="fztv-player-tabs"><a class="'+(tab==='main'?'active':'')+'" href="#/player/'+encodeURIComponent(key)+'">Основной</a><a class="'+(tab==='stats'?'active':'')+'" href="#/player/'+encodeURIComponent(key)+'/stats">Статистика</a></div>';
  const factHtml='<div class="fztv-player-facts">'+details.map(([a,b])=>'<div class="fztv-player-fact"><span>'+esc(a)+'</span><strong>'+esc(b)+'</strong></div>').join('')+'</div>';
- root.innerHTML='<div class="crumb"><a href="#/players">Игроки</a> / '+esc(name)+'</div>'+tabs+'<section class="fztv-player-card"><div class="fztv-player-hero"><div class="fztv-player-photo"><img src="'+esc(photo)+'" alt="'+esc(name)+'"></div><div class="fztv-player-main"><h1>'+esc(name)+(isCaptain?' <span title="Капитан команды">👑</span>':'')+'</h1><p class="fztv-player-sub">'+esc(team)+' · CS2</p>'+(tab==='stats'?statsHtml(st.data||[]):factHtml+achievements)+'</div></div>'+(tab==='stats'?detailedStats():'<div class="fztv-trophies"><h3>Трофеи</h3><p>Трофеев пока нет</p></div>')+'</section>';
+ root.innerHTML='<div class="crumb"><a href="#/players">Игроки</a> / '+esc(name)+'</div>'+tabs+'<section class="fztv-player-card"><div class="fztv-player-hero"><div class="fztv-player-photo"><img src="'+esc(photo)+'" alt="'+esc(name)+'"></div><div class="fztv-player-main"><h1>'+esc(name)+(isCaptain?' <span title="Капитан команды">👑</span>':'')+'</h1><p class="fztv-player-sub">'+esc(team)+' · CS2</p>'+(tab==='stats'?statsHtml(st.data||[],mapRows):factHtml+achievements)+'</div></div>'+(tab==='stats'?detailedStats():'<div class="fztv-trophies"><h3>Трофеи</h3><p>Трофеев пока нет</p></div>')+'</section>';
 }
 async function teamPage(client,root,id){
  const [teams,players,rpRows]=await Promise.all([
@@ -105,7 +121,8 @@ async function playersPage(client,root){
 export async function mount({client,root,route}){
  if(!root||!client)return;
  if(!document.getElementById('fztv-universal-team-style')){
- const style=document.createElement('style');style.id='fztv-universal-team-style';style.textContent='.fztv-lineup-head{margin:20px 0 12px;color:#dbe8f9;font-size:15px}.fztv-profile-bench{margin:15px 0;padding:14px;border-top:1px solid #34445b}.fztv-profile-bench h3{font-size:14px;margin:0 0 12px}.fztv-profile-bench>div{display:flex;gap:10px;flex-wrap:wrap}.fztv-profile-bench a{display:flex;align-items:center;gap:8px;background:#132136;border:1px solid #3b506c;border-radius:8px;padding:6px 12px;font-size:12px;color:#edf4ff;text-decoration:none}.fztv-profile-bench img{width:30px;height:30px;object-fit:cover;border-radius:5px}.fztv-mini-achievements{margin-top:16px;padding:14px;border:1px solid #34445c;border-radius:12px}.fztv-mini-achievements>div{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.fztv-mini-achievement{padding:7px 12px;border-radius:20px;background:#253752;border:1px solid #55749d;font-size:12px}.fztv-universal-team .tw-roster{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}.fztv-universal-team .tw-player{display:flex;flex-direction:column;overflow:hidden}.fztv-universal-team .tw-player img{width:100%;height:220px;object-fit:cover;background:#223248}.fztv-universal-team .tw-logo img{width:100%;height:100%;object-fit:contain}@media(max-width:850px){.fztv-universal-team .tw-roster{grid-template-columns:repeat(2,minmax(0,1fr))}.fztv-universal-team .tw-player img{height:160px}}';style.textContent+='.fzps-panel{background:#15253b;padding:20px;border-top:1px solid #344b65}.fzps-panel h3{color:#f4f8ff;font-size:18px;margin:0 0 18px}.fzps-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:10px;margin-bottom:19px}.fzps-stat{padding:15px;background:#20334c;border:1px solid #3a5776;border-radius:8px;text-align:center}.fzps-stat strong{display:block;font-size:24px}.fzps-stat span{font-size:11px;color:#abc5e5}.fzps-overflow{overflow-x:auto}.fzps-table{width:100%;min-width:420px;border-collapse:collapse}.fzps-table th,.fzps-table td{text-align:center;padding:12px;border-bottom:1px solid #39506a}.fzps-table th{color:#a9c0de;font-size:12px}.fzps-rating-track{height:3px;background:#283e54;max-width:130px;margin:5px auto 0}.fzps-rating-track i{display:block;height:100%;background:#5abeeb}.fzps-note{color:#a0b8d7;font-size:12px;margin-top:14px}';document.head.append(style);
+ const style=document.createElement('style');style.id='fztv-universal-team-style';style.textContent='.fztv-lineup-head{margin:20px 0 12px;color:#dbe8f9;font-size:15px}.fztv-profile-bench{margin:15px 0;padding:14px;border-top:1px solid #34445b}.fztv-profile-bench h3{font-size:14px;margin:0 0 12px}.fztv-profile-bench>div{display:flex;gap:10px;flex-wrap:wrap}.fztv-profile-bench a{display:flex;align-items:center;gap:8px;background:#132136;border:1px solid #3b506c;border-radius:8px;padding:6px 12px;font-size:12px;color:#edf4ff;text-decoration:none}.fztv-profile-bench img{width:30px;height:30px;object-fit:cover;border-radius:5px}.fztv-mini-achievements{margin-top:16px;padding:14px;border:1px solid #34445c;border-radius:12px}.fztv-mini-achievements>div{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.fztv-mini-achievement{padding:7px 12px;border-radius:20px;background:#253752;border:1px solid #55749d;font-size:12px}.fztv-universal-team .tw-roster{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}.fztv-universal-team .tw-player{display:flex;flex-direction:column;overflow:hidden}.fztv-universal-team .tw-player img{width:100%;height:220px;object-fit:cover;background:#223248}.fztv-universal-team .tw-logo img{width:100%;height:100%;object-fit:contain}@media(max-width:850px){.fztv-universal-team .tw-roster{grid-template-columns:repeat(2,minmax(0,1fr))}.fztv-universal-team .tw-player img{height:160px}}';style.textContent+='.fzsv-panel{width:100%;padding:20px 22px 12px;background:linear-gradient(140deg,#172a3e,#15243a);border-radius:10px}.fzsv-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.fzsv-metric{min-height:95px;display:flex;flex-direction:column;align-items:center;justify-content:center;border-bottom:2px solid #354c68;text-align:center;color:#dfeaff}.fzsv-metric strong{font-size:25px}.fzsv-metric small{font-size:11px;color:#a7c1df;margin-top:6px}.fzsv-metric.fzsv-green{border-bottom-color:#43d84e}.fzsv-metric.fzsv-rating{border-bottom-color:#43d84e}.fzsv-gauge{height:62px;width:116px;border-radius:80px 80px 0 0;background:linear-gradient(#15283e,#15283e) padding-box,conic-gradient(from 270deg at 50% 100%,#4ce041 0 var(--progress),#344b64 var(--progress) 50%,transparent 50% 100%) border-box;border:5px solid transparent;border-bottom:0;display:flex;justify-content:center;align-items:end;font-size:24px;font-weight:900}.fzsv-meta{text-align:center;color:#9ab4d3;font-size:11px;padding-top:15px}.fzsv-map-list{padding:20px 22px;background:#142136;border-top:1px solid #314b65}.fzsv-map-list h3{margin:0 0 15px;font-size:17px}.fzsv-maps{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:12px}.fzsv-map-card{padding:15px;background:#1c314c;border:1px solid #415b7a;border-radius:9px}.fzsv-map-title{display:flex;justify-content:space-between;gap:8px;color:#eaf4ff}.fzsv-map-title span{font-size:11px;color:#a9c3e4}.fzsv-map-numbers{display:flex;justify-content:space-around;margin-top:17px;text-align:center;font-size:23px;font-weight:800}.fzsv-map-numbers small{display:block;font-size:11px;color:#9bb3d1}@media(max-width:600px){.fzsv-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.fzsv-panel{padding:10px}}';
+ style.textContent+='.fzps-panel{background:#15253b;padding:20px;border-top:1px solid #344b65}.fzps-panel h3{color:#f4f8ff;font-size:18px;margin:0 0 18px}.fzps-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:10px;margin-bottom:19px}.fzps-stat{padding:15px;background:#20334c;border:1px solid #3a5776;border-radius:8px;text-align:center}.fzps-stat strong{display:block;font-size:24px}.fzps-stat span{font-size:11px;color:#abc5e5}.fzps-overflow{overflow-x:auto}.fzps-table{width:100%;min-width:420px;border-collapse:collapse}.fzps-table th,.fzps-table td{text-align:center;padding:12px;border-bottom:1px solid #39506a}.fzps-table th{color:#a9c0de;font-size:12px}.fzps-rating-track{height:3px;background:#283e54;max-width:130px;margin:5px auto 0}.fzps-rating-track i{display:block;height:100%;background:#5abeeb}.fzps-note{color:#a0b8d7;font-size:12px;margin-top:14px}';document.head.append(style);
  }
  const parts=location.hash.split('/'),key=decodeURIComponent(parts[2]||'').toLowerCase();
  if(route==='team-created')return teamPage(client,root,parts[2]||'');
