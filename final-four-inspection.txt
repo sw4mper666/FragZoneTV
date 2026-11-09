@@ -1,0 +1,519 @@
+index.html :: function tournamentDetail( :: 1649732
+ов добавлены. Статистические показатели появятся после добавления результатов матчей.</div></section>`}
+function matches(){return `<div class="crumb"><a href="#/home">Главная</a>　/　Матчи</div><div class="page-title"><div><h1>Матчи</h1><p>Live и предстоящие матчи Counter-Strike · CSTV</p></div><a class="back" href="#/home">← На главную</a></div><section class="panel"><div class="head"><h2>LIVE / UPCOMING</h2><small>РАСПИСАНИЕ</small></div>${empty('◉','Матчей пока что нету','Когда матчи будут добавлены, здесь появятся карточки. Нажми на матч, чтобы открыть его отдельную страницу.')}</section>`}
+function tournamentDetail(name,date){const isFztv=name.toUpperCase()==='FZTV CUP #1';if(isFztv){return `<div class="crumb"><a href="#/home">Главная</a>　/　<a href="#/tournaments">Турниры</a>　/　FZTV CUP #1</div><div class="page-title"><div><h1>FZTV CUP #1</h1><p>Официальная серия ежемесячных турниров FragZoneTV</p></div><a class="back" href="#/tournaments">← К календарю</a></div><section class="panel detail-card"><div class="detail-banner fztv-banner"><div class="cup">♛ &nbsp; FRAGZONETV TOURNAMENT</div><h2>FZTV CUP #1</h2><p>Ежемесячный турнир по Counter-Strike 2 от FragZoneTV. Собери команду, покажи свой скилл и поборись за призовые!</p><span class="fztv-tag">РЕГИСТРАЦИЯ ОТКРОЕТСЯ 7 НОЯБРЯ</span></div><div class="detail-info"><div class="info-box"><small>ДАТА ПРОВЕДЕНИЯ</small><b>13–16 ноября 2026</b></div><div class="info-box"><small>РЕГИСТРАЦИЯ</small><b style="color:#ff6875">С 7 ноября 2026</b></div><div class="info-box"><small>ОРГАНИЗАТОР</small><b>FragZoneTV</b></div></div><div class="detail-info"><div class="info-box"><small>ДИСЦИПЛИНА</small><b>Counter-Strike 2</b></div><div class="info-box"><small>ФОРМАТ</small><b>Плей-офф</b></div><div class="info-box"><small>УЧАСТНИКИ</small><b>0 / 8 команд</b></div></div><h3 style="margin:20px 0 8px">ПРИЗОВЫЕ МЕСТА · 200 FZTV POINTS</h3><div class="fztv-prizes"><div class="fztv-prize"><small>🥇 1 МЕСТО</small><b>100</b><small>FZTV POINTS</small></div><div class="fztv-prize"><small>🥈 2 МЕСТО</small><b>50</b><small>FZTV POINTS</small></div><div class="fztv-prize"><small>🥉 3 МЕСТО</small><b>30</b><small>FZTV POINTS</small></div><div 
+
+js/team-tournament-workflow.js :: fztv_tournament_applications :: 4581
+Date.now()>=new Date(t.registration_opens_at).getTime()&&(!t.starts_at||Date.now()<new Date(t.starts_at).getTime()));
+ for(const team of teams||[]){
+ const item=el('div');item.append(el('strong',team.name+' ['+team.tag+'] — '+team.status));
+ if(team.status==='approved'){
+ const select=el('select');for(const t of tournaments||[]){const option=el('option',t.name);option.value=t.id;select.append(option);}
+ const button=el('button','Подать заявку на турнир');button.type='button';button.disabled=!select.options.length;
+ button.onclick=async()=>{button.disabled=true;const {error}=await client.from('fztv_tournament_applications').insert({team_id:team.id,tournament_id:select.value,owner_id:user.id});msg.textContent=error?'Ошибка: '+error.message:'Заявка на турнир отправлена';button.disabled=false;};
+ item.append(select,button);
+ }myTeams.append(item);
+ if(team.status==='approved'){
+ import('./team-player-editor.js?v=lineups-20261107').then(m=>m.mountTeamPlayerEditor({client,container:item,team,user})).catch(err=>{const p=el('p','Не удалось загрузить управление игроками: '+err.message);item.append(p);});
+ }
+ }
+ }
+ await refresh();
+ const {data:isAdmin,error:adminError}=await client.rpc('fztv_is_admin');
+ if(adminError || !isAdmin)return;
+ heading('Админ-панель — заявки');
+ const admin=el('section');root.append(admin);
+ async function loadAdmin(){
+ admin.replaceChildren();
+ const allTeams=el('section');allTeams.append(el('h3','Управление командами'));
+ const {data:teams,error:teamsError}=await client.from('fztv_teams').select('id,name,tag,status,logo_url').order('created_at',{ascending:false});
+ if(teamsError){allTeams.append(el('p','Ошибка загрузки команд: '+teamsError.message));}
+ else {
+ allTeams.append(el('p','Всего команд: '+(teams||[]).length));
+ for(const team of teams||[]){
+ const line=el('div');line.className='rank-team';line.style.cssText='display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:10px';
+ if(team.logo_url){const img=el('img');img.src=team.logo_url;img.alt='';img.width=40;img.height=40;img.style.cssText='width:40px;height:40px;object-fit:cover;border-radius:8px';line.append(img);}
+ const info=el('span',team.name+' ['+team.tag+'] — '+team.sta
+
+js/team-tournament-workflow.js :: fztv_tournament_applications :: 7126
+msg.textContent='Удаление команды…';
+ const {data,error}=await client.from('fztv_teams').delete().eq('id',team.id).select('id');
+ if(error){msg.textContent='Ошибка удаления: '+error.message;remove.disabled=false;return;}
+ if(!data?.length){msg.textContent='Удаление не подтверждено. Проверь права администратора.';remove.disabled=false;return;}
+ msg.textContent='Команда «'+team.name+'» удалена';await loadAdmin();
+ };
+ line.append(remove);allTeams.append(line);
+ }
+ }
+ admin.append(allTeams);
+ for(const spec of [
+ {table:'fztv_teams',title:'Новые команды',label:r=>r.name+' ['+r.tag+']'},
+ {table:'fztv_tournament_applications',title:'Заявки на турниры',label:r=>r.team_id+' → '+r.tournament_id}
+ ]){
+ const group=el('div');group.append(el('h3',spec.title));
+ const {data,error}=await client.from(spec.table).select('*').eq('status','pending').order('created_at',{ascending:true});
+ if(error){group.append(el('p',error.message));admin.append(group);continue;}
+ group.append(el('p','Ожидают модерации: '+(data||[]).length));
+ for(const r of data||[]){const line=el('div');line.append(el('span',spec.label(r)+' '));
+ for(const [status,caption] of [['approved','Одобрить'],['rejected','Отклонить']]){
+ const b=el('button',caption);b.type='button';b.onclick=async()=>{b.disabled=true;const {error}=await client.from(spec.table).update({status}).eq('id',r.id);msg.textContent=error?'Ошибка: '+error.message:'Решение сохранено';await loadAdmin();};line.append(b);
+ }group.append(line);}admin.append(group);
+ }
+ }
+ await loadAdmin();
+ const refreshButton=el('button','Обновить уведомления');refreshButton.type='button';refreshButton.onclick=loadAdmin;root.append(refreshButton);
+}
+
+
+js/team-tournament-workflow.js :: registration_opens_at :: 3870
+ay='none';form.hidden=true;open.textContent='＋ Создать команду';
+ await refresh();
+ }catch(error){msg.textContent='Ошибка: '+error.message;}finally{submit.disabled=false;}
+ });
+ }
+ const myTeams=el('section');root.append(myTeams);
+ async function refresh(){
+ myTeams.replaceChildren(el('h2','Мои команды'));
+ const {data:teams,error}=await client.from('fztv_teams').select('id,name,tag,status').eq('owner_id',user.id).order('created_at',{ascending:false});
+ if(error){myTeams.append(el('p',error.message));return;}
+ const {data:tournamentRows}=await client.from('tournaments').select('id,name,status,registration_opens_at,starts_at').eq('status','registration');const tournaments=(tournamentRows||[]).filter(t=>Date.now()>=new Date(t.registration_opens_at).getTime()&&(!t.starts_at||Date.now()<new Date(t.starts_at).getTime()));
+ for(const team of teams||[]){
+ const item=el('div');item.append(el('strong',team.name+' ['+team.tag+'] — '+team.status));
+ if(team.status==='approved'){
+ const select=el('select');for(const t of tournaments||[]){const option=el('option',t.name);option.value=t.id;select.append(option);}
+ const button=el('button','Подать заявку на турнир');button.type='button';button.disabled=!select.options.length;
+ button.onclick=async()=>{button.disabled=true;const {error}=await client.from('fztv_tournament_applications').insert({team_id:team.id,tournament_id:select.value,owner_id:user.id});msg.textContent=error?'Ошибка: '+error.message:'Заявка на турнир отправлена';button.disabled=false;};
+ item.append(select,button);
+ }myTeams.append(item);
+ if(team.status==='approved'){
+ import('./team-player-editor.js?v=lineups-20261107').then(m=>m.mountTeamPlayerEditor({client,container:item,team,user})).catch(err=>{const p=el('p','Не удалось загрузить управление игроками: '+err.message);item.append(p);});
+ }
+ }
+ }
+ await refresh();
+ const {data:isAdmin,error:adminError}=await client.rpc('fztv_is_admin');
+ if(adminError || !isAdmin)return;
+ heading('Админ-панель — заявки');
+ const admin=el('section');root.append(admin);
+ async function loadAdmin(){
+ admin.replaceChildren();
+ const allTeams=el('section');allTeams.append(el('h3','Управление командами'));
+ const {data:teams,erro
+
+js/team-tournament-workflow.js :: registration_opens_at :: 4004
+sage;}finally{submit.disabled=false;}
+ });
+ }
+ const myTeams=el('section');root.append(myTeams);
+ async function refresh(){
+ myTeams.replaceChildren(el('h2','Мои команды'));
+ const {data:teams,error}=await client.from('fztv_teams').select('id,name,tag,status').eq('owner_id',user.id).order('created_at',{ascending:false});
+ if(error){myTeams.append(el('p',error.message));return;}
+ const {data:tournamentRows}=await client.from('tournaments').select('id,name,status,registration_opens_at,starts_at').eq('status','registration');const tournaments=(tournamentRows||[]).filter(t=>Date.now()>=new Date(t.registration_opens_at).getTime()&&(!t.starts_at||Date.now()<new Date(t.starts_at).getTime()));
+ for(const team of teams||[]){
+ const item=el('div');item.append(el('strong',team.name+' ['+team.tag+'] — '+team.status));
+ if(team.status==='approved'){
+ const select=el('select');for(const t of tournaments||[]){const option=el('option',t.name);option.value=t.id;select.append(option);}
+ const button=el('button','Подать заявку на турнир');button.type='button';button.disabled=!select.options.length;
+ button.onclick=async()=>{button.disabled=true;const {error}=await client.from('fztv_tournament_applications').insert({team_id:team.id,tournament_id:select.value,owner_id:user.id});msg.textContent=error?'Ошибка: '+error.message:'Заявка на турнир отправлена';button.disabled=false;};
+ item.append(select,button);
+ }myTeams.append(item);
+ if(team.status==='approved'){
+ import('./team-player-editor.js?v=lineups-20261107').then(m=>m.mountTeamPlayerEditor({client,container:item,team,user})).catch(err=>{const p=el('p','Не удалось загрузить управление игроками: '+err.message);item.append(p);});
+ }
+ }
+ }
+ await refresh();
+ const {data:isAdmin,error:adminError}=await client.rpc('fztv_is_admin');
+ if(adminError || !isAdmin)return;
+ heading('Админ-панель — заявки');
+ const admin=el('section');root.append(admin);
+ async function loadAdmin(){
+ admin.replaceChildren();
+ const allTeams=el('section');allTeams.append(el('h3','Управление командами'));
+ const {data:teams,error:teamsError}=await client.from('fztv_teams').select('id,name,tag,status,logo_url').order('created_at',{ascending:false});
+ if(teamsEr
+
+js/tournament-season-2027.js :: status==='registration' :: 9178
+cords.find(x=>x.id===id);const page=node('div','fzse-page'),back=node('a','fzse-link','← Все турниры');back.href='#/tournaments';page.append(back);
+if(!t){page.append(node('h2','','Турнир не найден'));root.replaceChildren(page);return;}
+const top=node('section','fzse-panel');top.append(hero(t),node('h1','',t.name),node('p','',t.description||'Турнир по Counter-Strike 2'));page.append(top);
+const info=node('div','fzse-details');for(const [key,val] of [['Начало',date(t.starts_at)],['Завершение',date(t.ends_at)],['Формат',formats[t.format]||t.format],['Команды',String(t.max_teams||8)],['Статус',t.status==='registration'?'Регистрация':t.status==='finished'?'Завершён':t.status==='in_progress'?'Идёт':'Запланирован']]){const chip=node('div','fzse-chip');chip.append(node('small','',key),node('strong','',val));info.append(chip);}page.append(info);
+if(t.format==='swiss_playoff'){const c=t.stage_config||{},p=node('section','fzse-panel');p.append(node('h2','','ШВЕЙЦАРСКАЯ СИСТЕМА + ПЛЕЙ-ОФФ'),node('p','',String(c.swiss_teams||16)+' команд, '+String(c.swiss_rounds||5)+' швейцарских раундов. Топ-'+String(c.playoff_teams||8)+' выходит в плей-офф. Матчи '+(c.best_of||'BO3')+', гранд-финал '+(c.grand_final||'BO5')+'.'),node('p','fzse-message','Жеребьёвка, пары, сетка и результаты будут добавлены после старта турнира.'));page.append(p);}
+const reg=node('section','fzse-panel');
+if(true){
+ const slotsTitle=node('h2','','УЧАСТНИКИ (0/'+(t.max_teams||8)+')');
+ const infoBox=node('div','info-box');infoBox.append(node('span','','УЧАСТНИКИ '),node('b','','0 / '+(t.max_teams||8)+' команд'));
+ const slots=node('div','fztv-slots');
+ reg.append(slotsTitle,infoBox,slots);
+} else {
+ reg.append(node('h2','','РЕГИСТРАЦИЯ КОМАНД'),node('p','',t.status==='registration'?'Регистрация объявлена открытой.':'Регистрация пока не открыта.'));
+ const team=node('a','fzse-link','Управление моей командой →');team.href='#/teams';reg.append(team);
+}
+page.append(reg);root.replaceChildren(page);
+if(true) {
+ import('./tournament-registration.js?v=20261108-general-registration-v4').then(m=>m.mountTournamentRegistration({client:db(),root:reg,tournamentId:t.id})).catch(err=>{console.error('FZTV CUP registration rest
+
+js/tournament-season-2027.js :: status==='registration' :: 10318
+лей-офф. Матчи '+(c.best_of||'BO3')+', гранд-финал '+(c.grand_final||'BO5')+'.'),node('p','fzse-message','Жеребьёвка, пары, сетка и результаты будут добавлены после старта турнира.'));page.append(p);}
+const reg=node('section','fzse-panel');
+if(true){
+ const slotsTitle=node('h2','','УЧАСТНИКИ (0/'+(t.max_teams||8)+')');
+ const infoBox=node('div','info-box');infoBox.append(node('span','','УЧАСТНИКИ '),node('b','','0 / '+(t.max_teams||8)+' команд'));
+ const slots=node('div','fztv-slots');
+ reg.append(slotsTitle,infoBox,slots);
+} else {
+ reg.append(node('h2','','РЕГИСТРАЦИЯ КОМАНД'),node('p','',t.status==='registration'?'Регистрация объявлена открытой.':'Регистрация пока не открыта.'));
+ const team=node('a','fzse-link','Управление моей командой →');team.href='#/teams';reg.append(team);
+}
+page.append(reg);root.replaceChildren(page);
+if(true) {
+ import('./tournament-registration.js?v=20261108-general-registration-v4').then(m=>m.mountTournamentRegistration({client:db(),root:reg,tournamentId:t.id})).catch(err=>{console.error('FZTV CUP registration restore',err);reg.append(node('p','fzse-message','Ошибка загрузки регистрации: '+err.message));});
+}
+}
+function field(title,name,kind,value,values){const wrapper=node('label','',title),x=node(kind==='select'?'select':kind==='textarea'?'textarea':'input');x.name=name;if(kind==='select'){for(const [key,label] of values){const op=node('option','',label);op.value=key;x.append(op);}x.value=value||'';}else{x.type=kind;x.value=value??'';}wrapper.append(x);return wrapper;}
+async function admin(root){let panel=$('#fzse-admin',root);if(!panel){panel=node('section','fzse-panel');panel.id='fzse-admin';root.prepend(panel);}panel.replaceChildren(node('h2','','УПРАВЛЕНИЕ ТУРНИРАМИ'));
+const choose=node('select','fzse-admin-select');choose.style.width='100%';for(const t of records){const op=node('option','',date(t.starts_at)+' · '+t.name);op.value=t.id;choose.append(op);}panel.append(choose);const content=node('div'),message=node('p','fzse-message');panel.append(content,message);
+function draw(){const t=records.find(x=>x.id===choose.value);if(!t)return;content.replaceChildren();const form=node('form','fzse-form');
+for(const [label,key,kind,va
+
+js/tournament-season-2027.js :: max_teams :: 6389
+px!important;min-height:220px;padding:12px!important}.fzse-panel>.fzse-hero .fzse-trophy-frame{height:188px}.fzse-panel>.fzse-hero .fzse-banner-copy strong{font-size:clamp(15px,4vw,23px)}.fzse-banner-copy small{font-size:9px}.fzse-banner-copy span{font-size:9px}}\n";document.head.append(style);
+let records=[],loaded=false,loadPromise=null,working=false,pending=false;
+async function load(force=false){if(loaded&&!force)return records;if(loadPromise)return loadPromise;const c=db();if(!c)return [];loadPromise=(async()=>{const r=await c.from('tournaments').select('id,name,description,format,status,max_teams,registration_opens_at,starts_at,ends_at,series,banner_url,stage_config').order('starts_at',{ascending:true});if(r.error)throw r.error;records=r.data||[];loaded=true;return records;})();try{return await loadPromise;}finally{loadPromise=null;}}
+function hero(t){
+ const e=node('div','fzse-hero '+(t.series||'')+(t.name==='HALLOWEEN NIGHT CUP'?' fzse-halloween':''));
+ const trophy=node('div','fzse-trophy-frame');
+ const imageUrl=t.name==='HALLOWEEN NIGHT CUP'
+   ?'./assets/tournaments/halloween-trophy-realistic.svg'
+   :t.banner_url;
+ if(imageUrl&&(/^https:\/\//i.test(imageUrl)||imageUrl.startsWith('./assets/tournaments/'))){
+   if(t.name==='HALLOWEEN NIGHT CUP'){
+     const im=node('img');im.src=imageUrl;im.alt='Кубок Halloween Night Cup · вид спереди';im.loading='lazy';trophy.append(im);
+   } else {
+     const crop=node('div','fzse-trophy-crop');crop.style.backgroundImage='url("'+imageUrl.replace(/["\\]/g,'')+'")';trophy.append(crop);
+   }
+ } else trophy.append(node('span','fzse-trophy-fallback','🏆'));
+ const copy=node('div','fzse-banner-copy');
+ copy.append(node('small','',type[t.series]||'FZTV TOURNAMENT'));
+ copy.append(node('strong','',t.name));
+ copy.append(node('span','',t.name==='HALLOWEEN NIGHT CUP'?'DARK ARENA EDITION':t.format==='swiss_playoff'?'SWISS STAGE + PLAYOFFS':'FRAGZONETV CHAMPIONSHIP'));
+ e.append(trophy,copy);
+ return e;
+}
+function card(t){const a=node('a','fzse-card');a.href='#/season-tournament/'+t.id;a.append(hero(t));const body=node('div','fzse-body');body.append(node('h3','',t.name),node('p','',date(t.starts_at)+' — '+date(t.ends_at)),node('
+
+js/tournament-season-2027.js :: max_teams :: 7998
+allback','🏆'));
+ const copy=node('div','fzse-banner-copy');
+ copy.append(node('small','',type[t.series]||'FZTV TOURNAMENT'));
+ copy.append(node('strong','',t.name));
+ copy.append(node('span','',t.name==='HALLOWEEN NIGHT CUP'?'DARK ARENA EDITION':t.format==='swiss_playoff'?'SWISS STAGE + PLAYOFFS':'FRAGZONETV CHAMPIONSHIP'));
+ e.append(trophy,copy);
+ return e;
+}
+function card(t){const a=node('a','fzse-card');a.href='#/season-tournament/'+t.id;a.append(hero(t));const body=node('div','fzse-body');body.append(node('h3','',t.name),node('p','',date(t.starts_at)+' — '+date(t.ends_at)),node('p','',(t.max_teams||8)+' команд · '+(formats[t.format]||t.format)));a.append(body);return a;}
+function calendar(root){const page=node('div','fzse-page');page.append(node('h1','','ТУРНИРЫ FRAGZONETV'),node('p','',records.length+' турниров · ноябрь 2026 — октябрь 2027'));let current=null,group=null;
+for(const t of records){const m=month(t.starts_at);if(m!==current){current=m;group=node('section','fzse-group');group.append(node('h2','',m),node('div','fzse-grid'));page.append(group);}$('.fzse-grid',group).append(card(t));}
+root.replaceChildren(page);}
+function detail(root,id){const t=records.find(x=>x.id===id);const page=node('div','fzse-page'),back=node('a','fzse-link','← Все турниры');back.href='#/tournaments';page.append(back);
+if(!t){page.append(node('h2','','Турнир не найден'));root.replaceChildren(page);return;}
+const top=node('section','fzse-panel');top.append(hero(t),node('h1','',t.name),node('p','',t.description||'Турнир по Counter-Strike 2'));page.append(top);
+const info=node('div','fzse-details');for(const [key,val] of [['Начало',date(t.starts_at)],['Завершение',date(t.ends_at)],['Формат',formats[t.format]||t.format],['Команды',String(t.max_teams||8)],['Статус',t.status==='registration'?'Регистрация':t.status==='finished'?'Завершён':t.status==='in_progress'?'Идёт':'Запланирован']]){const chip=node('div','fzse-chip');chip.append(node('small','',key),node('strong','',val));info.append(chip);}page.append(info);
+if(t.format==='swiss_playoff'){const c=t.stage_config||{},p=node('section','fzse-panel');p.append(node('h2','','ШВЕЙЦАРСКАЯ СИСТЕМА + ПЛЕЙ-ОФФ'),node('p','',String(c.swis
+
+js/tournament-season-2027.js :: max_teams :: 9151
+ detail(root,id){const t=records.find(x=>x.id===id);const page=node('div','fzse-page'),back=node('a','fzse-link','← Все турниры');back.href='#/tournaments';page.append(back);
+if(!t){page.append(node('h2','','Турнир не найден'));root.replaceChildren(page);return;}
+const top=node('section','fzse-panel');top.append(hero(t),node('h1','',t.name),node('p','',t.description||'Турнир по Counter-Strike 2'));page.append(top);
+const info=node('div','fzse-details');for(const [key,val] of [['Начало',date(t.starts_at)],['Завершение',date(t.ends_at)],['Формат',formats[t.format]||t.format],['Команды',String(t.max_teams||8)],['Статус',t.status==='registration'?'Регистрация':t.status==='finished'?'Завершён':t.status==='in_progress'?'Идёт':'Запланирован']]){const chip=node('div','fzse-chip');chip.append(node('small','',key),node('strong','',val));info.append(chip);}page.append(info);
+if(t.format==='swiss_playoff'){const c=t.stage_config||{},p=node('section','fzse-panel');p.append(node('h2','','ШВЕЙЦАРСКАЯ СИСТЕМА + ПЛЕЙ-ОФФ'),node('p','',String(c.swiss_teams||16)+' команд, '+String(c.swiss_rounds||5)+' швейцарских раундов. Топ-'+String(c.playoff_teams||8)+' выходит в плей-офф. Матчи '+(c.best_of||'BO3')+', гранд-финал '+(c.grand_final||'BO5')+'.'),node('p','fzse-message','Жеребьёвка, пары, сетка и результаты будут добавлены после старта турнира.'));page.append(p);}
+const reg=node('section','fzse-panel');
+if(true){
+ const slotsTitle=node('h2','','УЧАСТНИКИ (0/'+(t.max_teams||8)+')');
+ const infoBox=node('div','info-box');infoBox.append(node('span','','УЧАСТНИКИ '),node('b','','0 / '+(t.max_teams||8)+' команд'));
+ const slots=node('div','fztv-slots');
+ reg.append(slotsTitle,infoBox,slots);
+} else {
+ reg.append(node('h2','','РЕГИСТРАЦИЯ КОМАНД'),node('p','',t.status==='registration'?'Регистрация объявлена открытой.':'Регистрация пока не открыта.'));
+ const team=node('a','fzse-link','Управление моей командой →');team.href='#/teams';reg.append(team);
+}
+page.append(reg);root.replaceChildren(page);
+if(true) {
+ import('./tournament-registration.js?v=20261108-general-registration-v4').then(m=>m.mountTournamentRegistration({client:db(),root:reg,tournamentId:t.id})).catch(err=>{console.error(
+
+js/tournament-season-2027.js :: max_teams :: 10019
+d(info);
+if(t.format==='swiss_playoff'){const c=t.stage_config||{},p=node('section','fzse-panel');p.append(node('h2','','ШВЕЙЦАРСКАЯ СИСТЕМА + ПЛЕЙ-ОФФ'),node('p','',String(c.swiss_teams||16)+' команд, '+String(c.swiss_rounds||5)+' швейцарских раундов. Топ-'+String(c.playoff_teams||8)+' выходит в плей-офф. Матчи '+(c.best_of||'BO3')+', гранд-финал '+(c.grand_final||'BO5')+'.'),node('p','fzse-message','Жеребьёвка, пары, сетка и результаты будут добавлены после старта турнира.'));page.append(p);}
+const reg=node('section','fzse-panel');
+if(true){
+ const slotsTitle=node('h2','','УЧАСТНИКИ (0/'+(t.max_teams||8)+')');
+ const infoBox=node('div','info-box');infoBox.append(node('span','','УЧАСТНИКИ '),node('b','','0 / '+(t.max_teams||8)+' команд'));
+ const slots=node('div','fztv-slots');
+ reg.append(slotsTitle,infoBox,slots);
+} else {
+ reg.append(node('h2','','РЕГИСТРАЦИЯ КОМАНД'),node('p','',t.status==='registration'?'Регистрация объявлена открытой.':'Регистрация пока не открыта.'));
+ const team=node('a','fzse-link','Управление моей командой →');team.href='#/teams';reg.append(team);
+}
+page.append(reg);root.replaceChildren(page);
+if(true) {
+ import('./tournament-registration.js?v=20261108-general-registration-v4').then(m=>m.mountTournamentRegistration({client:db(),root:reg,tournamentId:t.id})).catch(err=>{console.error('FZTV CUP registration restore',err);reg.append(node('p','fzse-message','Ошибка загрузки регистрации: '+err.message));});
+}
+}
+function field(title,name,kind,value,values){const wrapper=node('label','',title),x=node(kind==='select'?'select':kind==='textarea'?'textarea':'input');x.name=name;if(kind==='select'){for(const [key,label] of values){const op=node('option','',label);op.value=key;x.append(op);}x.value=value||'';}else{x.type=kind;x.value=value??'';}wrapper.append(x);return wrapper;}
+async function admin(root){let panel=$('#fzse-admin',root);if(!panel){panel=node('section','fzse-panel');panel.id='fzse-admin';root.prepend(panel);}panel.replaceChildren(node('h2','','УПРАВЛЕНИЕ ТУРНИРАМИ'));
+const choose=node('select','fzse-admin-select');choose.style.width='100%';for(const t of records){const op=node('option','',date(t.starts_at)+' · '+t.name);op.value=t
+
+js/tournament-season-2027.js :: max_teams :: 10143
+ЙЦАРСКАЯ СИСТЕМА + ПЛЕЙ-ОФФ'),node('p','',String(c.swiss_teams||16)+' команд, '+String(c.swiss_rounds||5)+' швейцарских раундов. Топ-'+String(c.playoff_teams||8)+' выходит в плей-офф. Матчи '+(c.best_of||'BO3')+', гранд-финал '+(c.grand_final||'BO5')+'.'),node('p','fzse-message','Жеребьёвка, пары, сетка и результаты будут добавлены после старта турнира.'));page.append(p);}
+const reg=node('section','fzse-panel');
+if(true){
+ const slotsTitle=node('h2','','УЧАСТНИКИ (0/'+(t.max_teams||8)+')');
+ const infoBox=node('div','info-box');infoBox.append(node('span','','УЧАСТНИКИ '),node('b','','0 / '+(t.max_teams||8)+' команд'));
+ const slots=node('div','fztv-slots');
+ reg.append(slotsTitle,infoBox,slots);
+} else {
+ reg.append(node('h2','','РЕГИСТРАЦИЯ КОМАНД'),node('p','',t.status==='registration'?'Регистрация объявлена открытой.':'Регистрация пока не открыта.'));
+ const team=node('a','fzse-link','Управление моей командой →');team.href='#/teams';reg.append(team);
+}
+page.append(reg);root.replaceChildren(page);
+if(true) {
+ import('./tournament-registration.js?v=20261108-general-registration-v4').then(m=>m.mountTournamentRegistration({client:db(),root:reg,tournamentId:t.id})).catch(err=>{console.error('FZTV CUP registration restore',err);reg.append(node('p','fzse-message','Ошибка загрузки регистрации: '+err.message));});
+}
+}
+function field(title,name,kind,value,values){const wrapper=node('label','',title),x=node(kind==='select'?'select':kind==='textarea'?'textarea':'input');x.name=name;if(kind==='select'){for(const [key,label] of values){const op=node('option','',label);op.value=key;x.append(op);}x.value=value||'';}else{x.type=kind;x.value=value??'';}wrapper.append(x);return wrapper;}
+async function admin(root){let panel=$('#fzse-admin',root);if(!panel){panel=node('section','fzse-panel');panel.id='fzse-admin';root.prepend(panel);}panel.replaceChildren(node('h2','','УПРАВЛЕНИЕ ТУРНИРАМИ'));
+const choose=node('select','fzse-admin-select');choose.style.width='100%';for(const t of records){const op=node('option','',date(t.starts_at)+' · '+t.name);op.value=t.id;choose.append(op);}panel.append(choose);const content=node('div'),message=node('p','fzse-message');panel.append(content,
+
+js/tournament-season-2027.js :: registration_opens_at :: 6399
+nt;min-height:220px;padding:12px!important}.fzse-panel>.fzse-hero .fzse-trophy-frame{height:188px}.fzse-panel>.fzse-hero .fzse-banner-copy strong{font-size:clamp(15px,4vw,23px)}.fzse-banner-copy small{font-size:9px}.fzse-banner-copy span{font-size:9px}}\n";document.head.append(style);
+let records=[],loaded=false,loadPromise=null,working=false,pending=false;
+async function load(force=false){if(loaded&&!force)return records;if(loadPromise)return loadPromise;const c=db();if(!c)return [];loadPromise=(async()=>{const r=await c.from('tournaments').select('id,name,description,format,status,max_teams,registration_opens_at,starts_at,ends_at,series,banner_url,stage_config').order('starts_at',{ascending:true});if(r.error)throw r.error;records=r.data||[];loaded=true;return records;})();try{return await loadPromise;}finally{loadPromise=null;}}
+function hero(t){
+ const e=node('div','fzse-hero '+(t.series||'')+(t.name==='HALLOWEEN NIGHT CUP'?' fzse-halloween':''));
+ const trophy=node('div','fzse-trophy-frame');
+ const imageUrl=t.name==='HALLOWEEN NIGHT CUP'
+   ?'./assets/tournaments/halloween-trophy-realistic.svg'
+   :t.banner_url;
+ if(imageUrl&&(/^https:\/\//i.test(imageUrl)||imageUrl.startsWith('./assets/tournaments/'))){
+   if(t.name==='HALLOWEEN NIGHT CUP'){
+     const im=node('img');im.src=imageUrl;im.alt='Кубок Halloween Night Cup · вид спереди';im.loading='lazy';trophy.append(im);
+   } else {
+     const crop=node('div','fzse-trophy-crop');crop.style.backgroundImage='url("'+imageUrl.replace(/["\\]/g,'')+'")';trophy.append(crop);
+   }
+ } else trophy.append(node('span','fzse-trophy-fallback','🏆'));
+ const copy=node('div','fzse-banner-copy');
+ copy.append(node('small','',type[t.series]||'FZTV TOURNAMENT'));
+ copy.append(node('strong','',t.name));
+ copy.append(node('span','',t.name==='HALLOWEEN NIGHT CUP'?'DARK ARENA EDITION':t.format==='swiss_playoff'?'SWISS STAGE + PLAYOFFS':'FRAGZONETV CHAMPIONSHIP'));
+ e.append(trophy,copy);
+ return e;
+}
+function card(t){const a=node('a','fzse-card');a.href='#/season-tournament/'+t.id;a.append(hero(t));const body=node('div','fzse-body');body.append(node('h3','',t.name),node('p','',date(t.starts_at)+' — '+date(t.ends_at)),node('p','',(t.m
+
+js/tournament-season-2027.js :: registration_opens_at :: 12130
+(const t of records){const op=node('option','',date(t.starts_at)+' · '+t.name);op.value=t.id;choose.append(op);}panel.append(choose);const content=node('div'),message=node('p','fzse-message');panel.append(content,message);
+function draw(){const t=records.find(x=>x.id===choose.value);if(!t)return;content.replaceChildren();const form=node('form','fzse-form');
+for(const [label,key,kind,val] of [['Название','name','text',t.name],['Начало (Москва)','starts_at','datetime-local',editable(t.starts_at)],['Конец (Москва)','ends_at','datetime-local',editable(t.ends_at)],['Открытие регистрации (Москва)','registration_opens_at','datetime-local',editable(t.registration_opens_at)],['Количество команд','max_teams','number',String(t.max_teams||8)],['Ссылка на баннер HTTPS','banner_url','url',t.banner_url||''],['Описание','description','textarea',t.description||'']])form.append(field(label,key,kind,val));
+form.append(field('Формат','format','select',t.format,[['single_elimination','Плей-офф'],['swiss_playoff','Швейцарка + плей-офф'],['round_robin','Круговая']]));
+form.append(field('Статус','status','select',t.status,[['scheduled','Запланирован'],['registration','Регистрация'],['in_progress','Идёт'],['finished','Завершён'],['cancelled','Отменён']]));
+form.append(field('Серия','series','select',t.series,[['cup','FZTV CUP'],['major','MAJOR'],['open','OPEN'],['seasonal','Сезонный'],['masters','MASTERS']]));
+const actions=node('div');actions.style.gridColumn='1/-1';const save=node('button','fzse-btn','Сохранить изменения');save.type='submit';actions.append(save);const link=node('a','fzse-link','Открыть турнир');link.href='#/season-tournament/'+t.id;link.style.marginLeft='16px';actions.append(link);form.append(actions);content.append(form);
+form.onsubmit=async event=>{event.preventDefault();save.disabled=true;message.textContent='Сохранение…';try{const f=new FormData(form),name=String(f.get('name')||'').trim(),max=Number(f.get('max_teams')),start=iso(f.get('starts_at')),end=iso(f.get('ends_at')),banner=String(f.get('banner_url')||'').trim();if(!name||name.length>150)throw Error('Название: 1–150 символов');if(!Number.isInteger(max)||max<2||max>128)throw Error('Количество команд: 2–128')
+
+js/tournament-season-2027.js :: registration_opens_at :: 12181
+(t.starts_at)+' · '+t.name);op.value=t.id;choose.append(op);}panel.append(choose);const content=node('div'),message=node('p','fzse-message');panel.append(content,message);
+function draw(){const t=records.find(x=>x.id===choose.value);if(!t)return;content.replaceChildren();const form=node('form','fzse-form');
+for(const [label,key,kind,val] of [['Название','name','text',t.name],['Начало (Москва)','starts_at','datetime-local',editable(t.starts_at)],['Конец (Москва)','ends_at','datetime-local',editable(t.ends_at)],['Открытие регистрации (Москва)','registration_opens_at','datetime-local',editable(t.registration_opens_at)],['Количество команд','max_teams','number',String(t.max_teams||8)],['Ссылка на баннер HTTPS','banner_url','url',t.banner_url||''],['Описание','description','textarea',t.description||'']])form.append(field(label,key,kind,val));
+form.append(field('Формат','format','select',t.format,[['single_elimination','Плей-офф'],['swiss_playoff','Швейцарка + плей-офф'],['round_robin','Круговая']]));
+form.append(field('Статус','status','select',t.status,[['scheduled','Запланирован'],['registration','Регистрация'],['in_progress','Идёт'],['finished','Завершён'],['cancelled','Отменён']]));
+form.append(field('Серия','series','select',t.series,[['cup','FZTV CUP'],['major','MAJOR'],['open','OPEN'],['seasonal','Сезонный'],['masters','MASTERS']]));
+const actions=node('div');actions.style.gridColumn='1/-1';const save=node('button','fzse-btn','Сохранить изменения');save.type='submit';actions.append(save);const link=node('a','fzse-link','Открыть турнир');link.href='#/season-tournament/'+t.id;link.style.marginLeft='16px';actions.append(link);form.append(actions);content.append(form);
+form.onsubmit=async event=>{event.preventDefault();save.disabled=true;message.textContent='Сохранение…';try{const f=new FormData(form),name=String(f.get('name')||'').trim(),max=Number(f.get('max_teams')),start=iso(f.get('starts_at')),end=iso(f.get('ends_at')),banner=String(f.get('banner_url')||'').trim();if(!name||name.length>150)throw Error('Название: 1–150 символов');if(!Number.isInteger(max)||max<2||max>128)throw Error('Количество команд: 2–128');if(!start||!end||new Date(start)>new Date(end))thr
+
+js/tournament-season-2027.js :: registration_opens_at :: 13972
+анение…';try{const f=new FormData(form),name=String(f.get('name')||'').trim(),max=Number(f.get('max_teams')),start=iso(f.get('starts_at')),end=iso(f.get('ends_at')),banner=String(f.get('banner_url')||'').trim();if(!name||name.length>150)throw Error('Название: 1–150 символов');if(!Number.isInteger(max)||max<2||max>128)throw Error('Количество команд: 2–128');if(!start||!end||new Date(start)>new Date(end))throw Error('Проверь даты');if(banner&&!/^https:\/\//.test(banner))throw Error('Укажи HTTPS-адрес баннера');
+const format=String(f.get('format'));const payload={name,starts_at:start,ends_at:end,registration_opens_at:iso(f.get('registration_opens_at')),max_teams:max,banner_url:banner||null,description:String(f.get('description')||''),status:String(f.get('status')),format,series:String(f.get('series')),stage_config:format==='swiss_playoff'?(t.stage_config&&t.format==='swiss_playoff'?t.stage_config:{swiss_rounds:5,swiss_teams:16,playoff_teams:8,playoff_format:'single_elimination',best_of:'BO3',grand_final:'BO5'}):{}};
+const result=await db().from('tournaments').update(payload).eq('id',t.id).select('id').single();if(result.error)throw result.error;if(!result.data)throw Error('Недостаточно прав');loaded=false;await load(true);message.textContent='Изменения сохранены';choose.replaceChildren();for(const x of records){const op=node('option','',date(x.starts_at)+' · '+x.name);op.value=x.id;choose.append(op);}choose.value=t.id;draw();}catch(e){message.textContent='Ошибка: '+e.message;}finally{save.disabled=false;}};
+}choose.addEventListener('change',draw);draw();}
+async function mount(){if(working)return;const r=route();if(!['tournaments','season-tournament','admin'].includes(r))return;const root=$('#app');if(!root||!db())return;working=true;try{await load();if(r!==route())return;if(r==='tournaments'){if(root.dataset.fzse==='calendar'&&$('.fzse-page',root))return;root.dataset.fzse='calendar';calendar(root);}else if(r==='season-tournament'){const id=decodeURIComponent(location.hash.split('/')[2]||'');if(root.dataset.fzse===id&&$('.fzse-page',root))return;root.dataset.fzse=id;detail(root,id);}else if(r==='admin'&&typeof isAdmin==='function'&&isAdmin()){await admin(root);}}cat
+
+js/tournament-season-2027.js :: registration_opens_at :: 14005
+(form),name=String(f.get('name')||'').trim(),max=Number(f.get('max_teams')),start=iso(f.get('starts_at')),end=iso(f.get('ends_at')),banner=String(f.get('banner_url')||'').trim();if(!name||name.length>150)throw Error('Название: 1–150 символов');if(!Number.isInteger(max)||max<2||max>128)throw Error('Количество команд: 2–128');if(!start||!end||new Date(start)>new Date(end))throw Error('Проверь даты');if(banner&&!/^https:\/\//.test(banner))throw Error('Укажи HTTPS-адрес баннера');
+const format=String(f.get('format'));const payload={name,starts_at:start,ends_at:end,registration_opens_at:iso(f.get('registration_opens_at')),max_teams:max,banner_url:banner||null,description:String(f.get('description')||''),status:String(f.get('status')),format,series:String(f.get('series')),stage_config:format==='swiss_playoff'?(t.stage_config&&t.format==='swiss_playoff'?t.stage_config:{swiss_rounds:5,swiss_teams:16,playoff_teams:8,playoff_format:'single_elimination',best_of:'BO3',grand_final:'BO5'}):{}};
+const result=await db().from('tournaments').update(payload).eq('id',t.id).select('id').single();if(result.error)throw result.error;if(!result.data)throw Error('Недостаточно прав');loaded=false;await load(true);message.textContent='Изменения сохранены';choose.replaceChildren();for(const x of records){const op=node('option','',date(x.starts_at)+' · '+x.name);op.value=x.id;choose.append(op);}choose.value=t.id;draw();}catch(e){message.textContent='Ошибка: '+e.message;}finally{save.disabled=false;}};
+}choose.addEventListener('change',draw);draw();}
+async function mount(){if(working)return;const r=route();if(!['tournaments','season-tournament','admin'].includes(r))return;const root=$('#app');if(!root||!db())return;working=true;try{await load();if(r!==route())return;if(r==='tournaments'){if(root.dataset.fzse==='calendar'&&$('.fzse-page',root))return;root.dataset.fzse='calendar';calendar(root);}else if(r==='season-tournament'){const id=decodeURIComponent(location.hash.split('/')[2]||'');if(root.dataset.fzse===id&&$('.fzse-page',root))return;root.dataset.fzse=id;detail(root,id);}else if(r==='admin'&&typeof isAdmin==='function'&&isAdmin()){await admin(root);}}catch(e){console.warn('FZTV tourname
+
+js/tournament-registration.js :: fztv_tournament_applications :: 2796
+ctorAll('.fztv-tournament-registration').forEach(e=>e.remove());const controls=el('div');controls.className='fztv-tournament-registration';
+ const title=el('h3','РЕГИСТРАЦИЯ КОМАНД');controls.append(title);
+ const status=el('p');status.setAttribute('role','status');
+ const {data:{user}}=await client.auth.getUser();
+ const now=Date.now(),opens=new Date(tournament.registration_opens_at).getTime(),starts=tournament.starts_at?new Date(tournament.starts_at).getTime():Infinity;
+ const open=tournament.status==='registration'&&now>=opens&&now<starts;
+ const {data:approved,error:ae}=await client.from('fztv_tournament_applications').select('team_id,status').eq('tournament_id',tournament.id).in('status',['approved','pending']);
+ const ids=(approved||[]).map(a=>a.team_id);
+ let teams=[];
+ if(ids.length){const {data,error:teamError}=await client.from('fztv_teams').select('id,name,tag,logo_url').in('id',ids);if(teamError)console.warn('Tournament teams:',teamError.message);const byId=new Map((data||[]).map(t=>[t.id,t]));teams=ids.map(id=>byId.get(id)).filter(Boolean);}
+ const capacity=tournament.max_teams||8;
+ slots.replaceChildren();
+ for(let i=0;i<capacity;i++){
+ const team=teams[i],slot=el('div');slot.className='fztv-slot';
+ if(team){slot.classList.add('fztv-slot-filled');if(team.logo_url){const img=el('img');img.src=team.logo_url;img.alt='';img.width=35;img.height=35;img.style.cssText='width:35px;height:35px;object-fit:cover;border-radius:7px';slot.append(img);}slot.append(el('strong',team.name));const registration=(approved||[]).find(a=>a.team_id===team.id);if(registration?.status==='pending')slot.append(el('small','На проверке'));}
+ else{slot.append(el('span','♟'),el('strong','СВОБОДНО'));}
+ slots.append(slot);
+ }
+ const count=[...root.querySelectorAll('h2,h3,h4')].find(n=>n.textContent.includes('УЧАСТНИКИ'));if(count)count.textContent='УЧАСТНИКИ ('+teams.length+'/'+capacity+')';
+ const info=[...root.querySelectorAll('.info-box')].find(x=>x.textContent.includes('УЧАСТНИКИ'));if(info){const b=info.querySelector('b');if(b)b.textContent=teams.length+' / '+capacity+' команд';}
+ if(ae)status.textContent='Не удалось загрузить участников: '+ae.message;
+ if(!user){controls.appen
+
+js/tournament-registration.js :: fztv_tournament_applications :: 4698
+;
+ const info=[...root.querySelectorAll('.info-box')].find(x=>x.textContent.includes('УЧАСТНИКИ'));if(info){const b=info.querySelector('b');if(b)b.textContent=teams.length+' / '+capacity+' команд';}
+ if(ae)status.textContent='Не удалось загрузить участников: '+ae.message;
+ if(!user){controls.append(el('p','Войди в аккаунт владельца команды, чтобы подать заявку.'));const a=el('a','Войти');a.href='#/auth';controls.append(a);}
+ else{
+ const {data:owned,error:oe}=await client.from('fztv_teams').select('id,name').eq('owner_id',user.id).eq('status','approved');
+ const {data:mine}=await client.from('fztv_tournament_applications').select('team_id,status').eq('tournament_id',tournament.id).eq('owner_id',user.id);
+ const available=(owned||[]).filter(t=>!(mine||[]).some(a=>a.team_id===t.id));
+ if(oe)controls.append(el('p','Ошибка загрузки команд: '+oe.message));
+ else if(!owned?.length){controls.append(el('p','Для регистрации войди под аккаунтом владельца одобренной команды. Если команда ещё не одобрена — дождись модерации.'));const a=el('a','Создать команду');a.href='#/teams';controls.append(a);}
+ else{
+ for(const a of mine||[]){const t=owned.find(x=>x.id===a.team_id);if(t)controls.append(el('p',t.name+': '+({pending:'заявка на рассмотрении',approved:'участие подтверждено',rejected:'заявка отклонена'}[a.status]||a.status)));}
+ if(available.length){const select=el('select');for(const t of available){const option=el('option',t.name);option.value=t.id;select.append(option);}controls.append(select);
+ const btn=el('button','Зарегистрировать команду');btn.type='button';btn.className='toolbtn';btn.disabled=!open||teams.length>=capacity;
+ if(!open)controls.append(el('p',now<opens?'Регистрация ещё не открыта.':'Регистрация закрыта.'));else controls.append(el('p','Свободных мест: '+Math.max(0,capacity-teams.length)+' из '+capacity+'.'));
+ btn.onclick=async()=>{btn.disabled=true;const {error}=await client.rpc('fztv_register_cup_team',{p_team_id:select.value});if(error){status.textContent='Ошибка: '+error.message;btn.disabled=false;}else{status.textContent='Заявка на турнир успешно отправлена и ожидает одобрения.';btn.remove();select.remove();delete root.dataset.fzCupRegistrationMoun
+
+js/tournament-registration.js :: status==='registration' :: 2696
+const e=document.createElement(tag);if(txt!==undefined)e.textContent=txt;return e;};
+ root.querySelectorAll('.fztv-tournament-registration').forEach(e=>e.remove());const controls=el('div');controls.className='fztv-tournament-registration';
+ const title=el('h3','РЕГИСТРАЦИЯ КОМАНД');controls.append(title);
+ const status=el('p');status.setAttribute('role','status');
+ const {data:{user}}=await client.auth.getUser();
+ const now=Date.now(),opens=new Date(tournament.registration_opens_at).getTime(),starts=tournament.starts_at?new Date(tournament.starts_at).getTime():Infinity;
+ const open=tournament.status==='registration'&&now>=opens&&now<starts;
+ const {data:approved,error:ae}=await client.from('fztv_tournament_applications').select('team_id,status').eq('tournament_id',tournament.id).in('status',['approved','pending']);
+ const ids=(approved||[]).map(a=>a.team_id);
+ let teams=[];
+ if(ids.length){const {data,error:teamError}=await client.from('fztv_teams').select('id,name,tag,logo_url').in('id',ids);if(teamError)console.warn('Tournament teams:',teamError.message);const byId=new Map((data||[]).map(t=>[t.id,t]));teams=ids.map(id=>byId.get(id)).filter(Boolean);}
+ const capacity=tournament.max_teams||8;
+ slots.replaceChildren();
+ for(let i=0;i<capacity;i++){
+ const team=teams[i],slot=el('div');slot.className='fztv-slot';
+ if(team){slot.classList.add('fztv-slot-filled');if(team.logo_url){const img=el('img');img.src=team.logo_url;img.alt='';img.width=35;img.height=35;img.style.cssText='width:35px;height:35px;object-fit:cover;border-radius:7px';slot.append(img);}slot.append(el('strong',team.name));const registration=(approved||[]).find(a=>a.team_id===team.id);if(registration?.status==='pending')slot.append(el('small','На проверке'));}
+ else{slot.append(el('span','♟'),el('strong','СВОБОДНО'));}
+ slots.append(slot);
+ }
+ const count=[...root.querySelectorAll('h2,h3,h4')].find(n=>n.textContent.includes('УЧАСТНИКИ'));if(count)count.textContent='УЧАСТНИКИ ('+teams.length+'/'+capacity+')';
+ const info=[...root.querySelectorAll('.info-box')].find(x=>x.textContent.includes('УЧАСТНИКИ'));if(info){const b=info.querySelector('b');if(b)b.textContent=teams.length+' / '+capacity+' команд';}
+
+js/tournament-registration.js :: max_teams :: 409
+// Live FZTV CUP #1 registration and participant slots.
+export async function mountTournamentRegistration({client,root}){
+ if(!root||!client||root.dataset.fzCupRegistrationMounted==='1')return;
+ root.dataset.fzCupRegistrationMounted='1';
+ root.querySelectorAll('.fztv-tournament-registration').forEach(e=>e.remove());
+ const {data:tournaments,error:te}=await client.from('tournaments').select('id,name,status,max_teams,registration_opens_at,starts_at').eq('name','FZTV CUP #1').limit(1);
+ if(te||!tournaments?.length)return;
+ const tournament=tournaments[0];
+ const slots=root.querySelector('.fztv-slots');if(!slots)return;
+ if(!root.querySelector('#fztv-square-slots-style')){const style=document.createElement('style');style.id='fztv-square-slots-style';style.textContent=`.fztv-slots{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:12px!important}.fztv-slots .fztv-slot{box-sizing:border-box!important;aspect-ratio:1/1!important;width:100%!important;min-width:0!important;height:auto!important;min-height:0!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:7px!important;text-align:center!important;padding:12px!important;border:1px solid #364961!important;border-radius:10px!important;background:#172338!important;overflow:hidden!important}.fztv-slots .fztv-slot>img{width:56%!important;height:56%!important;max-height:110px!important;object-fit:contain!important;border-radius:8px!important}.fztv-slots .fztv-slot>strong{font-size:clamp(11px,1.3vw,16px)!important;line-height:1.2!important;overflow-wrap:anywhere!important}.fztv-slots .fztv-slot>span{font-size:clamp(28px,4vw,52px)!important;line-height:1!important}.fztv-slots .fztv-slot>small{color:#f5c36b;font-size:11px!important}.fztv-slots .fztv-slot-filled{border-color:#507bb4!important;background:#1c304a!important}@media(max-width:650px){.fztv-slots{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}.fztv-slots .fztv-slot{padding:8px!important}}`;root.append(style);}
+ const el=(tag,txt)=>{const e=document.createElement(tag);if(txt!==undefined)e.textContent=txt;return e;};
+ root.querySelector
+
+js/tournament-registration.js :: max_teams :: 3294
+t.status==='registration'&&now>=opens&&now<starts;
+ const {data:approved,error:ae}=await client.from('fztv_tournament_applications').select('team_id,status').eq('tournament_id',tournament.id).in('status',['approved','pending']);
+ const ids=(approved||[]).map(a=>a.team_id);
+ let teams=[];
+ if(ids.length){const {data,error:teamError}=await client.from('fztv_teams').select('id,name,tag,logo_url').in('id',ids);if(teamError)console.warn('Tournament teams:',teamError.message);const byId=new Map((data||[]).map(t=>[t.id,t]));teams=ids.map(id=>byId.get(id)).filter(Boolean);}
+ const capacity=tournament.max_teams||8;
+ slots.replaceChildren();
+ for(let i=0;i<capacity;i++){
+ const team=teams[i],slot=el('div');slot.className='fztv-slot';
+ if(team){slot.classList.add('fztv-slot-filled');if(team.logo_url){const img=el('img');img.src=team.logo_url;img.alt='';img.width=35;img.height=35;img.style.cssText='width:35px;height:35px;object-fit:cover;border-radius:7px';slot.append(img);}slot.append(el('strong',team.name));const registration=(approved||[]).find(a=>a.team_id===team.id);if(registration?.status==='pending')slot.append(el('small','На проверке'));}
+ else{slot.append(el('span','♟'),el('strong','СВОБОДНО'));}
+ slots.append(slot);
+ }
+ const count=[...root.querySelectorAll('h2,h3,h4')].find(n=>n.textContent.includes('УЧАСТНИКИ'));if(count)count.textContent='УЧАСТНИКИ ('+teams.length+'/'+capacity+')';
+ const info=[...root.querySelectorAll('.info-box')].find(x=>x.textContent.includes('УЧАСТНИКИ'));if(info){const b=info.querySelector('b');if(b)b.textContent=teams.length+' / '+capacity+' команд';}
+ if(ae)status.textContent='Не удалось загрузить участников: '+ae.message;
+ if(!user){controls.append(el('p','Войди в аккаунт владельца команды, чтобы подать заявку.'));const a=el('a','Войти');a.href='#/auth';controls.append(a);}
+ else{
+ const {data:owned,error:oe}=await client.from('fztv_teams').select('id,name').eq('owner_id',user.id).eq('status','approved');
+ const {data:mine}=await client.from('fztv_tournament_applications').select('team_id,status').eq('tournament_id',tournament.id).eq('owner_id',user.id);
+ const available=(owned||[]).filter(t=>!(mine||[]).some(a=>a.team_id===t.id));
+ if
+
+js/tournament-registration.js :: registration_opens_at :: 419
+// Live FZTV CUP #1 registration and participant slots.
+export async function mountTournamentRegistration({client,root}){
+ if(!root||!client||root.dataset.fzCupRegistrationMounted==='1')return;
+ root.dataset.fzCupRegistrationMounted='1';
+ root.querySelectorAll('.fztv-tournament-registration').forEach(e=>e.remove());
+ const {data:tournaments,error:te}=await client.from('tournaments').select('id,name,status,max_teams,registration_opens_at,starts_at').eq('name','FZTV CUP #1').limit(1);
+ if(te||!tournaments?.length)return;
+ const tournament=tournaments[0];
+ const slots=root.querySelector('.fztv-slots');if(!slots)return;
+ if(!root.querySelector('#fztv-square-slots-style')){const style=document.createElement('style');style.id='fztv-square-slots-style';style.textContent=`.fztv-slots{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:12px!important}.fztv-slots .fztv-slot{box-sizing:border-box!important;aspect-ratio:1/1!important;width:100%!important;min-width:0!important;height:auto!important;min-height:0!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:7px!important;text-align:center!important;padding:12px!important;border:1px solid #364961!important;border-radius:10px!important;background:#172338!important;overflow:hidden!important}.fztv-slots .fztv-slot>img{width:56%!important;height:56%!important;max-height:110px!important;object-fit:contain!important;border-radius:8px!important}.fztv-slots .fztv-slot>strong{font-size:clamp(11px,1.3vw,16px)!important;line-height:1.2!important;overflow-wrap:anywhere!important}.fztv-slots .fztv-slot>span{font-size:clamp(28px,4vw,52px)!important;line-height:1!important}.fztv-slots .fztv-slot>small{color:#f5c36b;font-size:11px!important}.fztv-slots .fztv-slot-filled{border-color:#507bb4!important;background:#1c304a!important}@media(max-width:650px){.fztv-slots{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}.fztv-slots .fztv-slot{padding:8px!important}}`;root.append(style);}
+ const el=(tag,txt)=>{const e=document.createElement(tag);if(txt!==undefined)e.textContent=txt;return e;};
+ root.querySelector
+
+js/tournament-registration.js :: registration_opens_at :: 2561
+,minmax(0,1fr))!important;gap:8px!important}.fztv-slots .fztv-slot{padding:8px!important}}`;root.append(style);}
+ const el=(tag,txt)=>{const e=document.createElement(tag);if(txt!==undefined)e.textContent=txt;return e;};
+ root.querySelectorAll('.fztv-tournament-registration').forEach(e=>e.remove());const controls=el('div');controls.className='fztv-tournament-registration';
+ const title=el('h3','РЕГИСТРАЦИЯ КОМАНД');controls.append(title);
+ const status=el('p');status.setAttribute('role','status');
+ const {data:{user}}=await client.auth.getUser();
+ const now=Date.now(),opens=new Date(tournament.registration_opens_at).getTime(),starts=tournament.starts_at?new Date(tournament.starts_at).getTime():Infinity;
+ const open=tournament.status==='registration'&&now>=opens&&now<starts;
+ const {data:approved,error:ae}=await client.from('fztv_tournament_applications').select('team_id,status').eq('tournament_id',tournament.id).in('status',['approved','pending']);
+ const ids=(approved||[]).map(a=>a.team_id);
+ let teams=[];
+ if(ids.length){const {data,error:teamError}=await client.from('fztv_teams').select('id,name,tag,logo_url').in('id',ids);if(teamError)console.warn('Tournament teams:',teamError.message);const byId=new Map((data||[]).map(t=>[t.id,t]));teams=ids.map(id=>byId.get(id)).filter(Boolean);}
+ const capacity=tournament.max_teams||8;
+ slots.replaceChildren();
+ for(let i=0;i<capacity;i++){
+ const team=teams[i],slot=el('div');slot.className='fztv-slot';
+ if(team){slot.classList.add('fztv-slot-filled');if(team.logo_url){const img=el('img');img.src=team.logo_url;img.alt='';img.width=35;img.height=35;img.style.cssText='width:35px;height:35px;object-fit:cover;border-radius:7px';slot.append(img);}slot.append(el('strong',team.name));const registration=(approved||[]).find(a=>a.team_id===team.id);if(registration?.status==='pending')slot.append(el('small','На проверке'));}
+ else{slot.append(el('span','♟'),el('strong','СВОБОДНО'));}
+ slots.append(slot);
+ }
+ const count=[...root.querySelectorAll('h2,h3,h4')].find(n=>n.textContent.includes('УЧАСТНИКИ'));if(count)count.textContent='УЧАСТНИКИ ('+teams.length+'/'+capacity+')';
+ const info=[...root.querySelectorAll('.info-box')].find(x=>x
+
+js/tournament-registration.js :: Зарегистрировать команду :: 5633
+под аккаунтом владельца одобренной команды. Если команда ещё не одобрена — дождись модерации.'));const a=el('a','Создать команду');a.href='#/teams';controls.append(a);}
+ else{
+ for(const a of mine||[]){const t=owned.find(x=>x.id===a.team_id);if(t)controls.append(el('p',t.name+': '+({pending:'заявка на рассмотрении',approved:'участие подтверждено',rejected:'заявка отклонена'}[a.status]||a.status)));}
+ if(available.length){const select=el('select');for(const t of available){const option=el('option',t.name);option.value=t.id;select.append(option);}controls.append(select);
+ const btn=el('button','Зарегистрировать команду');btn.type='button';btn.className='toolbtn';btn.disabled=!open||teams.length>=capacity;
+ if(!open)controls.append(el('p',now<opens?'Регистрация ещё не открыта.':'Регистрация закрыта.'));else controls.append(el('p','Свободных мест: '+Math.max(0,capacity-teams.length)+' из '+capacity+'.'));
+ btn.onclick=async()=>{btn.disabled=true;const {error}=await client.rpc('fztv_register_cup_team',{p_team_id:select.value});if(error){status.textContent='Ошибка: '+error.message;btn.disabled=false;}else{status.textContent='Заявка на турнир успешно отправлена и ожидает одобрения.';btn.remove();select.remove();delete root.dataset.fzCupRegistrationMounted;await mountTournamentRegistration({client,root});}};
+ controls.append(btn);
+ }
+ }
+ }
+ controls.append(status);
+ slots.insertAdjacentElement('beforebegin',controls);
+}
+
+
+js/tournament-registration.js :: Регистрация закрыта :: 5820
+a of mine||[]){const t=owned.find(x=>x.id===a.team_id);if(t)controls.append(el('p',t.name+': '+({pending:'заявка на рассмотрении',approved:'участие подтверждено',rejected:'заявка отклонена'}[a.status]||a.status)));}
+ if(available.length){const select=el('select');for(const t of available){const option=el('option',t.name);option.value=t.id;select.append(option);}controls.append(select);
+ const btn=el('button','Зарегистрировать команду');btn.type='button';btn.className='toolbtn';btn.disabled=!open||teams.length>=capacity;
+ if(!open)controls.append(el('p',now<opens?'Регистрация ещё не открыта.':'Регистрация закрыта.'));else controls.append(el('p','Свободных мест: '+Math.max(0,capacity-teams.length)+' из '+capacity+'.'));
+ btn.onclick=async()=>{btn.disabled=true;const {error}=await client.rpc('fztv_register_cup_team',{p_team_id:select.value});if(error){status.textContent='Ошибка: '+error.message;btn.disabled=false;}else{status.textContent='Заявка на турнир успешно отправлена и ожидает одобрения.';btn.remove();select.remove();delete root.dataset.fzCupRegistrationMounted;await mountTournamentRegistration({client,root});}};
+ controls.append(btn);
+ }
+ }
+ }
+ controls.append(status);
+ slots.insertAdjacentElement('beforebegin',controls);
+}
+
