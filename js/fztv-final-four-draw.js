@@ -106,5 +106,6 @@ function schedule(){
 }
 const app=$('#app');
 if(app)new MutationObserver(schedule).observe(app,{childList:true,subtree:false});
+document.addEventListener('change',event=>{if(event.target?.matches?.('.fzse-admin-select'))schedule();});
 window.addEventListener('hashchange',schedule);schedule();
 })();
