@@ -1,0 +1,112 @@
+js/admin-player-trophies.js Все трансферы AT 10014
+f;border-radius:7px;padding:10px;min-width:0}.fztv-roster-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:12px 0}.fztv-roster-btn{background:#283d5b;border:1px solid #496080;color:white;border-radius:7px;padding:9px 13px;cursor:pointer}.fztv-roster-link{color:#b7d8ff;cursor:pointer}.fztv-agent-tag{display:inline-block;background:#38455a;color:#e7edf5;border-radius:6px;padding:4px 8px;font-size:12px;font-weight:700}.fztv-agent-card{border:1px solid #32435b;border-radius:10px;padding:12px;display:flex;align-items:center;gap:12px;margin:8px 0}.fztv-agent-card img{width:45px;height:45px;border-radius:50%;object-fit:cover}.fztv-free-banner{padding:12px;background:#1e3048;border:1px solid #576981;border-radius:9px;margin:12px 0;font-weight:700}';
+  document.head.append(style);
+  let rendering=false;
+  const state={rows:[],transfers:[],teams:[],loadedAt:0};
+  async function read(force=false){
+    const c=client();if(!c)return false;
+    if(!force&&Date.now()-state.loadedAt<8000)return true;
+    const [p,t,teams]=await Promise.all([
+      c.from('fztv_roster_players').select('*').order('nickname'),
+      c.from('fztv_transfers').select('*').order('occurred_at',{ascending:false}).limit(100),
+      c.from('fztv_teams').select('name').eq('status','approved')
+    ]);
+    if(p.error||t.error){console.warn('FZTV transfers:',p.error||t.error);return false;}
+    state.rows=p.data||[];state.transfers=t.data||[];state.teams=teams.data||[];
+    state.loadedAt=Date.now();return true;
+  }
+  function titleBar(heading,showAll=false){
+    const row=el('div');row.className='fztv-move-heading';row.append(el('h3',heading));
+    if(showAll){const a=el('a','Все трансферы');a.href='#/transfers';a.className='fztv-roster-link';row.append(a);}
+    return row;
+  }
+  function transferRow(t){
+    const p=state.rows.find(x=>x.player_slug===t.player_slug),r=el('div');
+    r.className='fztv-transfer-row';
+    const nick=el('a',p?.nickname||t.player_slug);nick.href='#/player/'+encodeURIComponent(t.player_slug);
+    nick.className='fztv-transfer-name fztv-roster-link';r.append(nick);
+    const sides=el('div');sides.className='fztv-transfer-sides';
+    const left=el('span',t.from_team||'NO TEAM');left.className='fztv-transfer-team'+(t.from_team?'':' free');
+    const right=el('span',t.to_team||'NO TEAM');right.className='fztv-transfer-team'+(t.to_team?'':' free');
+    sides.append(left,el('span','→'),right);r.append(sides);return r;
+  }
+  function transferPanel(showAll=false){
+    const box=el('section');box.className='fztv-move-panel';
+    box.append(titleBar('↗ Трансферы',!showAll));
+    const transfers=showAll?state.transfers:state.transfers.slice(0,5);
+    if(!transfers.length)box.append(el('p','Трансферов пока нет.'));
+    for(const t of transfers)box.append(transferRow(t));
+    const agents=state.rows.filter(p=>!p.team_name);
+    const agentsTitle=el('details');agentsTitle.style.marginTop='12px';
+    const summary=el('summary','Свободные агенты ('+agents.length+')');summary.style.cursor='pointer';
+    agentsTitle.append(summary);
+    for(const p of agents){const a=el('a',p.nickname);a.href='#/player/'+encodeURIComponent(p.player_slug);a.style.cssText='display:block;padding:7px;color:#c1d5f8';agentsTitle.append(a);}
+    box.append(agentsTitle);return box;
+  }
+  function rosterField(name,type='text'){
+    const label=el('label',name),input=el('input');
+    label.className='fztv-roster-field';input.type=type;label.append(input);return {label,input};
+  }
+  function teamSelector(){
+    const sel=el('select');const free=el('option','
+
+js/admin-player-trophies.js Свободные агенты ( AT 11303
+('status','approved')
+    ]);
+    if(p.error||t.error){console.warn('FZTV transfers:',p.error||t.error);return false;}
+    state.rows=p.data||[];state.transfers=t.data||[];state.teams=teams.data||[];
+    state.loadedAt=Date.now();return true;
+  }
+  function titleBar(heading,showAll=false){
+    const row=el('div');row.className='fztv-move-heading';row.append(el('h3',heading));
+    if(showAll){const a=el('a','Все трансферы');a.href='#/transfers';a.className='fztv-roster-link';row.append(a);}
+    return row;
+  }
+  function transferRow(t){
+    const p=state.rows.find(x=>x.player_slug===t.player_slug),r=el('div');
+    r.className='fztv-transfer-row';
+    const nick=el('a',p?.nickname||t.player_slug);nick.href='#/player/'+encodeURIComponent(t.player_slug);
+    nick.className='fztv-transfer-name fztv-roster-link';r.append(nick);
+    const sides=el('div');sides.className='fztv-transfer-sides';
+    const left=el('span',t.from_team||'NO TEAM');left.className='fztv-transfer-team'+(t.from_team?'':' free');
+    const right=el('span',t.to_team||'NO TEAM');right.className='fztv-transfer-team'+(t.to_team?'':' free');
+    sides.append(left,el('span','→'),right);r.append(sides);return r;
+  }
+  function transferPanel(showAll=false){
+    const box=el('section');box.className='fztv-move-panel';
+    box.append(titleBar('↗ Трансферы',!showAll));
+    const transfers=showAll?state.transfers:state.transfers.slice(0,5);
+    if(!transfers.length)box.append(el('p','Трансферов пока нет.'));
+    for(const t of transfers)box.append(transferRow(t));
+    const agents=state.rows.filter(p=>!p.team_name);
+    const agentsTitle=el('details');agentsTitle.style.marginTop='12px';
+    const summary=el('summary','Свободные агенты ('+agents.length+')');summary.style.cursor='pointer';
+    agentsTitle.append(summary);
+    for(const p of agents){const a=el('a',p.nickname);a.href='#/player/'+encodeURIComponent(p.player_slug);a.style.cssText='display:block;padding:7px;color:#c1d5f8';agentsTitle.append(a);}
+    box.append(agentsTitle);return box;
+  }
+  function rosterField(name,type='text'){
+    const label=el('label',name),input=el('input');
+    label.className='fztv-roster-field';input.type=type;label.append(input);return {label,input};
+  }
+  function teamSelector(){
+    const sel=el('select');const free=el('option','Свободный агент / NO TEAM');free.value='';sel.append(free);
+    const names=new Set(['Team Woods',...state.teams.map(x=>x.name),...state.rows.map(x=>x.team_name).filter(Boolean)]);
+    for(const name of names){const option=el('option',name);option.value=name;sel.append(option);}return sel;
+  }
+  async function adminPanel(root){
+    if(!admin()||document.getElementById('fztv-admin-transfers'))return;
+    const box=el('section');box.id='fztv-admin-transfers';box.className='fztv-move-panel';
+    box.append(el('h2','Управление игроками и трансферами'));
+    const choose=el('select');choose.style.cssText='width:100%;max-width:400px;background:#15253a;color:white;border:1px solid #52637a;padding:10px;border-radius:7px';
+    const form=el('form');form.className='fztv-roster-grid';
+    const status=el('p');status.setAttribute('role','status');
+    box.append(choose,form,status);root.prepend(box);
+    const refreshOptions=()=>{
+      choose.replaceChildren();
+      let o=el('option','＋ Создать нового игрока');o.value='';choose.append(o);
+      for(const p of state.rows){o=el('option',p.nickname+(p.team_name?' · '+p.team_name:' · свободный агент'));o.value=p.player_slug;choose.append(o);}
+    };
+    const renderForm=()=>{
+      form.replaceChildren();status.textContent='';
+     
