@@ -1,0 +1,764 @@
+PATH index.html TERM Турниры</ INDEX 1205209
+lay:flex;gap:9px;flex-wrap:wrap}.fztv-bench-player{display:flex;align-items:center;gap:8px;padding:7px 10px;background:#101b2b;border:1px solid #364b63;border-radius:8px;color:#e5edf7;font-size:12px;font-weight:750;text-decoration:none}.fztv-bench-player:hover{border-color:#df445d}.fztv-bench-player img{width:26px;height:26px;object-fit:cover;border-radius:5px}</style>
+</head>
+<body>
+<header class="topbar">
+ <a class="brand" href="#/home"><span class="brand-mark"><span class="logo">FZ<span>TV</span></span><small>FRAGZONE TV</small><span id="fztv-online-state" class="fztv-site-live" title="Посетители на сайте в реальном времени"><span class="fztv-live-dot"></span>Сейчас онлайн: <strong id="fztv-online-count">—</strong></span></span><span class="site-version" aria-label="Версия сайта beta v.0.5"><span>beta</span> <span class="site-version-number">v.0.5</span></span></a>
+ <nav id="nav"><a data-route="home" href="#/home">Главная</a><a data-route="matches" href="#/matches">Матчи</a><a data-route="ranking" href="#/ranking">Рейтинг</a><a data-route="players" href="#/players">Игроки</a><a data-route="teams" href="#/teams">Создать команду</a><a data-route="tournaments" href="#/tournaments">Турниры</a><a data-route="news" href="#/news">Новости</a><a data-route="rules" href="#/rules">Правила</a><a data-route="bank" href="#/bank">🏦 Банк</a><a data-route="market" href="#/market">🛒 FZ Market</a></nav>
+ <a class="top-right admin-top-link" id="adminTopLink" href="#/admin">АДМИН-ПАНЕЛЬ</a><a class="top-right auth-top-link" href="#/auth">Войти / Регистрация</a>
+</header>
+<main class="wrap" id="app"></main>
+<footer><span>© 2026 FragZoneTV · FZTV</span><span>Независимый киберспортивный портал CS2</span></footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+const months=[
+ {name:'Ноябрь',year:'',events:[]},
+ {name:'Декабрь',year:'',events:[]},
+ {name:'Январь',year:'2027',events:[]},
+ {name:'Февраль',year:'2027',events:[]},
+ {name:'Март',year:'2027',events:[]},
+ {name:'Апрель',year:'2027',events:[]},
+ {name:'Май',year:'2027',events:[]},
+ {name:'Июнь',year:'2027',events:[]},
+ {name:'Июль',year:'2027',events:[]},
+ {name:'Август',year:'2027',events:[]},
+ {name:'Сентябрь',year:'2027',events:[]},
+ {name:'Октябрь',year:'2027',events:[]}
+];
+const app=document.getElementById('app');let currentFilter='all',collapsed=false,showNovMore=false;
+const empty=(icon,title,desc)=>`<div class="empty"><div class="empty-icon">${icon}</div><strong>${title}</strong><span>${desc}</span></div>`;
+function home(){return `<section class="hero"><div class="hero-content"><div class="eyebrow">FRAGZONE TV · COUNTER-STRIKE</div><h1>ТВОЯ ЗОНА<br><span>КИБЕРСПОРТА</span></h1><p>Матчи, команды, игроки и турниры Counter-Strike — всё в одном месте. Следи за сценой вместе с FZTV.</p><a class="hero-btn" href="#/matches">СМОТРЕТЬ МАТЧИ&nbsp; →</a></div><div class="hero-side"><b>FZTV</b><span>THE HOME OF CS2</span></div></section>
+<section class="grid"><aside class="stack left"><a class="panel panel-link" href="#/matches"><div class="head"><h2>МАТЧИ</h2><small>LIVE / UPCOMING ↗</small></div>${empty('◉','Матчей пока что нету','Открой страниц
+
+PATH index.html TERM Турниры</ INDEX 1211027
+y">
+<div class="fztv-ac-promo-logo"><span>FZTV</span> <b>ANTI-CHEAT</b><em>2.0</em></div>
+<p>Честные матчи начинаются с проверки. Подключи FZTV Anti-Cheat перед игрой в Counter-Strike 2.</p>
+<div class="fztv-ac-promo-features"><span>✓ Вход через FZTV</span><span>✓ Проверки процессов</span><span>✓ Контроль файла CS2</span></div>
+<a class="fztv-ac-download" href="https://github.com/sw4mper666/FragZoneTV/releases/download/ac-v2.0/FZTV-AntiCheat-2.0.exe" target="_blank" rel="noopener noreferrer" aria-label="Скачать FZTV Anti-Cheat 2.0 для Windows">⬇ СКАЧАТЬ АНТИЧИТ 2.0</a>
+
+</div></section></aside>
+<section class="stack center"><div class="panel"><div class="head"><h2>НОВОСТИ FZTV</h2><small>ПОСЛЕДНИЕ ПУБЛИКАЦИИ</small></div><div class="news-feature"><div class="news-art"><b>FRAG<span>ZONE</span>TV</b></div><h3>Добро пожаловать на FragZoneTV</h3><p>Твой новый портал о Counter-Strike. Скоро здесь появятся свежие новости, обзоры и материалы киберспортивной сцены.</p></div><div class="news-list"><div class="news-row"><i>✦</i><div><b>Новости скоро появятся</b><small>Следи за обновлениями FZTV</small></div></div></div></div><section class="panel panel-link"><div class="head"><h2>АКТУАЛЬНЫЕ ТУРНИРЫ</h2><small>TOURNAMENTS ↗</small></div><a class="event featured" href="#/tournament/FZTV%20CUP%20%231/13%E2%80%9316%20%D0%BD%D0%BE%D1%8F%D0%B1%D1%80%D1%8F%202026"><span class="event-icon">🏆</span><span class="event-name">FZTV CUP #1</span><span class="event-date">13–16 НОЯ</span></a><div class="more-note" style="display:block">Ежемесячный турнир FragZoneTV · регистрация с 7 ноября</div></section></section>
+<aside class="stack right"><a class="panel panel-link" href="#/matches"><div class="head"><h2>БЛИЖАЙШИЕ МАТЧИ</h2><small>SCHEDULE ↗</small></div>${empty('◷','Матчей пока что нету','Расписание появится после добавления матчей.')}</a><div class="panel promo"><b>FZ<span>TV</span></b><p>FRAGZONE TV<br>ТВОЙ ИСТОЧНИК НОВОСТЕЙ И СТАТИСТИКИ CS2.</p></div></aside></section>`}
+const teamWoodsPlayers=['sw4mper','Skrizzi','Loytaber','bosskpec','fladar'];
+const teamWoodsRoster=[["sw4mper","[IMAGE]
+
+PATH index.html TERM Турниры</ INDEX 1643176
+дного, <strong class="red">#0</strong> регионального (Россия)</b></div><div class="tw-fact"><span>Тир</span><b class="tier">TIER 1</b></div><div class="tw-fact"><span>Лучшая позиция</span><b class="red">#0</b></div><div class="tw-fact"><span>Игроков в составе</span><b>5</b></div><div class="tw-fact"><span>Средний возраст</span><b>0</b></div><div class="tw-fact"><span>Тренер</span><b style="color:#4b88ff">JWling</b></div></div>
+  <div class="tw-trophy"><img src="${trophy}" alt="Трофей CSTV"></div>
+ </section>`;
+}
+function tournamentCalendar(){let shown=months.map((m,i)=>{let title=m.name+(m.year?' '+m.year:'');let content=i===0?`<a class="event featured" href="#/tournament/FZTV%20CUP%20%231/13%E2%80%9316%20%D0%BD%D0%BE%D1%8F%D0%B1%D1%80%D1%8F%202026"><span class="event-icon">🏆</span><span class="event-name">FZTV CUP #1</span><span class="event-date">13–16 НОЯ</span></a><div class="more-note" style="display:block">Ежемесячный турнир FragZoneTV · регистрация с 7 ноября</div>`:`<div class="empty-month"><b>:(</b><span>Пока нет турниров</span></div>`;return `<section class="month"><h3>${title}</h3>${content}</section>`}).join('');return `<div class="crumb"><a href="#/home">Главная</a>　/　Турниры</div><div class="page-title"><div><h1>Календарь турниров</h1><p>Расписание турниров Counter-Strike · CSTV</p></div><div class="calendar-toolbar"><button class="toolbtn" id="earlier">‹ Раньше</button><button class="toolbtn" id="collapse">${collapsed?'Развернуть':'Свернуть'}</button></div></div><div class="calendar ${collapsed?'collapsed':''}" id="calendar">${shown}</div>`}
+
+function rulesPage(){return `<div class="crumb"><a href="#/home">Главная</a>　/　Правила</div><div class="page-title"><div><h1>Правила FragZoneTV</h1><p>Редакция 1.0 · ноябрь 2026</p></div></div><section class="panel" style="padding:22px;line-height:1.8"><h2>1. Общие положения</h2><p>1.1. Каждый пользователь обязан соблюдать правила FragZoneTV.</p><p>1.2. Регистрация на сайте означает согласие с правилами.</p><p>1.3. Незнание правил не освобождает от ответственности.</p><p>1.4. Администрация имеет право изменять правила и публиковать обновления.</p><h2>2. Поведение пользователей</h2><p>2.1. Запрещены оскорбления, травля и угрозы в адрес других пользователей.</p><p>2.2. Запрещены расизм, дискриминация и разжигание ненависти.</p><p>2.3. Запрещены спам и намеренное засорение сайта.</p><p>2.4. Запрещено выдавать себя за администрацию или другого пользователя.</p><p>2.5. Запрещено распространять личную информацию других людей без их согласия.</p><h2>3. Правила турниров</h2><p>3.1. Запрещено использовать читы, скрипты и сторонние программы, дающие нечестное преимущество.</p><p>3.2. Запрещено намеренно договариваться о результате матча.</p><p>3.3. Команда обязана явиться на матч вовремя.</p><p>3.4. Запрещено использовать баги игры для получения нечестного преимущества.</p><p>3.5. Результаты матчей должны быть достоверными.</p><p>3.6. Администрация турнира вправе дисквалифицировать команду за нарушение правил.</p><p><strong>3.7. Перед каждым официальным матчем FragZoneTV каждый игрок обязан включить античит, предусмотренный регламентом турнира.</strong></p><p>3.8. Игрок обязан убедиться, что античит
+
+PATH index.html TERM Турниры</ INDEX 1649910
+l"><div class="ranking-head">ИГРОКИ · TEAM WOODS</div>${players.map((name,i)=>`<div class="rank-team" style="cursor:default"><div class="rank-place">#${i+1}</div><div class="rank-logo">${name.slice(0,2).toUpperCase()}</div><div class="rank-main"><strong>${name}</strong><small>Team Woods · CS2</small></div><div class="rank-players">Матчи: —　 K/D: —　 Рейтинг: —</div></div>`).join('')}<div class="detail-empty">Имена игроков добавлены. Статистические показатели появятся после добавления результатов матчей.</div></section>`}
+function matches(){return `<div class="crumb"><a href="#/home">Главная</a>　/　Матчи</div><div class="page-title"><div><h1>Матчи</h1><p>Live и предстоящие матчи Counter-Strike · CSTV</p></div><a class="back" href="#/home">← На главную</a></div><section class="panel"><div class="head"><h2>LIVE / UPCOMING</h2><small>РАСПИСАНИЕ</small></div>${empty('◉','Матчей пока что нету','Когда матчи будут добавлены, здесь появятся карточки. Нажми на матч, чтобы открыть его отдельную страницу.')}</section>`}
+function tournamentDetail(name,date){const isFztv=name.toUpperCase()==='FZTV CUP #1';if(isFztv){return `<div class="crumb"><a href="#/home">Главная</a>　/　<a href="#/tournaments">Турниры</a>　/　FZTV CUP #1</div><div class="page-title"><div><h1>FZTV CUP #1</h1><p>Официальная серия ежемесячных турниров FragZoneTV</p></div><a class="back" href="#/tournaments">← К календарю</a></div><section class="panel detail-card"><div class="detail-banner fztv-banner"><div class="cup">♛ &nbsp; FRAGZONETV TOURNAMENT</div><h2>FZTV CUP #1</h2><p>Ежемесячный турнир по Counter-Strike 2 от FragZoneTV. Собери команду, покажи свой скилл и поборись за призовые!</p><span class="fztv-tag">РЕГИСТРАЦИЯ ЗАКРЫТА</span></div><div class="detail-info"><div class="info-box"><small>ДАТА ПРОВЕДЕНИЯ</small><b>13–16 ноября 2026</b></div><div class="info-box"><small>РЕГИСТРАЦИЯ</small><b style="color:#ff6875">Закрыта · 4 команды</b></div><div class="info-box"><small>ОРГАНИЗАТОР</small><b>FragZoneTV</b></div></div><div class="detail-info"><div class="info-box"><small>ДИСЦИПЛИНА</small><b>Counter-Strike 2</b></div><div class="info-box"><small>ФОРМАТ</small><b>Final Four</b></div><div class="info-box"><small>УЧАСТНИКИ</small><b>4 / 4 команды</b></div></div><h3 style="margin:20px 0 8px">ПРИЗОВЫЕ МЕСТА · 110 FZ POINTS</h3><div class="fztv-prizes"><div class="fztv-prize"><small>🥇 1 МЕСТО</small><b>50</b><small>FZTV POINTS</small></div><div class="fztv-prize"><small>🥈 2 МЕСТО</small><b>30</b><small>FZTV POINTS</small></div><div class="fztv-prize"><small>🥉 3 МЕСТО</small><b>20</b><small>FZTV POINTS</small></div><div class="fztv-prize"><small>4 МЕСТО</small><b>10</b><small>FZTV POINTS</small></div></div><h3 style="margin:22px 0 8px">УЧАСТНИКИ (4/4)</h3><div class="fztv-slots">${Array.from({length:4},(_,i)=>`<div class="fztv-slot"><span>♟</span>СВОБОДНО</div>`).join('')}</div><div class="detail-empty"><strong>FZTV CUP #1 — первый турнир ежемесячной серии FragZoneTV!</strong>Регистрация закрыта. Четыре команды утверждены. Формат Final Four: два полуфинала и финал. Собери состав и приготовься бороться за чемпионский титул.</div></section>`}return `<div class="crumb"><a href="#/home">Главная</a>
+
+PATH index.html TERM Турниры</ INDEX 1651937
+info"><div class="info-box"><small>ДИСЦИПЛИНА</small><b>Counter-Strike 2</b></div><div class="info-box"><small>ФОРМАТ</small><b>Final Four</b></div><div class="info-box"><small>УЧАСТНИКИ</small><b>4 / 4 команды</b></div></div><h3 style="margin:20px 0 8px">ПРИЗОВЫЕ МЕСТА · 110 FZ POINTS</h3><div class="fztv-prizes"><div class="fztv-prize"><small>🥇 1 МЕСТО</small><b>50</b><small>FZTV POINTS</small></div><div class="fztv-prize"><small>🥈 2 МЕСТО</small><b>30</b><small>FZTV POINTS</small></div><div class="fztv-prize"><small>🥉 3 МЕСТО</small><b>20</b><small>FZTV POINTS</small></div><div class="fztv-prize"><small>4 МЕСТО</small><b>10</b><small>FZTV POINTS</small></div></div><h3 style="margin:22px 0 8px">УЧАСТНИКИ (4/4)</h3><div class="fztv-slots">${Array.from({length:4},(_,i)=>`<div class="fztv-slot"><span>♟</span>СВОБОДНО</div>`).join('')}</div><div class="detail-empty"><strong>FZTV CUP #1 — первый турнир ежемесячной серии FragZoneTV!</strong>Регистрация закрыта. Четыре команды утверждены. Формат Final Four: два полуфинала и финал. Собери состав и приготовься бороться за чемпионский титул.</div></section>`}return `<div class="crumb"><a href="#/home">Главная</a>　/　<a href="#/tournaments">Турниры</a>　/　${name}</div><div class="page-title"><div><h1>${name}</h1><p>Страница турнира · CSTV</p></div><a class="back" href="#/tournaments">← К календарю</a></div><section class="panel detail-card"><div class="detail-banner"><div class="cup">🏆</div><h2>${name}</h2><p>Counter-Strike Tournament</p></div><div class="detail-info"><div class="info-box"><small>ДАТЫ</small><b>${date}</b></div><div class="info-box"><small>СТАТУС</small><b>Ожидается</b></div><div class="info-box"><small>ОРГАНИЗАТОР</small><b>CSTV</b></div></div><div class="detail-empty"><strong>Информация о турнире скоро появится</strong>Здесь будут команды, формат, сетка и результаты.</div></section>`}
+
+function fztvPlayerSlug(name){return String(name).toLowerCase().replace(/[^a-z0-9_-]/g,'')}
+function fztvPlayerLink(name){return '#/player/'+encodeURIComponent(fztvPlayerSlug(name))}
+function fztvPlayerProfile(){
+ const slug=decodeURIComponent((location.hash.split('/')[2]||'')).toLowerCase();
+ const roster=woodsRosterNow().find(([, ,original])=>original===slug);
+ if(!roster)return '<div class="detail-empty">Игрок не найден. <a href="#/players">Все игроки</a></div>';
+ const [name,photo]=roster,tab=location.hash.split('/')[3]==='stats'?'stats':'main';
+ const stats=(playerMatchStats||[]).filter(x=>x.player_slug===slug);
+ const sum=k=>stats.reduce((n,x)=>n+(Number(x[k])||0),0),matches=stats.length,kills=sum('kills'),deaths=sum('deaths'),assists=sum('assists'),rounds=sum('rounds_played'),headshots=sum('headshots'),wins=stats.filter(x=>x.won===true).length;
+ const kd=matches?(deaths?(kills/deaths).toFixed(2):kills?'∞':'0.00'):'—';
+ const ratio=(n,d)=>d?(n/d).toFixed(1):'—';
+ const fztvr=matches?((kills+0.5*assists)/Math.max(1,deaths)).toFixed(2):'—';
+ const metrics=[['FZTVR',fztvr],['K/D',kd],['Винрейт',matches?Math.round(100*wins/matches)+'%':'—'],['Убийств / матч',ratio(kills,matches)],['Смертей / матч',ratio(deaths,matches)],['Ассистов / матч',ratio(assists,matches)],['Матчей',matches||'—']];
+ const tabs=`
+
+PATH index.html TERM Турниры</ INDEX 1677928
+admin'}}}
+}
+function render(){const route=(location.hash||'#/home').replace(/^#\/?/,'').split('/')[0];let html;if(route==='home')html=home()+`<div class="page-title"><h2>Последние матчи</h2></div>${matchesCache.slice(0,3).map(matchCard).join('')}`;else if(route==='auth')html=authPage();else if(route==='admin')html=adminPage();else if(route==='matches')html=matches();else if(route==='match')html='<div class="page-title"><h1>Матч</h1></div>';else if(route==='news')html=newsPage();else if(route==='member')html='<div id="fztv-member-view" style="min-height:220px">Загрузка профиля…</div>';else if(route==='bank'||route==='market')html='<div id="fztv-finance-root" style="min-height:360px"></div>';else if(route==='ranking')html=home();else if(route==='team-created')html=createdTeamDetail();else if(route==='team')html=location.hash.toLowerCase().includes('/taykans')?taykansDetail():teamDetail();else if(route==='tournaments')html=tournamentCalendar();else if(route==='tournament'){const parts=location.hash.split('/');html=tournamentDetail(decodeURIComponent(parts[2]||'Турнир'),decodeURIComponent(parts[3]||'Дата уточняется'))}else if(route==='teams')html='<div class="page-title"><h1>Команды и турниры</h1></div><section class="panel" style="padding:20px" id="teams-workflow">Загрузка…</section>';else if(route==='players')html=playersPage();else if(route==='player')html=fztvPlayerProfile();else if(route==='rules')html=rulesPage();else if(route==='stats')html=home();else html=home();app.innerHTML=html;enhanceRankingLayout(route);if(route==='bank'||route==='market'){import('./js/fztv-finance.js?v=20261107-fz-market-v1').then(m=>m.mountFinance({client:sb,root:document.getElementById('fztv-finance-root'),route})).catch(e=>{const node=document.getElementById('fztv-finance-root');if(node)node.textContent='Ошибка загрузки банка: '+e.message;console.error(e)});}if(['players','player','admin'].includes(route)){import('./js/contracts.js').then(m=>m.mount({client:sb,root:app,route})).catch(err=>console.warn('Contracts:',err));}if(route==='auth'&&currentUser()){import('./js/account-community.js?v=founder-premium-20261107-v2').then(m=>m.mountAccount({client:sb,root:document.getElementById('fztv-account-dashboard'),user:currentUser(),onUpdated:refreshAuth})).catch(e=>console.error('Account:',e))}if(route==='member'){import('./js/account-community.js?v=founder-premium-20261107-v2').then(m=>m.mountPublicMember({client:sb,root:document.getElementById('fztv-member-view'),id:decodeURIComponent(location.hash.split('/')[2]||'')})).catch(e=>console.error('Member:',e))}if(route==='news'){import('./js/account-community.js?v=founder-premium-20261107-v2').then(m=>m.mountNewsComments({client:sb,root:app,user:currentUser()})).catch(e=>console.error('News comments:',e))}if(route==='match'){import('./js/match-detail.js?v=20261109-final-four-home-admin-v4').then(m=>m.mount({client:sb,root:app,id:decodeURIComponent(location.hash.split('/')[2]||'')})).catch(console.error)}if(route==='matches'||(route==='admin'&&isAdmin())){import('./js/match-submissions.js?v=20261109-final-four-home-admin-v4').then(m=>m.mount({client:sb,root:app,route})).catch(console.error)}if(['team-created','player','pl
+
+PATH index.html TERM Турниры INDEX 1205209
+lay:flex;gap:9px;flex-wrap:wrap}.fztv-bench-player{display:flex;align-items:center;gap:8px;padding:7px 10px;background:#101b2b;border:1px solid #364b63;border-radius:8px;color:#e5edf7;font-size:12px;font-weight:750;text-decoration:none}.fztv-bench-player:hover{border-color:#df445d}.fztv-bench-player img{width:26px;height:26px;object-fit:cover;border-radius:5px}</style>
+</head>
+<body>
+<header class="topbar">
+ <a class="brand" href="#/home"><span class="brand-mark"><span class="logo">FZ<span>TV</span></span><small>FRAGZONE TV</small><span id="fztv-online-state" class="fztv-site-live" title="Посетители на сайте в реальном времени"><span class="fztv-live-dot"></span>Сейчас онлайн: <strong id="fztv-online-count">—</strong></span></span><span class="site-version" aria-label="Версия сайта beta v.0.5"><span>beta</span> <span class="site-version-number">v.0.5</span></span></a>
+ <nav id="nav"><a data-route="home" href="#/home">Главная</a><a data-route="matches" href="#/matches">Матчи</a><a data-route="ranking" href="#/ranking">Рейтинг</a><a data-route="players" href="#/players">Игроки</a><a data-route="teams" href="#/teams">Создать команду</a><a data-route="tournaments" href="#/tournaments">Турниры</a><a data-route="news" href="#/news">Новости</a><a data-route="rules" href="#/rules">Правила</a><a data-route="bank" href="#/bank">🏦 Банк</a><a data-route="market" href="#/market">🛒 FZ Market</a></nav>
+ <a class="top-right admin-top-link" id="adminTopLink" href="#/admin">АДМИН-ПАНЕЛЬ</a><a class="top-right auth-top-link" href="#/auth">Войти / Регистрация</a>
+</header>
+<main class="wrap" id="app"></main>
+<footer><span>© 2026 FragZoneTV · FZTV</span><span>Независимый киберспортивный портал CS2</span></footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+const months=[
+ {name:'Ноябрь',year:'',events:[]},
+ {name:'Декабрь',year:'',events:[]},
+ {name:'Январь',year:'2027',events:[]},
+ {name:'Февраль',year:'2027',events:[]},
+ {name:'Март',year:'2027',events:[]},
+ {name:'Апрель',year:'2027',events:[]},
+ {name:'Май',year:'2027',events:[]},
+ {name:'Июнь',year:'2027',events:[]},
+ {name:'Июль',year:'2027',events:[]},
+ {name:'Август',year:'2027',events:[]},
+ {name:'Сентябрь',year:'2027',events:[]},
+ {name:'Октябрь',year:'2027',events:[]}
+];
+const app=document.getElementById('app');let currentFilter='all',collapsed=false,showNovMore=false;
+const empty=(icon,title,desc)=>`<div class="empty"><div class="empty-icon">${icon}</div><strong>${title}</strong><span>${desc}</span></div>`;
+function home(){return `<section class="hero"><div class="hero-content"><div class="eyebrow">FRAGZONE TV · COUNTER-STRIKE</div><h1>ТВОЯ ЗОНА<br><span>КИБЕРСПОРТА</span></h1><p>Матчи, команды, игроки и турниры Counter-Strike — всё в одном месте. Следи за сценой вместе с FZTV.</p><a class="hero-btn" href="#/matches">СМОТРЕТЬ МАТЧИ&nbsp; →</a></div><div class="hero-side"><b>FZTV</b><span>THE HOME OF CS2</span></div></section>
+<section class="grid"><aside class="stack left"><a class="panel panel-link" href="#/matches"><div class="head"><h2>МАТЧИ</h2><small>LIVE / UPCOMING ↗</small></div>${empty('◉','Матчей пока что нету','Открой страниц
+
+PATH index.html TERM Турниры INDEX 1206770
+ация</a>
+</header>
+<main class="wrap" id="app"></main>
+<footer><span>© 2026 FragZoneTV · FZTV</span><span>Независимый киберспортивный портал CS2</span></footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+const months=[
+ {name:'Ноябрь',year:'',events:[]},
+ {name:'Декабрь',year:'',events:[]},
+ {name:'Январь',year:'2027',events:[]},
+ {name:'Февраль',year:'2027',events:[]},
+ {name:'Март',year:'2027',events:[]},
+ {name:'Апрель',year:'2027',events:[]},
+ {name:'Май',year:'2027',events:[]},
+ {name:'Июнь',year:'2027',events:[]},
+ {name:'Июль',year:'2027',events:[]},
+ {name:'Август',year:'2027',events:[]},
+ {name:'Сентябрь',year:'2027',events:[]},
+ {name:'Октябрь',year:'2027',events:[]}
+];
+const app=document.getElementById('app');let currentFilter='all',collapsed=false,showNovMore=false;
+const empty=(icon,title,desc)=>`<div class="empty"><div class="empty-icon">${icon}</div><strong>${title}</strong><span>${desc}</span></div>`;
+function home(){return `<section class="hero"><div class="hero-content"><div class="eyebrow">FRAGZONE TV · COUNTER-STRIKE</div><h1>ТВОЯ ЗОНА<br><span>КИБЕРСПОРТА</span></h1><p>Матчи, команды, игроки и турниры Counter-Strike — всё в одном месте. Следи за сценой вместе с FZTV.</p><a class="hero-btn" href="#/matches">СМОТРЕТЬ МАТЧИ&nbsp; →</a></div><div class="hero-side"><b>FZTV</b><span>THE HOME OF CS2</span></div></section>
+<section class="grid"><aside class="stack left"><a class="panel panel-link" href="#/matches"><div class="head"><h2>МАТЧИ</h2><small>LIVE / UPCOMING ↗</small></div>${empty('◉','Матчей пока что нету','Открой страницу матчей, чтобы посмотреть расписание.')}</a><a class="panel panel-link" href="#/ranking"><div class="head"><h2>РЕЙТИНГ КОМАНД</h2><small>RANKING ↗</small></div><div style="padding:12px;display:flex;align-items:center;gap:10px"><div style="width:30px;height:30px;display:grid;place-items:center;background:#202b3a;border-radius:6px;font-weight:900;color:#f3c969">#1</div><div style="flex:1;min-width:0"><b style="font-size:13px">Woods Team</b><small style="display:block;color:var(--muted);font-size:10px;margin-top:3px">Counter-Strike 2</small></div><div style="display:flex;align-items:center;gap:7px;font-size:11px;font-weight:900"><span>0</span><span style="color:#aebbd0">FZ</span></div></div></a><a class="panel panel-link" href="#/players"><div class="head"><h2>ИГРОКИ МЕСЯЦА И НЕДЕЛИ</h2><small>TOP PLAYERS ↗</small></div><div style="padding:12px;display:grid;gap:10px"><div style="padding:12px;background:linear-gradient(120deg,#321720,#192332);border:1px solid #71303b;border-radius:7px"><div style="font-size:9px;color:#ff7785;font-weight:900;letter-spacing:1.3px;margin-bottom:9px">🏆 ИГРОК МЕСЯЦА</div><div style="display:flex;align-items:center;gap:9px"><div style="width:38px;height:38px;display:grid;place-items:center;border-radius:6px;background:linear-gradient(145deg,#b91f32,#48131d);font-size:17px;font-weight:1000">?</div><div><b style="font-size:14px">Пока не выбран</b><small style="display:block;color:#aab6c5;font-size:10px;margin-top:4px">🇷🇺 Россия</small></div></div><div style="margin-top:10px;padding-top:8px;border-top:1px solid #f
+
+PATH index.html TERM Турниры INDEX 1211027
+y">
+<div class="fztv-ac-promo-logo"><span>FZTV</span> <b>ANTI-CHEAT</b><em>2.0</em></div>
+<p>Честные матчи начинаются с проверки. Подключи FZTV Anti-Cheat перед игрой в Counter-Strike 2.</p>
+<div class="fztv-ac-promo-features"><span>✓ Вход через FZTV</span><span>✓ Проверки процессов</span><span>✓ Контроль файла CS2</span></div>
+<a class="fztv-ac-download" href="https://github.com/sw4mper666/FragZoneTV/releases/download/ac-v2.0/FZTV-AntiCheat-2.0.exe" target="_blank" rel="noopener noreferrer" aria-label="Скачать FZTV Anti-Cheat 2.0 для Windows">⬇ СКАЧАТЬ АНТИЧИТ 2.0</a>
+
+</div></section></aside>
+<section class="stack center"><div class="panel"><div class="head"><h2>НОВОСТИ FZTV</h2><small>ПОСЛЕДНИЕ ПУБЛИКАЦИИ</small></div><div class="news-feature"><div class="news-art"><b>FRAG<span>ZONE</span>TV</b></div><h3>Добро пожаловать на FragZoneTV</h3><p>Твой новый портал о Counter-Strike. Скоро здесь появятся свежие новости, обзоры и материалы киберспортивной сцены.</p></div><div class="news-list"><div class="news-row"><i>✦</i><div><b>Новости скоро появятся</b><small>Следи за обновлениями FZTV</small></div></div></div></div><section class="panel panel-link"><div class="head"><h2>АКТУАЛЬНЫЕ ТУРНИРЫ</h2><small>TOURNAMENTS ↗</small></div><a class="event featured" href="#/tournament/FZTV%20CUP%20%231/13%E2%80%9316%20%D0%BD%D0%BE%D1%8F%D0%B1%D1%80%D1%8F%202026"><span class="event-icon">🏆</span><span class="event-name">FZTV CUP #1</span><span class="event-date">13–16 НОЯ</span></a><div class="more-note" style="display:block">Ежемесячный турнир FragZoneTV · регистрация с 7 ноября</div></section></section>
+<aside class="stack right"><a class="panel panel-link" href="#/matches"><div class="head"><h2>БЛИЖАЙШИЕ МАТЧИ</h2><small>SCHEDULE ↗</small></div>${empty('◷','Матчей пока что нету','Расписание появится после добавления матчей.')}</a><div class="panel promo"><b>FZ<span>TV</span></b><p>FRAGZONE TV<br>ТВОЙ ИСТОЧНИК НОВОСТЕЙ И СТАТИСТИКИ CS2.</p></div></aside></section>`}
+const teamWoodsPlayers=['sw4mper','Skrizzi','Loytaber','bosskpec','fladar'];
+const teamWoodsRoster=[["sw4mper","[IMAGE]
+
+PATH index.html TERM Турниры INDEX 1643176
+дного, <strong class="red">#0</strong> регионального (Россия)</b></div><div class="tw-fact"><span>Тир</span><b class="tier">TIER 1</b></div><div class="tw-fact"><span>Лучшая позиция</span><b class="red">#0</b></div><div class="tw-fact"><span>Игроков в составе</span><b>5</b></div><div class="tw-fact"><span>Средний возраст</span><b>0</b></div><div class="tw-fact"><span>Тренер</span><b style="color:#4b88ff">JWling</b></div></div>
+  <div class="tw-trophy"><img src="${trophy}" alt="Трофей CSTV"></div>
+ </section>`;
+}
+function tournamentCalendar(){let shown=months.map((m,i)=>{let title=m.name+(m.year?' '+m.year:'');let content=i===0?`<a class="event featured" href="#/tournament/FZTV%20CUP%20%231/13%E2%80%9316%20%D0%BD%D0%BE%D1%8F%D0%B1%D1%80%D1%8F%202026"><span class="event-icon">🏆</span><span class="event-name">FZTV CUP #1</span><span class="event-date">13–16 НОЯ</span></a><div class="more-note" style="display:block">Ежемесячный турнир FragZoneTV · регистрация с 7 ноября</div>`:`<div class="empty-month"><b>:(</b><span>Пока нет турниров</span></div>`;return `<section class="month"><h3>${title}</h3>${content}</section>`}).join('');return `<div class="crumb"><a href="#/home">Главная</a>　/　Турниры</div><div class="page-title"><div><h1>Календарь турниров</h1><p>Расписание турниров Counter-Strike · CSTV</p></div><div class="calendar-toolbar"><button class="toolbtn" id="earlier">‹ Раньше</button><button class="toolbtn" id="collapse">${collapsed?'Развернуть':'Свернуть'}</button></div></div><div class="calendar ${collapsed?'collapsed':''}" id="calendar">${shown}</div>`}
+
+function rulesPage(){return `<div class="crumb"><a href="#/home">Главная</a>　/　Правила</div><div class="page-title"><div><h1>Правила FragZoneTV</h1><p>Редакция 1.0 · ноябрь 2026</p></div></div><section class="panel" style="padding:22px;line-height:1.8"><h2>1. Общие положения</h2><p>1.1. Каждый пользователь обязан соблюдать правила FragZoneTV.</p><p>1.2. Регистрация на сайте означает согласие с правилами.</p><p>1.3. Незнание правил не освобождает от ответственности.</p><p>1.4. Администрация имеет право изменять правила и публиковать обновления.</p><h2>2. Поведение пользователей</h2><p>2.1. Запрещены оскорбления, травля и угрозы в адрес других пользователей.</p><p>2.2. Запрещены расизм, дискриминация и разжигание ненависти.</p><p>2.3. Запрещены спам и намеренное засорение сайта.</p><p>2.4. Запрещено выдавать себя за администрацию или другого пользователя.</p><p>2.5. Запрещено распространять личную информацию других людей без их согласия.</p><h2>3. Правила турниров</h2><p>3.1. Запрещено использовать читы, скрипты и сторонние программы, дающие нечестное преимущество.</p><p>3.2. Запрещено намеренно договариваться о результате матча.</p><p>3.3. Команда обязана явиться на матч вовремя.</p><p>3.4. Запрещено использовать баги игры для получения нечестного преимущества.</p><p>3.5. Результаты матчей должны быть достоверными.</p><p>3.6. Администрация турнира вправе дисквалифицировать команду за нарушение правил.</p><p><strong>3.7. Перед каждым официальным матчем FragZoneTV каждый игрок обязан включить античит, предусмотренный регламентом турнира.</strong></p><p>3.8. Игрок обязан убедиться, что античит
+
+PATH index.html TERM Турниры INDEX 1649910
+l"><div class="ranking-head">ИГРОКИ · TEAM WOODS</div>${players.map((name,i)=>`<div class="rank-team" style="cursor:default"><div class="rank-place">#${i+1}</div><div class="rank-logo">${name.slice(0,2).toUpperCase()}</div><div class="rank-main"><strong>${name}</strong><small>Team Woods · CS2</small></div><div class="rank-players">Матчи: —　 K/D: —　 Рейтинг: —</div></div>`).join('')}<div class="detail-empty">Имена игроков добавлены. Статистические показатели появятся после добавления результатов матчей.</div></section>`}
+function matches(){return `<div class="crumb"><a href="#/home">Главная</a>　/　Матчи</div><div class="page-title"><div><h1>Матчи</h1><p>Live и предстоящие матчи Counter-Strike · CSTV</p></div><a class="back" href="#/home">← На главную</a></div><section class="panel"><div class="head"><h2>LIVE / UPCOMING</h2><small>РАСПИСАНИЕ</small></div>${empty('◉','Матчей пока что нету','Когда матчи будут добавлены, здесь появятся карточки. Нажми на матч, чтобы открыть его отдельную страницу.')}</section>`}
+function tournamentDetail(name,date){const isFztv=name.toUpperCase()==='FZTV CUP #1';if(isFztv){return `<div class="crumb"><a href="#/home">Главная</a>　/　<a href="#/tournaments">Турниры</a>　/　FZTV CUP #1</div><div class="page-title"><div><h1>FZTV CUP #1</h1><p>Официальная серия ежемесячных турниров FragZoneTV</p></div><a class="back" href="#/tournaments">← К календарю</a></div><section class="panel detail-card"><div class="detail-banner fztv-banner"><div class="cup">♛ &nbsp; FRAGZONETV TOURNAMENT</div><h2>FZTV CUP #1</h2><p>Ежемесячный турнир по Counter-Strike 2 от FragZoneTV. Собери команду, покажи свой скилл и поборись за призовые!</p><span class="fztv-tag">РЕГИСТРАЦИЯ ЗАКРЫТА</span></div><div class="detail-info"><div class="info-box"><small>ДАТА ПРОВЕДЕНИЯ</small><b>13–16 ноября 2026</b></div><div class="info-box"><small>РЕГИСТРАЦИЯ</small><b style="color:#ff6875">Закрыта · 4 команды</b></div><div class="info-box"><small>ОРГАНИЗАТОР</small><b>FragZoneTV</b></div></div><div class="detail-info"><div class="info-box"><small>ДИСЦИПЛИНА</small><b>Counter-Strike 2</b></div><div class="info-box"><small>ФОРМАТ</small><b>Final Four</b></div><div class="info-box"><small>УЧАСТНИКИ</small><b>4 / 4 команды</b></div></div><h3 style="margin:20px 0 8px">ПРИЗОВЫЕ МЕСТА · 110 FZ POINTS</h3><div class="fztv-prizes"><div class="fztv-prize"><small>🥇 1 МЕСТО</small><b>50</b><small>FZTV POINTS</small></div><div class="fztv-prize"><small>🥈 2 МЕСТО</small><b>30</b><small>FZTV POINTS</small></div><div class="fztv-prize"><small>🥉 3 МЕСТО</small><b>20</b><small>FZTV POINTS</small></div><div class="fztv-prize"><small>4 МЕСТО</small><b>10</b><small>FZTV POINTS</small></div></div><h3 style="margin:22px 0 8px">УЧАСТНИКИ (4/4)</h3><div class="fztv-slots">${Array.from({length:4},(_,i)=>`<div class="fztv-slot"><span>♟</span>СВОБОДНО</div>`).join('')}</div><div class="detail-empty"><strong>FZTV CUP #1 — первый турнир ежемесячной серии FragZoneTV!</strong>Регистрация закрыта. Четыре команды утверждены. Формат Final Four: два полуфинала и финал. Собери состав и приготовься бороться за чемпионский титул.</div></section>`}return `<div class="crumb"><a href="#/home">Главная</a>
+
+PATH index.html TERM Турниры INDEX 1651937
+info"><div class="info-box"><small>ДИСЦИПЛИНА</small><b>Counter-Strike 2</b></div><div class="info-box"><small>ФОРМАТ</small><b>Final Four</b></div><div class="info-box"><small>УЧАСТНИКИ</small><b>4 / 4 команды</b></div></div><h3 style="margin:20px 0 8px">ПРИЗОВЫЕ МЕСТА · 110 FZ POINTS</h3><div class="fztv-prizes"><div class="fztv-prize"><small>🥇 1 МЕСТО</small><b>50</b><small>FZTV POINTS</small></div><div class="fztv-prize"><small>🥈 2 МЕСТО</small><b>30</b><small>FZTV POINTS</small></div><div class="fztv-prize"><small>🥉 3 МЕСТО</small><b>20</b><small>FZTV POINTS</small></div><div class="fztv-prize"><small>4 МЕСТО</small><b>10</b><small>FZTV POINTS</small></div></div><h3 style="margin:22px 0 8px">УЧАСТНИКИ (4/4)</h3><div class="fztv-slots">${Array.from({length:4},(_,i)=>`<div class="fztv-slot"><span>♟</span>СВОБОДНО</div>`).join('')}</div><div class="detail-empty"><strong>FZTV CUP #1 — первый турнир ежемесячной серии FragZoneTV!</strong>Регистрация закрыта. Четыре команды утверждены. Формат Final Four: два полуфинала и финал. Собери состав и приготовься бороться за чемпионский титул.</div></section>`}return `<div class="crumb"><a href="#/home">Главная</a>　/　<a href="#/tournaments">Турниры</a>　/　${name}</div><div class="page-title"><div><h1>${name}</h1><p>Страница турнира · CSTV</p></div><a class="back" href="#/tournaments">← К календарю</a></div><section class="panel detail-card"><div class="detail-banner"><div class="cup">🏆</div><h2>${name}</h2><p>Counter-Strike Tournament</p></div><div class="detail-info"><div class="info-box"><small>ДАТЫ</small><b>${date}</b></div><div class="info-box"><small>СТАТУС</small><b>Ожидается</b></div><div class="info-box"><small>ОРГАНИЗАТОР</small><b>CSTV</b></div></div><div class="detail-empty"><strong>Информация о турнире скоро появится</strong>Здесь будут команды, формат, сетка и результаты.</div></section>`}
+
+function fztvPlayerSlug(name){return String(name).toLowerCase().replace(/[^a-z0-9_-]/g,'')}
+function fztvPlayerLink(name){return '#/player/'+encodeURIComponent(fztvPlayerSlug(name))}
+function fztvPlayerProfile(){
+ const slug=decodeURIComponent((location.hash.split('/')[2]||'')).toLowerCase();
+ const roster=woodsRosterNow().find(([, ,original])=>original===slug);
+ if(!roster)return '<div class="detail-empty">Игрок не найден. <a href="#/players">Все игроки</a></div>';
+ const [name,photo]=roster,tab=location.hash.split('/')[3]==='stats'?'stats':'main';
+ const stats=(playerMatchStats||[]).filter(x=>x.player_slug===slug);
+ const sum=k=>stats.reduce((n,x)=>n+(Number(x[k])||0),0),matches=stats.length,kills=sum('kills'),deaths=sum('deaths'),assists=sum('assists'),rounds=sum('rounds_played'),headshots=sum('headshots'),wins=stats.filter(x=>x.won===true).length;
+ const kd=matches?(deaths?(kills/deaths).toFixed(2):kills?'∞':'0.00'):'—';
+ const ratio=(n,d)=>d?(n/d).toFixed(1):'—';
+ const fztvr=matches?((kills+0.5*assists)/Math.max(1,deaths)).toFixed(2):'—';
+ const metrics=[['FZTVR',fztvr],['K/D',kd],['Винрейт',matches?Math.round(100*wins/matches)+'%':'—'],['Убийств / матч',ratio(kills,matches)],['Смертей / матч',ratio(deaths,matches)],['Ассистов / матч',ratio(assists,matches)],['Матчей',matches||'—']];
+ const tabs=`
+
+PATH index.html TERM Турниры INDEX 1677928
+admin'}}}
+}
+function render(){const route=(location.hash||'#/home').replace(/^#\/?/,'').split('/')[0];let html;if(route==='home')html=home()+`<div class="page-title"><h2>Последние матчи</h2></div>${matchesCache.slice(0,3).map(matchCard).join('')}`;else if(route==='auth')html=authPage();else if(route==='admin')html=adminPage();else if(route==='matches')html=matches();else if(route==='match')html='<div class="page-title"><h1>Матч</h1></div>';else if(route==='news')html=newsPage();else if(route==='member')html='<div id="fztv-member-view" style="min-height:220px">Загрузка профиля…</div>';else if(route==='bank'||route==='market')html='<div id="fztv-finance-root" style="min-height:360px"></div>';else if(route==='ranking')html=home();else if(route==='team-created')html=createdTeamDetail();else if(route==='team')html=location.hash.toLowerCase().includes('/taykans')?taykansDetail():teamDetail();else if(route==='tournaments')html=tournamentCalendar();else if(route==='tournament'){const parts=location.hash.split('/');html=tournamentDetail(decodeURIComponent(parts[2]||'Турнир'),decodeURIComponent(parts[3]||'Дата уточняется'))}else if(route==='teams')html='<div class="page-title"><h1>Команды и турниры</h1></div><section class="panel" style="padding:20px" id="teams-workflow">Загрузка…</section>';else if(route==='players')html=playersPage();else if(route==='player')html=fztvPlayerProfile();else if(route==='rules')html=rulesPage();else if(route==='stats')html=home();else html=home();app.innerHTML=html;enhanceRankingLayout(route);if(route==='bank'||route==='market'){import('./js/fztv-finance.js?v=20261107-fz-market-v1').then(m=>m.mountFinance({client:sb,root:document.getElementById('fztv-finance-root'),route})).catch(e=>{const node=document.getElementById('fztv-finance-root');if(node)node.textContent='Ошибка загрузки банка: '+e.message;console.error(e)});}if(['players','player','admin'].includes(route)){import('./js/contracts.js').then(m=>m.mount({client:sb,root:app,route})).catch(err=>console.warn('Contracts:',err));}if(route==='auth'&&currentUser()){import('./js/account-community.js?v=founder-premium-20261107-v2').then(m=>m.mountAccount({client:sb,root:document.getElementById('fztv-account-dashboard'),user:currentUser(),onUpdated:refreshAuth})).catch(e=>console.error('Account:',e))}if(route==='member'){import('./js/account-community.js?v=founder-premium-20261107-v2').then(m=>m.mountPublicMember({client:sb,root:document.getElementById('fztv-member-view'),id:decodeURIComponent(location.hash.split('/')[2]||'')})).catch(e=>console.error('Member:',e))}if(route==='news'){import('./js/account-community.js?v=founder-premium-20261107-v2').then(m=>m.mountNewsComments({client:sb,root:app,user:currentUser()})).catch(e=>console.error('News comments:',e))}if(route==='match'){import('./js/match-detail.js?v=20261109-final-four-home-admin-v4').then(m=>m.mount({client:sb,root:app,id:decodeURIComponent(location.hash.split('/')[2]||'')})).catch(console.error)}if(route==='matches'||(route==='admin'&&isAdmin())){import('./js/match-submissions.js?v=20261109-final-four-home-admin-v4').then(m=>m.mount({client:sb,root:app,route})).catch(console.error)}if(['team-created','player','pl
+
+PATH js/fztv-final-four-draw.js TERM fzse-admin INDEX 5038
+o_url').in('id',ids);
+  if(q.error)throw q.error;
+  teams=q.data||[];
+ }
+ display(root,ids,teams);
+}
+function mountPublic(){
+ if(route()!=='season-tournament'||id()!==CUP)return;
+ const parent=$('#app .fzse-final-four');if(!parent||$('#fz4-root',parent))return;
+ const root=make('div');root.id='fz4-root';parent.append(root);
+ refresh(root).catch(e=>{if(root.isConnected)root.textContent='Ошибка сетки: '+e.message;});
+}
+function mountHome(){
+ const hash=location.hash||'#/home';
+ if(!['#/home','#/home/','#/'].includes(hash))return;
+ const panel=$('#fztv-final-four-home');if(!panel)return;
+ if($('#fz4-home',panel))return;
+ panel.replaceChildren();
+ const heading=make('div','fztv-move-heading');
+ heading.append(make('h3','','FZTV CUP #1 · СЕТКА FINAL FOUR'));
+ const link=make('a','','Открыть турнир');link.href='#/season-tournament/'+CUP;link.style.cssText='color:#c2d8f6;margin-left:auto';
+ heading.append(link);
+ const root=make('div');root.id='fz4-home';
+ panel.append(heading,root);
+ refresh(root).catch(e=>{if(root.isConnected)root.textContent='Ошибка сетки: '+e.message;});
+}
+
+function mountAdmin(){
+ if(route()!=='admin'||typeof isAdmin!=='function'||!isAdmin())return;
+ const parent=$('#fzse-admin'),select=$('.fzse-admin-select',parent||document);
+ if(!parent||!select)return;
+ if(select.value!==CUP){$('#fz4-admin',parent)?.remove();return;}
+ if($('#fz4-admin',parent))return;
+ const panel=make('div','fz4-admin');panel.id='fz4-admin';
+ const button=make('button','','Запуск турнира · случайная жеребьёвка');button.type='button';
+ const msg=make('p','fz4-note','Нужны 4 одобренные команды. Можно перемешивать пары неограниченное количество раз.');
+ const preview=make('div');
+ panel.append(make('h3','','FZTV CUP #1 · FINAL FOUR'),button,msg,preview);parent.append(panel);
+ refresh(preview).then(()=>{if($('.fz4-board',preview))button.textContent='Перемешать пары ещё раз';}).catch(e=>{msg.textContent=e.message;});
+ button.addEventListener('click',async()=>{
+  button.disabled=true;msg.textContent='Создаём случайные пары…';
+  try{
+   const c=client(),apps=await c.from('fztv_tournament_applications').select('team_id').eq('tournament_id',CUP).eq('status','approved');
+   if(apps.error)throw apps.error;
+   const ids=[...new Set((apps.data||[]).map(t=>t.team_id))];
+   if(ids.length!==4)throw Error('Нужно ровно 4 одобренные команды. Сейчас: '+ids.length);
+   const found=await c.from('tournaments').select('stage_config,format').eq('id',CUP).single();
+   if(found.error)throw found.error;
+   if(found.data.format!=='final_four')throw Error('Неверный формат турнира');
+   const next=shuffle(ids,found.data.stage_config?.bracket?.team_ids);
+   const config={...(found.data.stage_config||{}),type:'single_elimination',format:'Final Four',team_count:4,rounds:[{name:'Полуфиналы',matches:2},{name:'Финал',matches:1}],bracket:{team_ids:next,drawn_at:new Date().toISOString()}};
+   const saved=await c.from('tournaments').update({stage_config:config,status:'in_progress'}).eq('id',CUP).select('id').single();
+   if(saved.error)throw saved.error;
+   const teams=await c.from('fztv_teams').select('id,name,logo_url').in('id',next);
+   if(teams.error)throw teams.error;
+   display(preview,next
+
+PATH js/fztv-final-four-draw.js TERM fzse-admin INDEX 5062
+if(q.error)throw q.error;
+  teams=q.data||[];
+ }
+ display(root,ids,teams);
+}
+function mountPublic(){
+ if(route()!=='season-tournament'||id()!==CUP)return;
+ const parent=$('#app .fzse-final-four');if(!parent||$('#fz4-root',parent))return;
+ const root=make('div');root.id='fz4-root';parent.append(root);
+ refresh(root).catch(e=>{if(root.isConnected)root.textContent='Ошибка сетки: '+e.message;});
+}
+function mountHome(){
+ const hash=location.hash||'#/home';
+ if(!['#/home','#/home/','#/'].includes(hash))return;
+ const panel=$('#fztv-final-four-home');if(!panel)return;
+ if($('#fz4-home',panel))return;
+ panel.replaceChildren();
+ const heading=make('div','fztv-move-heading');
+ heading.append(make('h3','','FZTV CUP #1 · СЕТКА FINAL FOUR'));
+ const link=make('a','','Открыть турнир');link.href='#/season-tournament/'+CUP;link.style.cssText='color:#c2d8f6;margin-left:auto';
+ heading.append(link);
+ const root=make('div');root.id='fz4-home';
+ panel.append(heading,root);
+ refresh(root).catch(e=>{if(root.isConnected)root.textContent='Ошибка сетки: '+e.message;});
+}
+
+function mountAdmin(){
+ if(route()!=='admin'||typeof isAdmin!=='function'||!isAdmin())return;
+ const parent=$('#fzse-admin'),select=$('.fzse-admin-select',parent||document);
+ if(!parent||!select)return;
+ if(select.value!==CUP){$('#fz4-admin',parent)?.remove();return;}
+ if($('#fz4-admin',parent))return;
+ const panel=make('div','fz4-admin');panel.id='fz4-admin';
+ const button=make('button','','Запуск турнира · случайная жеребьёвка');button.type='button';
+ const msg=make('p','fz4-note','Нужны 4 одобренные команды. Можно перемешивать пары неограниченное количество раз.');
+ const preview=make('div');
+ panel.append(make('h3','','FZTV CUP #1 · FINAL FOUR'),button,msg,preview);parent.append(panel);
+ refresh(preview).then(()=>{if($('.fz4-board',preview))button.textContent='Перемешать пары ещё раз';}).catch(e=>{msg.textContent=e.message;});
+ button.addEventListener('click',async()=>{
+  button.disabled=true;msg.textContent='Создаём случайные пары…';
+  try{
+   const c=client(),apps=await c.from('fztv_tournament_applications').select('team_id').eq('tournament_id',CUP).eq('status','approved');
+   if(apps.error)throw apps.error;
+   const ids=[...new Set((apps.data||[]).map(t=>t.team_id))];
+   if(ids.length!==4)throw Error('Нужно ровно 4 одобренные команды. Сейчас: '+ids.length);
+   const found=await c.from('tournaments').select('stage_config,format').eq('id',CUP).single();
+   if(found.error)throw found.error;
+   if(found.data.format!=='final_four')throw Error('Неверный формат турнира');
+   const next=shuffle(ids,found.data.stage_config?.bracket?.team_ids);
+   const config={...(found.data.stage_config||{}),type:'single_elimination',format:'Final Four',team_count:4,rounds:[{name:'Полуфиналы',matches:2},{name:'Финал',matches:1}],bracket:{team_ids:next,drawn_at:new Date().toISOString()}};
+   const saved=await c.from('tournaments').update({stage_config:config,status:'in_progress'}).eq('id',CUP).select('id').single();
+   if(saved.error)throw saved.error;
+   const teams=await c.from('fztv_teams').select('id,name,logo_url').in('id',next);
+   if(teams.error)throw teams.error;
+   display(preview,next,teams.data||[]);
+   but
+
+PATH js/fztv-final-four-draw.js TERM fzse-admin INDEX 7606
+ормат турнира');
+   const next=shuffle(ids,found.data.stage_config?.bracket?.team_ids);
+   const config={...(found.data.stage_config||{}),type:'single_elimination',format:'Final Four',team_count:4,rounds:[{name:'Полуфиналы',matches:2},{name:'Финал',matches:1}],bracket:{team_ids:next,drawn_at:new Date().toISOString()}};
+   const saved=await c.from('tournaments').update({stage_config:config,status:'in_progress'}).eq('id',CUP).select('id').single();
+   if(saved.error)throw saved.error;
+   const teams=await c.from('fztv_teams').select('id,name,logo_url').in('id',next);
+   if(teams.error)throw teams.error;
+   display(preview,next,teams.data||[]);
+   button.textContent='Перемешать пары ещё раз';
+   msg.textContent='Новые пары сохранены и опубликованы. Жеребьёвку можно повторять.';
+  }catch(e){msg.textContent='Ошибка: '+e.message;}
+  finally{button.disabled=false;}
+ });
+}
+let scheduled=false;
+function schedule(){
+ if(scheduled)return;scheduled=true;
+ setTimeout(()=>{scheduled=false;mountHome();mountPublic();},80);
+}
+const app=$('#app');
+if(app)new MutationObserver(schedule).observe(app,{childList:true,subtree:true});
+document.addEventListener('change',event=>{if(event.target?.matches?.('.fzse-admin-select'))schedule();});
+window.addEventListener('fz-final-four-updated',()=>{
+ const home=$('#fz4-home');if(home)refresh(home).catch(console.error);
+ const detail=$('#fz4-root');if(detail)refresh(detail).catch(console.error);
+});
+window.addEventListener('hashchange',schedule);schedule();
+})();
+
+
+PATH js/fztv-final-four-draw.js TERM fzse-admin-select INDEX 5062
+if(q.error)throw q.error;
+  teams=q.data||[];
+ }
+ display(root,ids,teams);
+}
+function mountPublic(){
+ if(route()!=='season-tournament'||id()!==CUP)return;
+ const parent=$('#app .fzse-final-four');if(!parent||$('#fz4-root',parent))return;
+ const root=make('div');root.id='fz4-root';parent.append(root);
+ refresh(root).catch(e=>{if(root.isConnected)root.textContent='Ошибка сетки: '+e.message;});
+}
+function mountHome(){
+ const hash=location.hash||'#/home';
+ if(!['#/home','#/home/','#/'].includes(hash))return;
+ const panel=$('#fztv-final-four-home');if(!panel)return;
+ if($('#fz4-home',panel))return;
+ panel.replaceChildren();
+ const heading=make('div','fztv-move-heading');
+ heading.append(make('h3','','FZTV CUP #1 · СЕТКА FINAL FOUR'));
+ const link=make('a','','Открыть турнир');link.href='#/season-tournament/'+CUP;link.style.cssText='color:#c2d8f6;margin-left:auto';
+ heading.append(link);
+ const root=make('div');root.id='fz4-home';
+ panel.append(heading,root);
+ refresh(root).catch(e=>{if(root.isConnected)root.textContent='Ошибка сетки: '+e.message;});
+}
+
+function mountAdmin(){
+ if(route()!=='admin'||typeof isAdmin!=='function'||!isAdmin())return;
+ const parent=$('#fzse-admin'),select=$('.fzse-admin-select',parent||document);
+ if(!parent||!select)return;
+ if(select.value!==CUP){$('#fz4-admin',parent)?.remove();return;}
+ if($('#fz4-admin',parent))return;
+ const panel=make('div','fz4-admin');panel.id='fz4-admin';
+ const button=make('button','','Запуск турнира · случайная жеребьёвка');button.type='button';
+ const msg=make('p','fz4-note','Нужны 4 одобренные команды. Можно перемешивать пары неограниченное количество раз.');
+ const preview=make('div');
+ panel.append(make('h3','','FZTV CUP #1 · FINAL FOUR'),button,msg,preview);parent.append(panel);
+ refresh(preview).then(()=>{if($('.fz4-board',preview))button.textContent='Перемешать пары ещё раз';}).catch(e=>{msg.textContent=e.message;});
+ button.addEventListener('click',async()=>{
+  button.disabled=true;msg.textContent='Создаём случайные пары…';
+  try{
+   const c=client(),apps=await c.from('fztv_tournament_applications').select('team_id').eq('tournament_id',CUP).eq('status','approved');
+   if(apps.error)throw apps.error;
+   const ids=[...new Set((apps.data||[]).map(t=>t.team_id))];
+   if(ids.length!==4)throw Error('Нужно ровно 4 одобренные команды. Сейчас: '+ids.length);
+   const found=await c.from('tournaments').select('stage_config,format').eq('id',CUP).single();
+   if(found.error)throw found.error;
+   if(found.data.format!=='final_four')throw Error('Неверный формат турнира');
+   const next=shuffle(ids,found.data.stage_config?.bracket?.team_ids);
+   const config={...(found.data.stage_config||{}),type:'single_elimination',format:'Final Four',team_count:4,rounds:[{name:'Полуфиналы',matches:2},{name:'Финал',matches:1}],bracket:{team_ids:next,drawn_at:new Date().toISOString()}};
+   const saved=await c.from('tournaments').update({stage_config:config,status:'in_progress'}).eq('id',CUP).select('id').single();
+   if(saved.error)throw saved.error;
+   const teams=await c.from('fztv_teams').select('id,name,logo_url').in('id',next);
+   if(teams.error)throw teams.error;
+   display(preview,next,teams.data||[]);
+   but
+
+PATH js/fztv-final-four-draw.js TERM fzse-admin-select INDEX 7606
+ормат турнира');
+   const next=shuffle(ids,found.data.stage_config?.bracket?.team_ids);
+   const config={...(found.data.stage_config||{}),type:'single_elimination',format:'Final Four',team_count:4,rounds:[{name:'Полуфиналы',matches:2},{name:'Финал',matches:1}],bracket:{team_ids:next,drawn_at:new Date().toISOString()}};
+   const saved=await c.from('tournaments').update({stage_config:config,status:'in_progress'}).eq('id',CUP).select('id').single();
+   if(saved.error)throw saved.error;
+   const teams=await c.from('fztv_teams').select('id,name,logo_url').in('id',next);
+   if(teams.error)throw teams.error;
+   display(preview,next,teams.data||[]);
+   button.textContent='Перемешать пары ещё раз';
+   msg.textContent='Новые пары сохранены и опубликованы. Жеребьёвку можно повторять.';
+  }catch(e){msg.textContent='Ошибка: '+e.message;}
+  finally{button.disabled=false;}
+ });
+}
+let scheduled=false;
+function schedule(){
+ if(scheduled)return;scheduled=true;
+ setTimeout(()=>{scheduled=false;mountHome();mountPublic();},80);
+}
+const app=$('#app');
+if(app)new MutationObserver(schedule).observe(app,{childList:true,subtree:true});
+document.addEventListener('change',event=>{if(event.target?.matches?.('.fzse-admin-select'))schedule();});
+window.addEventListener('fz-final-four-updated',()=>{
+ const home=$('#fz4-home');if(home)refresh(home).catch(console.error);
+ const detail=$('#fz4-root');if(detail)refresh(detail).catch(console.error);
+});
+window.addEventListener('hashchange',schedule);schedule();
+})();
+
+
+PATH js/team-tournament-workflow.js TERM Турниры INDEX 6465
+ const admin=el('section');root.append(admin);
+ async function loadAdmin(){
+ admin.replaceChildren();
+ const allTeams=el('section');allTeams.append(el('h3','Управление командами'));
+ const {data:teams,error:teamsError}=await client.from('fztv_teams').select('id,name,tag,status,logo_url').order('created_at',{ascending:false});
+ if(teamsError){allTeams.append(el('p','Ошибка загрузки команд: '+teamsError.message));}
+ else {
+ allTeams.append(el('p','Всего команд: '+(teams||[]).length));
+ for(const team of teams||[]){
+ const line=el('div');line.className='rank-team';line.style.cssText='display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:10px';
+ if(team.logo_url){const img=el('img');img.src=team.logo_url;img.alt='';img.width=40;img.height=40;img.style.cssText='width:40px;height:40px;object-fit:cover;border-radius:8px';line.append(img);}
+ const info=el('span',team.name+' ['+team.tag+'] — '+team.status);info.style.flex='1';line.append(info);
+ const remove=el('button','Удалить команду');remove.type='button';remove.className='toolbtn';remove.style.color='#ff6975';
+ remove.onclick=async()=>{
+ if(!window.confirm('Удалить команду «'+team.name+'» навсегда? Игроки и заявки команды на турниры также будут удалены.'))return;
+ remove.disabled=true;msg.textContent='Удаление команды…';
+ const {data,error}=await client.from('fztv_teams').delete().eq('id',team.id).select('id');
+ if(error){msg.textContent='Ошибка удаления: '+error.message;remove.disabled=false;return;}
+ if(!data?.length){msg.textContent='Удаление не подтверждено. Проверь права администратора.';remove.disabled=false;return;}
+ msg.textContent='Команда «'+team.name+'» удалена';await loadAdmin();
+ };
+ line.append(remove);allTeams.append(line);
+ }
+ }
+ admin.append(allTeams);
+ for(const spec of [
+ {table:'fztv_teams',title:'Новые команды',label:r=>r.name+' ['+r.tag+']'},
+ {table:'fztv_tournament_applications',title:'Заявки на турниры',label:r=>r.team_id+' → '+r.tournament_id}
+ ]){
+ const group=el('div');group.append(el('h3',spec.title));
+ const {data,error}=await client.from(spec.table).select('*').eq('status','pending').order('created_at',{ascending:true});
+ if(error){group.append(el('p',error.message));admin.append(group);continue;}
+ group.append(el('p','Ожидают модерации: '+(data||[]).length));
+ for(const r of data||[]){const line=el('div');line.append(el('span',spec.label(r)+' '));
+ for(const [status,caption] of [['approved','Одобрить'],['rejected','Отклонить']]){
+ const b=el('button',caption);b.type='button';b.onclick=async()=>{b.disabled=true;const {error}=await client.from(spec.table).update({status}).eq('id',r.id);msg.textContent=error?'Ошибка: '+error.message:'Решение сохранено';await loadAdmin();};line.append(b);
+ }group.append(line);}admin.append(group);
+ }
+ }
+ await loadAdmin();
+ const refreshButton=el('button','Обновить уведомления');refreshButton.type='button';refreshButton.onclick=loadAdmin;root.append(refreshButton);
+}
+
+
+PATH js/team-tournament-workflow.js TERM Турниры INDEX 7173
+am.logo_url;img.alt='';img.width=40;img.height=40;img.style.cssText='width:40px;height:40px;object-fit:cover;border-radius:8px';line.append(img);}
+ const info=el('span',team.name+' ['+team.tag+'] — '+team.status);info.style.flex='1';line.append(info);
+ const remove=el('button','Удалить команду');remove.type='button';remove.className='toolbtn';remove.style.color='#ff6975';
+ remove.onclick=async()=>{
+ if(!window.confirm('Удалить команду «'+team.name+'» навсегда? Игроки и заявки команды на турниры также будут удалены.'))return;
+ remove.disabled=true;msg.textContent='Удаление команды…';
+ const {data,error}=await client.from('fztv_teams').delete().eq('id',team.id).select('id');
+ if(error){msg.textContent='Ошибка удаления: '+error.message;remove.disabled=false;return;}
+ if(!data?.length){msg.textContent='Удаление не подтверждено. Проверь права администратора.';remove.disabled=false;return;}
+ msg.textContent='Команда «'+team.name+'» удалена';await loadAdmin();
+ };
+ line.append(remove);allTeams.append(line);
+ }
+ }
+ admin.append(allTeams);
+ for(const spec of [
+ {table:'fztv_teams',title:'Новые команды',label:r=>r.name+' ['+r.tag+']'},
+ {table:'fztv_tournament_applications',title:'Заявки на турниры',label:r=>r.team_id+' → '+r.tournament_id}
+ ]){
+ const group=el('div');group.append(el('h3',spec.title));
+ const {data,error}=await client.from(spec.table).select('*').eq('status','pending').order('created_at',{ascending:true});
+ if(error){group.append(el('p',error.message));admin.append(group);continue;}
+ group.append(el('p','Ожидают модерации: '+(data||[]).length));
+ for(const r of data||[]){const line=el('div');line.append(el('span',spec.label(r)+' '));
+ for(const [status,caption] of [['approved','Одобрить'],['rejected','Отклонить']]){
+ const b=el('button',caption);b.type='button';b.onclick=async()=>{b.disabled=true;const {error}=await client.from(spec.table).update({status}).eq('id',r.id);msg.textContent=error?'Ошибка: '+error.message:'Решение сохранено';await loadAdmin();};line.append(b);
+ }group.append(line);}admin.append(group);
+ }
+ }
+ await loadAdmin();
+ const refreshButton=el('button','Обновить уведомления');refreshButton.type='button';refreshButton.onclick=loadAdmin;root.append(refreshButton);
+}
+
+
+PATH js/tournament-season-2027.js TERM УПРАВЛЕНИЕ ТУРНИРАМИ INDEX 13777
+nd(slotsTitle,infoBox,slots);
+} else {
+ reg.append(node('h2','','РЕГИСТРАЦИЯ КОМАНД'),node('p','',t.status==='registration'?'Регистрация объявлена открытой.':'Регистрация пока не открыта.'));
+ const team=node('a','fzse-link','Управление моей командой →');team.href='#/teams';reg.append(team);
+}
+page.append(reg);root.replaceChildren(page);
+if(true) {
+ import('./tournament-registration.js?v=20261109-final-four-v1').then(m=>m.mountTournamentRegistration({client:db(),root:reg,tournamentId:t.id})).catch(err=>{console.error('FZTV CUP registration restore',err);reg.append(node('p','fzse-message','Ошибка загрузки регистрации: '+err.message));});
+}
+}
+function field(title,name,kind,value,values){const wrapper=node('label','',title),x=node(kind==='select'?'select':kind==='textarea'?'textarea':'input');x.name=name;if(kind==='select'){for(const [key,label] of values){const op=node('option','',label);op.value=key;x.append(op);}x.value=value||'';}else{x.type=kind;x.value=value??'';}wrapper.append(x);return wrapper;}
+async function admin(root){let panel=$('#fzse-admin',root);if(!panel){panel=node('section','fzse-panel');panel.id='fzse-admin';root.prepend(panel);}panel.replaceChildren(node('h2','','УПРАВЛЕНИЕ ТУРНИРАМИ'));
+const choose=node('select','fzse-admin-select');choose.style.width='100%';for(const t of records){const op=node('option','',date(t.starts_at)+' · '+t.name);op.value=t.id;choose.append(op);}panel.append(choose);const content=node('div'),message=node('p','fzse-message');panel.append(content,message);
+function draw(){const t=records.find(x=>x.id===choose.value);if(!t)return;content.replaceChildren();const form=node('form','fzse-form');
+for(const [label,key,kind,val] of [['Название','name','text',t.name],['Начало (Москва)','starts_at','datetime-local',editable(t.starts_at)],['Конец (Москва)','ends_at','datetime-local',editable(t.ends_at)],['Открытие регистрации (Москва)','registration_opens_at','datetime-local',editable(t.registration_opens_at)],['Количество команд','max_teams','number',String(t.max_teams||8)],['Ссылка на баннер HTTPS','banner_url','url',t.banner_url||''],['Описание','description','textarea',t.description||'']])form.append(field(label,key,kind,val));
+form.append(field('Формат','format','select',t.format,[['single_elimination','Плей-офф'],['swiss_playoff','Швейцарка + плей-офф'],['round_robin','Круговая'],['final_four','Final Four']]));
+form.append(field('Статус','status','select',t.status,[['scheduled','Запланирован'],['registration','Регистрация'],['closed','Регистрация закрыта'],['in_progress','Идёт'],['finished','Завершён'],['cancelled','Отменён']]));
+form.append(field('Серия','series','select',t.series,[['cup','FZTV CUP'],['major','MAJOR'],['open','OPEN'],['seasonal','Сезонный'],['masters','MASTERS']]));
+if(t.id==='be494a78-0d63-4ebd-8d29-f7ea9cb48a1b'&&t.format==='final_four'){
+ const controls=node('section','fzse-final-four-admin');
+ controls.style.cssText='grid-column:1/-1;padding:18px;background:#1b2d45;border:1px solid #567294;border-radius:10px';
+ controls.append(node('h3','','FZTV CUP #1 · ЖЕРЕБЬЁВКА FINAL FOUR'));
+ const launch=node('button','fzse-btn',t.stage_config?.bracket?.team_ids?.length===4?'ПЕРЕМЕШАТЬ ПАРЫ ЗА
+
+PATH js/tournament-season-2027.js TERM fzse-admin INDEX 2890
+ve;display:flex;justify-content:space-between;align-items:center;padding:14px;overflow:hidden}.fzse-hero.major{background:linear-gradient(115deg,#21243c,#863342,#393047)}.fzse-hero.cup{background:linear-gradient(115deg,#17223e,#582432,#263957)}.fzse-hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.fzse-hero b,.fzse-hero span{position:relative;z-index:1;text-shadow:0 2px 6px #000}.fzse-hero b{background:#111a2e9c;padding:7px;border-radius:5px;letter-spacing:.1em}.fzse-hero span{font-size:26px}.fzse-body{padding:15px}.fzse-body h3{font-size:18px;margin:0 0 12px}.fzse-body p{font-size:13px;color:#b7c8de;margin:7px 0}.fzse-panel{padding:18px;background:#132035;border:1px solid #35475e;border-radius:12px;margin:16px 0}.fzse-details{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}.fzse-chip{background:#1d2e46;padding:12px;border-radius:8px}.fzse-chip small{display:block;color:#9bacc9}.fzse-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-top:12px}.fzse-form label{display:flex;flex-direction:column;gap:5px;color:#b8c9dd;font-size:13px}.fzse-form input,.fzse-form textarea,.fzse-form select,.fzse-admin-select{background:#0e1828;color:white;border:1px solid #435d7a;border-radius:7px;padding:10px;min-width:0}.fzse-btn{background:#e93854;color:#fff;border:0;padding:10px 17px;border-radius:7px;font-weight:800;cursor:pointer}.fzse-link{color:#c2ddfa}.fzse-message{color:#d4e3f7;font-size:13px}';style.textContent += '.fzse-hero{height:160px}.fzse-panel>.fzse-hero{height:270px;margin:-18px -18px 15px}.fzse-hero img{object-position:center center}.fzse-card .fzse-hero{height:132px}@media(max-width:650px){.fzse-panel>.fzse-hero{height:165px}.fzse-card .fzse-hero{height:122px}}';style.textContent+='.fzse-prize-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:14px}.fzse-prize-card{text-align:center;background:#1c2e47;border:1px solid #496783;border-radius:9px;padding:18px 8px}.fzse-prize-card small,.fzse-prize-card span{display:block;font-size:11px;color:#acc5e1}.fzse-prize-card strong{display:block;font-size:32px;color:#f1f8ff;margin:7px 0}@media(max-width:650px){.fzse-prize-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}';
+style.textContent+='.fzse-final-four-rounds{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px}.fzse-final-four-card{display:grid;gap:8px;padding:17px;background:#1c2e47;border:1px solid #54708e;border-radius:9px}.fzse-final-four-card strong{font-size:15px;color:#eaf3ff}.fzse-final-four-card small{color:#acc5df;font-size:12px}@media(max-width:650px){.fzse-final-four-rounds{grid-template-columns:1fr}}';
+style.textContent+="\n.fzse-hero{display:flex!important;align-items:center!important;gap:clamp(10px,3vw,30px)!important;padding:13px!important;min-height:145px;background:radial-gradient(ellipse at 22% 70%,#516b954a,transparent 62%),linear-gradient(115deg,#0a1120,#1b2842 60%,#0b1224)!important}\n.fzse-hero.fzse-halloween{background:radial-gradient(ellipse at 24% 65%,#fc79173d,transparent 57%),radial-gradient(ellipse at 90% 18%,#663bb244,transparent 60%),linear-gradient(115deg
+
+PATH js/tournament-season-2027.js TERM fzse-admin INDEX 13634
+);infoBox.append(node('span','','УЧАСТНИКИ '),node('b','','0 / '+(t.max_teams||8)+' команд'));
+ const slots=node('div','fztv-slots');
+ reg.append(slotsTitle,infoBox,slots);
+} else {
+ reg.append(node('h2','','РЕГИСТРАЦИЯ КОМАНД'),node('p','',t.status==='registration'?'Регистрация объявлена открытой.':'Регистрация пока не открыта.'));
+ const team=node('a','fzse-link','Управление моей командой →');team.href='#/teams';reg.append(team);
+}
+page.append(reg);root.replaceChildren(page);
+if(true) {
+ import('./tournament-registration.js?v=20261109-final-four-v1').then(m=>m.mountTournamentRegistration({client:db(),root:reg,tournamentId:t.id})).catch(err=>{console.error('FZTV CUP registration restore',err);reg.append(node('p','fzse-message','Ошибка загрузки регистрации: '+err.message));});
+}
+}
+function field(title,name,kind,value,values){const wrapper=node('label','',title),x=node(kind==='select'?'select':kind==='textarea'?'textarea':'input');x.name=name;if(kind==='select'){for(const [key,label] of values){const op=node('option','',label);op.value=key;x.append(op);}x.value=value||'';}else{x.type=kind;x.value=value??'';}wrapper.append(x);return wrapper;}
+async function admin(root){let panel=$('#fzse-admin',root);if(!panel){panel=node('section','fzse-panel');panel.id='fzse-admin';root.prepend(panel);}panel.replaceChildren(node('h2','','УПРАВЛЕНИЕ ТУРНИРАМИ'));
+const choose=node('select','fzse-admin-select');choose.style.width='100%';for(const t of records){const op=node('option','',date(t.starts_at)+' · '+t.name);op.value=t.id;choose.append(op);}panel.append(choose);const content=node('div'),message=node('p','fzse-message');panel.append(content,message);
+function draw(){const t=records.find(x=>x.id===choose.value);if(!t)return;content.replaceChildren();const form=node('form','fzse-form');
+for(const [label,key,kind,val] of [['Название','name','text',t.name],['Начало (Москва)','starts_at','datetime-local',editable(t.starts_at)],['Конец (Москва)','ends_at','datetime-local',editable(t.ends_at)],['Открытие регистрации (Москва)','registration_opens_at','datetime-local',editable(t.registration_opens_at)],['Количество команд','max_teams','number',String(t.max_teams||8)],['Ссылка на баннер HTTPS','banner_url','url',t.banner_url||''],['Описание','description','textarea',t.description||'']])form.append(field(label,key,kind,val));
+form.append(field('Формат','format','select',t.format,[['single_elimination','Плей-офф'],['swiss_playoff','Швейцарка + плей-офф'],['round_robin','Круговая'],['final_four','Final Four']]));
+form.append(field('Статус','status','select',t.status,[['scheduled','Запланирован'],['registration','Регистрация'],['closed','Регистрация закрыта'],['in_progress','Идёт'],['finished','Завершён'],['cancelled','Отменён']]));
+form.append(field('Серия','series','select',t.series,[['cup','FZTV CUP'],['major','MAJOR'],['open','OPEN'],['seasonal','Сезонный'],['masters','MASTERS']]));
+if(t.id==='be494a78-0d63-4ebd-8d29-f7ea9cb48a1b'&&t.format==='final_four'){
+ const controls=node('section','fzse-final-four-admin');
+ controls.style.cssText='grid-column:1/-1;padding:18px;background:#1b2d45;border:1px solid #567294;border-radius:10px';
+ controls.append(node('h3','','F
+
+PATH js/tournament-season-2027.js TERM fzse-admin INDEX 13708
+ams||8)+' команд'));
+ const slots=node('div','fztv-slots');
+ reg.append(slotsTitle,infoBox,slots);
+} else {
+ reg.append(node('h2','','РЕГИСТРАЦИЯ КОМАНД'),node('p','',t.status==='registration'?'Регистрация объявлена открытой.':'Регистрация пока не открыта.'));
+ const team=node('a','fzse-link','Управление моей командой →');team.href='#/teams';reg.append(team);
+}
+page.append(reg);root.replaceChildren(page);
+if(true) {
+ import('./tournament-registration.js?v=20261109-final-four-v1').then(m=>m.mountTournamentRegistration({client:db(),root:reg,tournamentId:t.id})).catch(err=>{console.error('FZTV CUP registration restore',err);reg.append(node('p','fzse-message','Ошибка загрузки регистрации: '+err.message));});
+}
+}
+function field(title,name,kind,value,values){const wrapper=node('label','',title),x=node(kind==='select'?'select':kind==='textarea'?'textarea':'input');x.name=name;if(kind==='select'){for(const [key,label] of values){const op=node('option','',label);op.value=key;x.append(op);}x.value=value||'';}else{x.type=kind;x.value=value??'';}wrapper.append(x);return wrapper;}
+async function admin(root){let panel=$('#fzse-admin',root);if(!panel){panel=node('section','fzse-panel');panel.id='fzse-admin';root.prepend(panel);}panel.replaceChildren(node('h2','','УПРАВЛЕНИЕ ТУРНИРАМИ'));
+const choose=node('select','fzse-admin-select');choose.style.width='100%';for(const t of records){const op=node('option','',date(t.starts_at)+' · '+t.name);op.value=t.id;choose.append(op);}panel.append(choose);const content=node('div'),message=node('p','fzse-message');panel.append(content,message);
+function draw(){const t=records.find(x=>x.id===choose.value);if(!t)return;content.replaceChildren();const form=node('form','fzse-form');
+for(const [label,key,kind,val] of [['Название','name','text',t.name],['Начало (Москва)','starts_at','datetime-local',editable(t.starts_at)],['Конец (Москва)','ends_at','datetime-local',editable(t.ends_at)],['Открытие регистрации (Москва)','registration_opens_at','datetime-local',editable(t.registration_opens_at)],['Количество команд','max_teams','number',String(t.max_teams||8)],['Ссылка на баннер HTTPS','banner_url','url',t.banner_url||''],['Описание','description','textarea',t.description||'']])form.append(field(label,key,kind,val));
+form.append(field('Формат','format','select',t.format,[['single_elimination','Плей-офф'],['swiss_playoff','Швейцарка + плей-офф'],['round_robin','Круговая'],['final_four','Final Four']]));
+form.append(field('Статус','status','select',t.status,[['scheduled','Запланирован'],['registration','Регистрация'],['closed','Регистрация закрыта'],['in_progress','Идёт'],['finished','Завершён'],['cancelled','Отменён']]));
+form.append(field('Серия','series','select',t.series,[['cup','FZTV CUP'],['major','MAJOR'],['open','OPEN'],['seasonal','Сезонный'],['masters','MASTERS']]));
+if(t.id==='be494a78-0d63-4ebd-8d29-f7ea9cb48a1b'&&t.format==='final_four'){
+ const controls=node('section','fzse-final-four-admin');
+ controls.style.cssText='grid-column:1/-1;padding:18px;background:#1b2d45;border:1px solid #567294;border-radius:10px';
+ controls.append(node('h3','','FZTV CUP #1 · ЖЕРЕБЬЁВКА FINAL FOUR'));
+ const launch=node('button','fzse-b
+
+PATH js/tournament-season-2027.js TERM fzse-admin INDEX 13830
+de('h2','','РЕГИСТРАЦИЯ КОМАНД'),node('p','',t.status==='registration'?'Регистрация объявлена открытой.':'Регистрация пока не открыта.'));
+ const team=node('a','fzse-link','Управление моей командой →');team.href='#/teams';reg.append(team);
+}
+page.append(reg);root.replaceChildren(page);
+if(true) {
+ import('./tournament-registration.js?v=20261109-final-four-v1').then(m=>m.mountTournamentRegistration({client:db(),root:reg,tournamentId:t.id})).catch(err=>{console.error('FZTV CUP registration restore',err);reg.append(node('p','fzse-message','Ошибка загрузки регистрации: '+err.message));});
+}
+}
+function field(title,name,kind,value,values){const wrapper=node('label','',title),x=node(kind==='select'?'select':kind==='textarea'?'textarea':'input');x.name=name;if(kind==='select'){for(const [key,label] of values){const op=node('option','',label);op.value=key;x.append(op);}x.value=value||'';}else{x.type=kind;x.value=value??'';}wrapper.append(x);return wrapper;}
+async function admin(root){let panel=$('#fzse-admin',root);if(!panel){panel=node('section','fzse-panel');panel.id='fzse-admin';root.prepend(panel);}panel.replaceChildren(node('h2','','УПРАВЛЕНИЕ ТУРНИРАМИ'));
+const choose=node('select','fzse-admin-select');choose.style.width='100%';for(const t of records){const op=node('option','',date(t.starts_at)+' · '+t.name);op.value=t.id;choose.append(op);}panel.append(choose);const content=node('div'),message=node('p','fzse-message');panel.append(content,message);
+function draw(){const t=records.find(x=>x.id===choose.value);if(!t)return;content.replaceChildren();const form=node('form','fzse-form');
+for(const [label,key,kind,val] of [['Название','name','text',t.name],['Начало (Москва)','starts_at','datetime-local',editable(t.starts_at)],['Конец (Москва)','ends_at','datetime-local',editable(t.ends_at)],['Открытие регистрации (Москва)','registration_opens_at','datetime-local',editable(t.registration_opens_at)],['Количество команд','max_teams','number',String(t.max_teams||8)],['Ссылка на баннер HTTPS','banner_url','url',t.banner_url||''],['Описание','description','textarea',t.description||'']])form.append(field(label,key,kind,val));
+form.append(field('Формат','format','select',t.format,[['single_elimination','Плей-офф'],['swiss_playoff','Швейцарка + плей-офф'],['round_robin','Круговая'],['final_four','Final Four']]));
+form.append(field('Статус','status','select',t.status,[['scheduled','Запланирован'],['registration','Регистрация'],['closed','Регистрация закрыта'],['in_progress','Идёт'],['finished','Завершён'],['cancelled','Отменён']]));
+form.append(field('Серия','series','select',t.series,[['cup','FZTV CUP'],['major','MAJOR'],['open','OPEN'],['seasonal','Сезонный'],['masters','MASTERS']]));
+if(t.id==='be494a78-0d63-4ebd-8d29-f7ea9cb48a1b'&&t.format==='final_four'){
+ const controls=node('section','fzse-final-four-admin');
+ controls.style.cssText='grid-column:1/-1;padding:18px;background:#1b2d45;border:1px solid #567294;border-radius:10px';
+ controls.append(node('h3','','FZTV CUP #1 · ЖЕРЕБЬЁВКА FINAL FOUR'));
+ const launch=node('button','fzse-btn',t.stage_config?.bracket?.team_ids?.length===4?'ПЕРЕМЕШАТЬ ПАРЫ ЗАНОВО':'ЗАПУСТИТЬ СЕТКУ ТУРНИРА');
+ launch.type='butto
+
+PATH js/tournament-season-2027.js TERM fzse-admin-select INDEX 2890
+ve;display:flex;justify-content:space-between;align-items:center;padding:14px;overflow:hidden}.fzse-hero.major{background:linear-gradient(115deg,#21243c,#863342,#393047)}.fzse-hero.cup{background:linear-gradient(115deg,#17223e,#582432,#263957)}.fzse-hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.fzse-hero b,.fzse-hero span{position:relative;z-index:1;text-shadow:0 2px 6px #000}.fzse-hero b{background:#111a2e9c;padding:7px;border-radius:5px;letter-spacing:.1em}.fzse-hero span{font-size:26px}.fzse-body{padding:15px}.fzse-body h3{font-size:18px;margin:0 0 12px}.fzse-body p{font-size:13px;color:#b7c8de;margin:7px 0}.fzse-panel{padding:18px;background:#132035;border:1px solid #35475e;border-radius:12px;margin:16px 0}.fzse-details{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}.fzse-chip{background:#1d2e46;padding:12px;border-radius:8px}.fzse-chip small{display:block;color:#9bacc9}.fzse-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-top:12px}.fzse-form label{display:flex;flex-direction:column;gap:5px;color:#b8c9dd;font-size:13px}.fzse-form input,.fzse-form textarea,.fzse-form select,.fzse-admin-select{background:#0e1828;color:white;border:1px solid #435d7a;border-radius:7px;padding:10px;min-width:0}.fzse-btn{background:#e93854;color:#fff;border:0;padding:10px 17px;border-radius:7px;font-weight:800;cursor:pointer}.fzse-link{color:#c2ddfa}.fzse-message{color:#d4e3f7;font-size:13px}';style.textContent += '.fzse-hero{height:160px}.fzse-panel>.fzse-hero{height:270px;margin:-18px -18px 15px}.fzse-hero img{object-position:center center}.fzse-card .fzse-hero{height:132px}@media(max-width:650px){.fzse-panel>.fzse-hero{height:165px}.fzse-card .fzse-hero{height:122px}}';style.textContent+='.fzse-prize-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:14px}.fzse-prize-card{text-align:center;background:#1c2e47;border:1px solid #496783;border-radius:9px;padding:18px 8px}.fzse-prize-card small,.fzse-prize-card span{display:block;font-size:11px;color:#acc5e1}.fzse-prize-card strong{display:block;font-size:32px;color:#f1f8ff;margin:7px 0}@media(max-width:650px){.fzse-prize-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}';
+style.textContent+='.fzse-final-four-rounds{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px}.fzse-final-four-card{display:grid;gap:8px;padding:17px;background:#1c2e47;border:1px solid #54708e;border-radius:9px}.fzse-final-four-card strong{font-size:15px;color:#eaf3ff}.fzse-final-four-card small{color:#acc5df;font-size:12px}@media(max-width:650px){.fzse-final-four-rounds{grid-template-columns:1fr}}';
+style.textContent+="\n.fzse-hero{display:flex!important;align-items:center!important;gap:clamp(10px,3vw,30px)!important;padding:13px!important;min-height:145px;background:radial-gradient(ellipse at 22% 70%,#516b954a,transparent 62%),linear-gradient(115deg,#0a1120,#1b2842 60%,#0b1224)!important}\n.fzse-hero.fzse-halloween{background:radial-gradient(ellipse at 24% 65%,#fc79173d,transparent 57%),radial-gradient(ellipse at 90% 18%,#663bb244,transparent 60%),linear-gradient(115deg
+
+PATH js/tournament-season-2027.js TERM fzse-admin-select INDEX 13830
+de('h2','','РЕГИСТРАЦИЯ КОМАНД'),node('p','',t.status==='registration'?'Регистрация объявлена открытой.':'Регистрация пока не открыта.'));
+ const team=node('a','fzse-link','Управление моей командой →');team.href='#/teams';reg.append(team);
+}
+page.append(reg);root.replaceChildren(page);
+if(true) {
+ import('./tournament-registration.js?v=20261109-final-four-v1').then(m=>m.mountTournamentRegistration({client:db(),root:reg,tournamentId:t.id})).catch(err=>{console.error('FZTV CUP registration restore',err);reg.append(node('p','fzse-message','Ошибка загрузки регистрации: '+err.message));});
+}
+}
+function field(title,name,kind,value,values){const wrapper=node('label','',title),x=node(kind==='select'?'select':kind==='textarea'?'textarea':'input');x.name=name;if(kind==='select'){for(const [key,label] of values){const op=node('option','',label);op.value=key;x.append(op);}x.value=value||'';}else{x.type=kind;x.value=value??'';}wrapper.append(x);return wrapper;}
+async function admin(root){let panel=$('#fzse-admin',root);if(!panel){panel=node('section','fzse-panel');panel.id='fzse-admin';root.prepend(panel);}panel.replaceChildren(node('h2','','УПРАВЛЕНИЕ ТУРНИРАМИ'));
+const choose=node('select','fzse-admin-select');choose.style.width='100%';for(const t of records){const op=node('option','',date(t.starts_at)+' · '+t.name);op.value=t.id;choose.append(op);}panel.append(choose);const content=node('div'),message=node('p','fzse-message');panel.append(content,message);
+function draw(){const t=records.find(x=>x.id===choose.value);if(!t)return;content.replaceChildren();const form=node('form','fzse-form');
+for(const [label,key,kind,val] of [['Название','name','text',t.name],['Начало (Москва)','starts_at','datetime-local',editable(t.starts_at)],['Конец (Москва)','ends_at','datetime-local',editable(t.ends_at)],['Открытие регистрации (Москва)','registration_opens_at','datetime-local',editable(t.registration_opens_at)],['Количество команд','max_teams','number',String(t.max_teams||8)],['Ссылка на баннер HTTPS','banner_url','url',t.banner_url||''],['Описание','description','textarea',t.description||'']])form.append(field(label,key,kind,val));
+form.append(field('Формат','format','select',t.format,[['single_elimination','Плей-офф'],['swiss_playoff','Швейцарка + плей-офф'],['round_robin','Круговая'],['final_four','Final Four']]));
+form.append(field('Статус','status','select',t.status,[['scheduled','Запланирован'],['registration','Регистрация'],['closed','Регистрация закрыта'],['in_progress','Идёт'],['finished','Завершён'],['cancelled','Отменён']]));
+form.append(field('Серия','series','select',t.series,[['cup','FZTV CUP'],['major','MAJOR'],['open','OPEN'],['seasonal','Сезонный'],['masters','MASTERS']]));
+if(t.id==='be494a78-0d63-4ebd-8d29-f7ea9cb48a1b'&&t.format==='final_four'){
+ const controls=node('section','fzse-final-four-admin');
+ controls.style.cssText='grid-column:1/-1;padding:18px;background:#1b2d45;border:1px solid #567294;border-radius:10px';
+ controls.append(node('h3','','FZTV CUP #1 · ЖЕРЕБЬЁВКА FINAL FOUR'));
+ const launch=node('button','fzse-btn',t.stage_config?.bracket?.team_ids?.length===4?'ПЕРЕМЕШАТЬ ПАРЫ ЗАНОВО':'ЗАПУСТИТЬ СЕТКУ ТУРНИРА');
+ launch.type='butto
+
+PATH js/tournament-season-2027.js TERM Турниры INDEX 9136
+(imageUrl)||imageUrl.startsWith('./assets/tournaments/'))){
+   if(t.name==='HALLOWEEN NIGHT CUP'){
+     const im=node('img');im.src=imageUrl;im.alt='Кубок Halloween Night Cup · вид спереди';im.loading='lazy';trophy.append(im);
+   } else {
+     const crop=node('div','fzse-trophy-crop');crop.style.backgroundImage='url("'+imageUrl.replace(/["\\]/g,'')+'")';trophy.append(crop);
+   }
+ } else trophy.append(node('span','fzse-trophy-fallback','🏆'));
+ const copy=node('div','fzse-banner-copy');
+ copy.append(node('small','',type[t.series]||'FZTV TOURNAMENT'));
+ copy.append(node('strong','',t.name));
+ copy.append(node('span','',t.name==='HALLOWEEN NIGHT CUP'?'DARK ARENA EDITION':t.format==='swiss_playoff'?'SWISS STAGE + PLAYOFFS':'FRAGZONETV CHAMPIONSHIP'));
+ e.append(trophy,copy);
+ return e;
+}
+function card(t){const a=node('a','fzse-card');a.href='#/season-tournament/'+t.id;a.append(hero(t));const body=node('div','fzse-body');body.append(node('h3','',t.name),node('p','',date(t.starts_at)+' — '+date(t.ends_at)),node('p','',(t.max_teams||8)+' команд · '+(formats[t.format]||t.format)));a.append(body);return a;}
+function calendar(root){const page=node('div','fzse-page');page.append(node('h1','','ТУРНИРЫ FRAGZONETV'),node('p','',records.length+' турниров · ноябрь 2026 — октябрь 2027'));let current=null,group=null;
+for(const t of records){const m=month(t.starts_at);if(m!==current){current=m;group=node('section','fzse-group');group.append(node('h2','',m),node('div','fzse-grid'));page.append(group);}$('.fzse-grid',group).append(card(t));}
+root.replaceChildren(page);}
+function detail(root,id){const t=records.find(x=>x.id===id);const page=node('div','fzse-page'),back=node('a','fzse-link','← Все турниры');back.href='#/tournaments';page.append(back);
+if(!t){page.append(node('h2','','Турнир не найден'));root.replaceChildren(page);return;}
+const top=node('section','fzse-panel');top.append(hero(t),node('h1','',t.name),node('p','',t.description||'Турнир по Counter-Strike 2'));page.append(top);
+const info=node('div','fzse-details');for(const [key,val] of [['Начало',date(t.starts_at)],['Завершение',date(t.ends_at)],['Формат',formats[t.format]||t.format],['Команды',String(t.max_teams||8)],['Статус',t.status==='registration'?'Регистрация':t.status==='finished'?'Завершён':t.status==='in_progress'?'Идёт':t.status==='closed'?'Регистрация закрыта':'Запланирован']]){const chip=node('div','fzse-chip');chip.append(node('small','',key),node('strong','',val));info.append(chip);}page.append(info);
+if(t.format==='swiss_playoff'){const c=t.stage_config||{},p=node('section','fzse-panel');p.append(node('h2','','ШВЕЙЦАРСКАЯ СИСТЕМА + ПЛЕЙ-ОФФ'),node('p','',String(c.swiss_teams||16)+' команд, '+String(c.swiss_rounds||5)+' швейцарских раундов. Топ-'+String(c.playoff_teams||8)+' выходит в плей-офф. Матчи '+(c.best_of||'BO3')+', гранд-финал '+(c.grand_final||'BO5')+'.'),node('p','fzse-message','Жеребьёвка, пары, сетка и результаты будут добавлены после старта турнира.'));page.append(p);}
+if(t.format==='final_four'){
+ const p=node('section','fzse-panel fzse-final-four');
+ p.append(node('h2','','FINAL FOUR · ПЛЕЙ-ОФФ НА 4 КОМАНДЫ'),node('p','fzse-message','Регистрация завершена. Два полуфинала
+
+PATH js/tournament-season-2027.js TERM Турниры INDEX 9639
+node('small','',type[t.series]||'FZTV TOURNAMENT'));
+ copy.append(node('strong','',t.name));
+ copy.append(node('span','',t.name==='HALLOWEEN NIGHT CUP'?'DARK ARENA EDITION':t.format==='swiss_playoff'?'SWISS STAGE + PLAYOFFS':'FRAGZONETV CHAMPIONSHIP'));
+ e.append(trophy,copy);
+ return e;
+}
+function card(t){const a=node('a','fzse-card');a.href='#/season-tournament/'+t.id;a.append(hero(t));const body=node('div','fzse-body');body.append(node('h3','',t.name),node('p','',date(t.starts_at)+' — '+date(t.ends_at)),node('p','',(t.max_teams||8)+' команд · '+(formats[t.format]||t.format)));a.append(body);return a;}
+function calendar(root){const page=node('div','fzse-page');page.append(node('h1','','ТУРНИРЫ FRAGZONETV'),node('p','',records.length+' турниров · ноябрь 2026 — октябрь 2027'));let current=null,group=null;
+for(const t of records){const m=month(t.starts_at);if(m!==current){current=m;group=node('section','fzse-group');group.append(node('h2','',m),node('div','fzse-grid'));page.append(group);}$('.fzse-grid',group).append(card(t));}
+root.replaceChildren(page);}
+function detail(root,id){const t=records.find(x=>x.id===id);const page=node('div','fzse-page'),back=node('a','fzse-link','← Все турниры');back.href='#/tournaments';page.append(back);
+if(!t){page.append(node('h2','','Турнир не найден'));root.replaceChildren(page);return;}
+const top=node('section','fzse-panel');top.append(hero(t),node('h1','',t.name),node('p','',t.description||'Турнир по Counter-Strike 2'));page.append(top);
+const info=node('div','fzse-details');for(const [key,val] of [['Начало',date(t.starts_at)],['Завершение',date(t.ends_at)],['Формат',formats[t.format]||t.format],['Команды',String(t.max_teams||8)],['Статус',t.status==='registration'?'Регистрация':t.status==='finished'?'Завершён':t.status==='in_progress'?'Идёт':t.status==='closed'?'Регистрация закрыта':'Запланирован']]){const chip=node('div','fzse-chip');chip.append(node('small','',key),node('strong','',val));info.append(chip);}page.append(info);
+if(t.format==='swiss_playoff'){const c=t.stage_config||{},p=node('section','fzse-panel');p.append(node('h2','','ШВЕЙЦАРСКАЯ СИСТЕМА + ПЛЕЙ-ОФФ'),node('p','',String(c.swiss_teams||16)+' команд, '+String(c.swiss_rounds||5)+' швейцарских раундов. Топ-'+String(c.playoff_teams||8)+' выходит в плей-офф. Матчи '+(c.best_of||'BO3')+', гранд-финал '+(c.grand_final||'BO5')+'.'),node('p','fzse-message','Жеребьёвка, пары, сетка и результаты будут добавлены после старта турнира.'));page.append(p);}
+if(t.format==='final_four'){
+ const p=node('section','fzse-panel fzse-final-four');
+ p.append(node('h2','','FINAL FOUR · ПЛЕЙ-ОФФ НА 4 КОМАНДЫ'),node('p','fzse-message','Регистрация завершена. Два полуфинала, затем финал. Пары будут опубликованы после жеребьёвки.'));
+ const stages=node('div','fzse-final-four-rounds');
+ for(const [round,desc] of [['ПОЛУФИНАЛ 1','Участники определяются жеребьёвкой'],['ПОЛУФИНАЛ 2','Участники определяются жеребьёвкой'],['ФИНАЛ','Победитель полуфинала 1 — победитель полуфинала 2']]){
+  const card=node('div','fzse-final-four-card');card.append(node('strong','',round),node('small','',desc));stages.append(card);
+ }
+ p.append(stages);page.append(p);
+}
+const prizes=t.prize_poo
+
+PATH js/admin-player-trophies.js TERM FZTV ADMIN INDEX 24426
+teElement('p');message.style.cssText='font-size:12px;color:#ffb2c0';
+  button.onclick=async()=>{
+   if(running||!select.value)return;
+   const label=select.selectedOptions[0]?.textContent||'матч';
+   if(!confirm('Удалить '+label+'? Статистика игроков и RP за этот матч будут отменены. Действие необратимо.'))return;
+   running=true;button.disabled=true;message.textContent='Удаление матча…';
+   try{
+    const {error}=await sb.rpc('fztv_admin_delete_match',{p_match_id:select.value});
+    if(error)throw error;
+    const id=select.value;
+    const check=await sb.from('fztv_site_matches').select('id').eq('id',id);
+    if(check.error)throw check.error;
+    if(check.data?.length)throw Error('Матч всё ещё существует. Проверь права доступа.');
+    message.textContent='Матч и его статистика удалены.';
+    await loadContent();
+   }catch(err){message.textContent='Не удалось удалить матч: '+err.message;}
+   finally{running=false;button.disabled=false;}
+  };
+  panel.append(title,description,select,button,message);
+  section.replaceWith(panel);
+ }
+ const observer=new MutationObserver(()=>replaceMatchEditor());
+ observer.observe(app,{childList:true,subtree:false});
+ replaceMatchEditor();
+})();
+
+
+/* FZTV Admin Control Center — organize existing live panels without rebuilding their handlers. */
+(()=>{
+ const style=document.createElement('style');
+ style.textContent='.fzac{display:grid;grid-template-columns:228px minmax(0,1fr);gap:22px;align-items:start}.fzac-nav{background:#111a27;border:1px solid #2b3a4d;border-radius:12px;padding:15px;position:sticky;top:86px}.fzac-brand{font-size:17px;font-weight:900;letter-spacing:.6px;padding:8px 10px 18px}.fzac-brand span{color:#ed3046}.fzac-nav small{display:block;color:#8594a8;font-size:10px;letter-spacing:1px;padding:6px 10px}.fzac-nav button{width:100%;display:flex;align-items:center;gap:11px;text-align:left;background:transparent;color:#b7c4d5;border:0;border-radius:7px;padding:12px 10px;font-size:13px;font-weight:700}.fzac-nav button.active{background:#292e3b;color:white;box-shadow:inset 3px 0 #ef344c}.fzac-nav button:hover{background:#263447}.fzac-content{min-width:0}.fzac-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:17px}.fzac-header h1{margin:0;font-size:26px}.fzac-label{color:#9daec0;font-size:12px}.fzac-section{display:none}.fzac-section.active{display:block}.fzac-section>.panel,.fzac-section>section{margin-top:0!important;margin-bottom:14px}.fzac-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:20px}.fzac-metric{background:#162233;border:1px solid #304158;border-radius:10px;padding:19px}.fzac-metric small{color:#a4b2c4;font-size:12px}.fzac-metric b{display:block;font-size:32px;margin-top:12px}.fzac-activity{padding:20px;background:#152032;border:1px solid #304158;border-radius:10px}.fzac-activity h2{font-size:17px}.fzac-activity p{color:#a8b8ca;font-size:13px}.fzac-empty{padding:25px;border:1px dashed #35485e;border-radius:10px;color:#a4b2c5}@media(max-width:850px){.fzac{grid-template-columns:1fr;gap:12px}.fzac-nav{position:static}.fzac-nav-buttons{display:flex;overflow:auto;gap:4px}.fzac-nav button{white-space:nowrap;width:auto}.fza
+
+PATH js/admin-player-trophies.js TERM Турниры INDEX 26592
+ontent:space-between;align-items:center;margin-bottom:17px}.fzac-header h1{margin:0;font-size:26px}.fzac-label{color:#9daec0;font-size:12px}.fzac-section{display:none}.fzac-section.active{display:block}.fzac-section>.panel,.fzac-section>section{margin-top:0!important;margin-bottom:14px}.fzac-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:20px}.fzac-metric{background:#162233;border:1px solid #304158;border-radius:10px;padding:19px}.fzac-metric small{color:#a4b2c4;font-size:12px}.fzac-metric b{display:block;font-size:32px;margin-top:12px}.fzac-activity{padding:20px;background:#152032;border:1px solid #304158;border-radius:10px}.fzac-activity h2{font-size:17px}.fzac-activity p{color:#a8b8ca;font-size:13px}.fzac-empty{padding:25px;border:1px dashed #35485e;border-radius:10px;color:#a4b2c5}@media(max-width:850px){.fzac{grid-template-columns:1fr;gap:12px}.fzac-nav{position:static}.fzac-nav-buttons{display:flex;overflow:auto;gap:4px}.fzac-nav button{white-space:nowrap;width:auto}.fzac-metrics{grid-template-columns:repeat(2,1fr)}}';
+ document.head.append(style);
+ const sections=[['overview','▦','Обзор'],['matches','⚔','Матчи'],['tournaments','🏆','Турниры'],['teams','⬡','Команды'],['players','♙','Игроки'],['users','♧','Пользователи'],['news','▤','Новости']];
+ let active='overview',scheduled=false;
+ function category(section){
+  const text=(section.querySelector('h2,h3')?.textContent||'').toLowerCase();
+  if(section.querySelector('#usersList,#refreshUsers')||text.includes('пользоват')||text.includes('бан'))return 'users';
+  if(section.querySelector('#matchEditor,#fztv-delete-match-select')||text.includes('матч')||text.includes('результат'))return 'matches';
+  if(section.querySelector('#newsEditor')||text.includes('новост'))return 'news';
+  if(text.includes('турнир')||text.includes('сетк'))return 'tournaments';
+  if(text.includes('команд')||text.includes('заявк'))return 'teams';
+  if(text.includes('игрок')||text.includes('трофе')||text.includes('трансфер'))return 'players';
+  return 'overview';
+ }
+ function mount(){
+  if(!location.hash.startsWith('#/admin'))return;
+  const root=document.getElementById('app');if(!root)return;
+  const existing=root.querySelector('.fzac');
+  if(existing){
+   const content=existing.querySelector('.fzac-content');
+   // Other admin extensions can append panels after the dashboard is mounted.
+   const incoming=[...root.children].filter(x=>x.matches('section.panel,section')&&!x.closest('.fzac'));
+   for(const item of incoming)existing.querySelector('[data-fzac-section="'+category(item)+'"]').append(item);
+   return;
+  }
+  const adminHeading=[...root.querySelectorAll('.page-title h1')].find(x=>x.textContent.includes('Админ'));
+  if(!adminHeading)return;
+  const page=adminHeading.closest('.page-title');
+  const panels=[...root.children].filter(x=>x.matches('section.panel,section'));
+  const dashboard=document.createElement('div');dashboard.className='fzac';
+  const nav=document.createElement('aside');nav.className='fzac-nav';
+  nav.innerHTML='<div class="fzac-brand">⬡ FZTV <span>ADMIN</span></div><small>НАВИГАЦИЯ</small>';
+  const buttons=document.createElement('div');buttons.className=
