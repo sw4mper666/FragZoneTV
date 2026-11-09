@@ -1,0 +1,117 @@
+js/match-detail.js fztvWoodsPhoto at 15222
+& Number(x.lineup_position)<=5)
+   .sort((a,b)=>Number(a.lineup_position)-Number(b.lineup_position))){
+  if(players.length>=5)break;
+  if(!players.some(x=>x.slug===p.player_slug))
+   players.push({slug:p.player_slug,name:p.nickname,photo:p.photo_url||((team.name.toLowerCase()==='team woods'&&window.fztvWoodsPhoto)?window.fztvWoodsPhoto(p.player_slug):null)});
+ }
+ return players.slice(0,5);
+}
+export async function mount({client,root,id}){
+ if(!client||!root||!id)return;
+ if(!document.getElementById('fz-match-page-styles')){
+  const style=document.createElement('style');style.id='fz-match-page-styles';style.textContent=css;document.head.append(style);
+ }
+ root.innerHTML='<section class="panel detail-empty">Загружаем матч…</section>';
+ const [mr,mapr,tr,sr,lr,pr]=await Promise.all([
+  client.
+
+js/match-detail.js fztvWoodsPhoto at 15245
+ion)<=5)
+   .sort((a,b)=>Number(a.lineup_position)-Number(b.lineup_position))){
+  if(players.length>=5)break;
+  if(!players.some(x=>x.slug===p.player_slug))
+   players.push({slug:p.player_slug,name:p.nickname,photo:p.photo_url||((team.name.toLowerCase()==='team woods'&&window.fztvWoodsPhoto)?window.fztvWoodsPhoto(p.player_slug):null)});
+ }
+ return players.slice(0,5);
+}
+export async function mount({client,root,id}){
+ if(!client||!root||!id)return;
+ if(!document.getElementById('fz-match-page-styles')){
+  const style=document.createElement('style');style.id='fz-match-page-styles';style.textContent=css;document.head.append(style);
+ }
+ root.innerHTML='<section class="panel detail-empty">Загружаем матч…</section>';
+ const [mr,mapr,tr,sr,lr,pr]=await Promise.all([
+  client.from('fztv_site_matches
+
+js/admin-player-trophies.js Команда: at 17883
+se()===slug);
+        if(p&&!document.getElementById('fztv-roster-profile')){
+          const profile=el('section');profile.id='fztv-roster-profile';profile.className='fztv-move-panel';
+          const heading=el('h2',p.nickname);profile.append(heading);
+          profile.append(el('p',p.team_name?'Команда: '+p.team_name:'Статус: свободный агент'));
+          if(p.age)profile.append(el('p','Возраст: '+p.age+' лет'));
+          profile.append(el('p','Рейтинг: '+(p.rating||0)));
+          if(p.photo_url){const img=el('img');img.src=p.photo_url;img.alt='Фото '+p.nickname;img.style.cssText='max-width:120px;max-height:120px;object-fit:cover;border-radius:12px';profile.prepend(img);}
+          root.prepend(profile);
+        }
+        if(p&&!document.getElementById('fztv-player-team-status')){
+  
+
+js/admin-player-trophies.js Команда: at 18425
+o_url;img.alt='Фото '+p.nickname;img.style.cssText='max-width:120px;max-height:120px;object-fit:cover;border-radius:12px';profile.prepend(img);}
+          root.prepend(profile);
+        }
+        if(p&&!document.getElementById('fztv-player-team-status')){
+          const badge=el('div',p.team_name?'Команда: '+p.team_name:'Свободный агент · NO TEAM');
+          badge.id='fztv-player-team-status';badge.className='fztv-free-banner';root.prepend(badge);
+        }
+      }else{
+        if(!document.getElementById('fztv-transfer-preview')){
+          const panel=transferPanel(false);panel.id='fztv-transfer-preview';
+          // Show next to the statistics section if possible; otherwise at the end of the page.
+          const stats=[...root.querySelectorAll('h2,h3,h4')].find(x=>x.textContent.trim
+
+js/admin-player-trophies.js Рейтинг: at 18037
+le.className='fztv-move-panel';
+          const heading=el('h2',p.nickname);profile.append(heading);
+          profile.append(el('p',p.team_name?'Команда: '+p.team_name:'Статус: свободный агент'));
+          if(p.age)profile.append(el('p','Возраст: '+p.age+' лет'));
+          profile.append(el('p','Рейтинг: '+(p.rating||0)));
+          if(p.photo_url){const img=el('img');img.src=p.photo_url;img.alt='Фото '+p.nickname;img.style.cssText='max-width:120px;max-height:120px;object-fit:cover;border-radius:12px';profile.prepend(img);}
+          root.prepend(profile);
+        }
+        if(p&&!document.getElementById('fztv-player-team-status')){
+          const badge=el('div',p.team_name?'Команда: '+p.team_name:'Свободный агент · NO TEAM');
+          badge.id='fztv-player-team-status';badge.classNam
+
+js/player-leaderboard.js Рейтинг: at 1995
+g = Number(player.rating ?? player.points) || 0;
+    const rank = document.createElement('strong');
+    rank.textContent = 'ТОП-' + (index + 1);
+    const title = document.createElement('span');
+    title.textContent = name;
+    const score = document.createElement('span');
+    score.textContent = 'Рейтинг: ' + rating.toLocaleString('ru-RU');
+    const prize = document.createElement('span');
+    prize.textContent = 'Призовые: $0';
+    row.append(rank, title, score, prize);
+    list.append(row);
+  }
+  container.replaceChildren(list);
+}
+
+
+index.html Рейтинг: at 1615354
+escapeAuth(t.name)+'</div><section class="panel" style="padding:24px"><h1>'+escapeAuth(t.name)+'</h1>'+(t.logo_url?'<img src="'+escapeAuth(t.logo_url)+'" alt="" width="110" height="110" style="object-fit:cover;border-radius:14px">':'')+'<p>Тег: '+escapeAuth(t.tag||'')+'</p><p>Статус: Одобрена</p><p>Рейтинг: 0</p></section>';
+}
+let rankingWeekOffset=0;
+function fzWeekStart(offset=0){const d=new Date();d.setHours(12,0,0,0);const day=(d.getDay()+6)%7;d.setDate(d.getDate()-day+offset*7);return d;}
+function fzRankingBanner(){
+ const current=rankingWeekOffset===0;
+ const date=fzWeekStart(rankingWeekOffset);
+ const dateLabel=date.toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'});
+ return '<div class="fztv-week-banner"><div class="fztv-week-copy"><small>FRAGZONETV · МИРОВОЙ Р
+
+index.html Рейтинг: at 1649061
+iv>${players.map((name,i)=>`<div class="rank-team" style="cursor:default"><div class="rank-place">#${i+1}</div><div class="rank-logo">${name.slice(0,2).toUpperCase()}</div><div class="rank-main"><strong>${name}</strong><small>Team Woods · CS2</small></div><div class="rank-players">Матчи: —　 K/D: —　 Рейтинг: —</div></div>`).join('')}<div class="detail-empty">Имена игроков добавлены. Статистические показатели появятся после добавления результатов матчей.</div></section>`}
+function matches(){return `<div class="crumb"><a href="#/home">Главная</a>　/　Матчи</div><div class="page-title"><div><h1>Матчи</h1><p>Live и предстоящие матчи Counter-Strike · CSTV</p></div><a class="back" href="#/home">← На главную</a></div><section class="panel"><div class="head"><h2>LIVE / UPCOMING</h2><small>РАСПИСАНИЕ<
+
+index.html fztvWoodsPhoto at 1610044
+ZwOOI5SxxiIJgUAbx4gpTYzKPOcs57DvI6HimAZcMHJ8DfbKeJHAuRCYJfCslQxCfML2QvSQZrUlbVkttBKgp8aUxDP2JSacCAMuwnGVKcMYV0mTv6bLHTaEC/FJtd4ciwgPhJx9IXAa44RE8sZ3/u3fKYuS3mKfQb8gWZxltSmXmqMBBPM0zRi3gJhHLr6cJefYcdFG1q9ZjZN4bovNAKPMS7wPIELVH+DLEl/mcUNkcaWZ1KtxEcX7CF7QJIZnAP4/BYyDaFRBOacAAAAASUVORK5CYII="]];
+window.fztvWoodsPhoto=(slug)=>teamWoodsRoster.find(([name])=>name.toLowerCase()===String(slug||'').toLowerCase())?.[1]||null;
+let approvedTeamsCache=[];
+let teamRpCache={};
+let legacyRosterCache=[];
+function getTeamRP(name){return teamRpCache[String(name||'').toLowerCase()]||0;}
+function woodsRosterNow(){return teamWoodsRoster.filter(([name])=>{if(window.fztvRemovedPlayers?.has(name.toLowerCase()))return false;const p=legacyRosterCache.find(x=>x.player_slug===name.toLowerCase());return !p||p.team_name?
