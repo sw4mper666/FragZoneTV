@@ -19,7 +19,7 @@ async function playerPage(client,root,key,tab){
  if(!item&&!free){root.innerHTML='<div class="detail-empty">Игрок не найден. <a href="#/players">Все игроки</a></div>';return;}
  const name=item?.nickname||free.nickname,team=item?.fztv_teams?.name||free?.team_name||'Свободный агент',photo=item?.photo_url||free?.photo_url||fallback,slug=item?keyFor(item.id):free.player_slug;
  const [st, standings] = await Promise.all([client.from('fztv_player_match_stats').select('*').eq('player_slug',slug),client.from('fztv_roster_players').select('player_slug,rating').order('rating',{ascending:false})]);
- const legacyRole=!item?await client.from('fztv_legacy_player_profiles').select('primary_role').eq('player_slug',slug).maybeSingle():null;
+ const legacyRole=!item?await client.from('fztv_legacy_player_profiles').select('*').eq('player_slug',slug).maybeSingle():null;
  const isCaptain=String(item?.primary_role||legacyRole?.data?.primary_role||'').trim().toUpperCase()==='IGL';
  const registered=item?.created_at||free?.created_at;
  const memberSince=registered?new Date(registered).toLocaleDateString('ru-RU',{month:'long',year:'numeric'}):'—';
@@ -29,8 +29,8 @@ async function playerPage(client,root,key,tab){
  const badges=[matchRows.length>=1?'🎮 Первый матч':null,wins>=10?'🏅 10 побед':null,position>0&&position<=10?'⭐ Топ-10':null].filter(Boolean);
  const achievements='<div class="fztv-mini-achievements"><b>Мини-достижения</b><div>'+(badges.length?badges.map(x=>'<span class="fztv-mini-achievement">'+esc(x)+'</span>').join(''):'<small>Первые достижения появятся после матчей и попадания в рейтинг.</small>')+'</div></div>';
  if(!location.hash.toLowerCase().startsWith('#/player/'+key))return;
- const birth=item?.birth_date,age=free?.age??(birth?Math.max(0,new Date().getFullYear()-Number(birth.slice(0,4))-(new Date().toISOString().slice(5,10)<birth.slice(5,10)?1:0)):'—');
- const details=[['На FragZoneTV с',memberSince],['Возраст',age],['Команда',team],['Роль',item?.primary_role||'—'],['Страна',item?.country||'—'],['Рейтинг',free?.rating??'—'],['Призовые','$'+Number(item?.prize_usd||0)]];
+ const birth=item?.birth_date||legacyRole?.data?.birth_date,age=free?.age??(birth?Math.max(0,new Date().getFullYear()-Number(birth.slice(0,4))-(new Date().toISOString().slice(5,10)<birth.slice(5,10)?1:0)):'—');
+ const details=[['На FragZoneTV с',memberSince],['Возраст',age],['Команда',team],['Роль',item?.primary_role||legacyRole?.data?.primary_role||'—'],['Страна',item?.country||legacyRole?.data?.country||'Россия'],['Рейтинг',free?.rating??'—'],['Призовые','$'+Number(item?.prize_usd??legacyRole?.data?.prize_usd??0)]];
  const tabs='<div class="fztv-player-tabs"><a class="'+(tab==='main'?'active':'')+'" href="#/player/'+encodeURIComponent(key)+'">Основной</a><a class="'+(tab==='stats'?'active':'')+'" href="#/player/'+encodeURIComponent(key)+'/stats">Статистика</a></div>';
  const factHtml='<div class="fztv-player-facts">'+details.map(([a,b])=>'<div class="fztv-player-fact"><span>'+esc(a)+'</span><strong>'+esc(b)+'</strong></div>').join('')+'</div>';
  root.innerHTML='<div class="crumb"><a href="#/players">Игроки</a> / '+esc(name)+'</div>'+tabs+'<section class="fztv-player-card"><div class="fztv-player-hero"><div class="fztv-player-photo"><img src="'+esc(photo)+'" alt="'+esc(name)+'"></div><div class="fztv-player-main"><h1>'+esc(name)+(isCaptain?' <span title="Капитан команды">👑</span>':'')+'</h1><p class="fztv-player-sub">'+esc(team)+' · CS2</p>'+(tab==='stats'?statsHtml(st.data||[]):factHtml+achievements)+'</div></div>'+(tab==='main'?'<div class="fztv-trophies"><h3>Трофеи</h3><p>Трофеев пока нет</p></div>':'')+'</section>';
@@ -85,7 +85,6 @@ export async function mount({client,root,route}){
  }
  const parts=location.hash.split('/'),key=decodeURIComponent(parts[2]||'').toLowerCase();
  if(route==='team-created')return teamPage(client,root,parts[2]||'');
- if(route==='player'&&parts[3]==='stats')return; // stats are rendered by the single dedicated profile renderer
- if(route==='player'&&parts[3]!=='stats'&&(key.startsWith('team_')||key==='xblackerx'||!['sw4mper','loytaber','skrizzi','fladar','bosskpec'].includes(key)))return playerPage(client,root,key,'main');
+ if(route==='player'&&key)return playerPage(client,root,key,parts[3]==='stats'?'stats':'main');
  if(route==='players'){await playersPage(client,root);if(location.hash.startsWith('#/players')){const tbody=root.querySelector('.fztv-players-table tbody');if(tbody)await import('./player-quick-editor.js').then(m=>m.attachCaptainGears({client,tbody}));}return;}
 }
