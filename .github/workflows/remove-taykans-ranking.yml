@@ -1,0 +1,46 @@
+name: Remove Taykans from rankings
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/remove-taykans-ranking.yml']
+permissions: {contents: write}
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Remove hardcoded Taykans ranking rows
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          path=Path('index.html')
+          s=path.read_text(encoding='utf8')
+          # Full ranking: Taykans is a legacy hard-coded element, not an actual registered team.
+          pattern=r'<a class="rank-team" href="#/team/taykans">.*?</a>'
+          s,n=re.subn(pattern,'',s,count=1,flags=re.S)
+          if n!=1:raise SystemExit('Could not identify legacy Taykans full ranking row')
+          old_home='<a href="#/team/taykans"><b>#2</b><span>Taykans</span><strong>0 FZ Points</strong></a>'
+          if s.count(old_home)!=1:raise SystemExit('Expected exactly one home ranking Taykans row')
+          s=s.replace(old_home,'',1)
+          old_static="{name:'Taykans',logo:document.createElement('div'),players:[],href:'#/team/taykans'}"
+          if s.count(old_static)!=1:raise SystemExit('Expected exactly one hardcoded Taykans entry')
+          s=s.replace(old_static,'',1)
+          # Repair array trailing syntax, removing a comma after Team Woods.
+          s=s.replace("href:'#/team/woods'},\n ];","href:'#/team/woods'}\n ];",1)
+          s=s.replace("const top=approvedTeamsCache.slice(0,5).map((t,i)=>'<a href=\"#/team-created/'+encodeURIComponent(t.id)+'\"><b>#'+(i+3)","const top=approvedTeamsCache.slice(0,5).map((t,i)=>'<a href=\"#/team-created/'+encodeURIComponent(t.id)+'\"><b>#'+(i+2)",1)
+          # The dynamic ranking should exclude only the legitimate manually rendered Team Woods.
+          old_filter="!['team woods','taykans'].includes(t.name.trim().toLowerCase())"
+          if s.count(old_filter)!=1:raise SystemExit('Could not locate dynamic ranking filter')
+          s=s.replace(old_filter,"t.name.trim().toLowerCase()!=='team woods'",1)
+          assert "href:'#/team/taykans'}" not in s[s.index('function enhanceRankingLayout('):s.index('function enhanceRankingLayout(')+2500]
+          assert 'href="#/team/taykans"><div class="rank-place">' not in s
+          path.write_text(s,encoding='utf8')
+          print('Removed legacy Taykans from home and full rankings')
+          PY
+      - name: Commit
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git diff --cached --quiet || (git commit -m 'Remove Taykans from team rankings without deleting team profiles' && git push)
