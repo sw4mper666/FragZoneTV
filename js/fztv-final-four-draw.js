@@ -64,6 +64,21 @@ function mountPublic(){
  const root=make('div');root.id='fz4-root';parent.append(root);
  refresh(root).catch(e=>{if(root.isConnected)root.textContent='Ошибка сетки: '+e.message;});
 }
+function mountHome(){
+ const hash=location.hash||'#/home';
+ if(!['#/home','#/home/','#/'].includes(hash))return;
+ const panel=$('#fztv-final-four-home');if(!panel)return;
+ if($('#fz4-home',panel))return;
+ panel.replaceChildren();
+ const heading=make('div','fztv-move-heading');
+ heading.append(make('h3','','FZTV CUP #1 · СЕТКА FINAL FOUR'));
+ const link=make('a','','Открыть турнир');link.href='#/season-tournament/'+CUP;link.style.cssText='color:#c2d8f6;margin-left:auto';
+ heading.append(link);
+ const root=make('div');root.id='fz4-home';
+ panel.append(heading,root);
+ refresh(root).catch(e=>{if(root.isConnected)root.textContent='Ошибка сетки: '+e.message;});
+}
+
 function mountAdmin(){
  if(route()!=='admin'||typeof isAdmin!=='function'||!isAdmin())return;
  const parent=$('#fzse-admin'),select=$('.fzse-admin-select',parent||document);
@@ -102,10 +117,14 @@ function mountAdmin(){
 let scheduled=false;
 function schedule(){
  if(scheduled)return;scheduled=true;
- setTimeout(()=>{scheduled=false;mountPublic();mountAdmin();},80);
+ setTimeout(()=>{scheduled=false;mountHome();mountPublic();},80);
 }
 const app=$('#app');
-if(app)new MutationObserver(schedule).observe(app,{childList:true,subtree:false});
+if(app)new MutationObserver(schedule).observe(app,{childList:true,subtree:true});
 document.addEventListener('change',event=>{if(event.target?.matches?.('.fzse-admin-select'))schedule();});
+window.addEventListener('fz-final-four-updated',()=>{
+ const home=$('#fz4-home');if(home)refresh(home).catch(console.error);
+ const detail=$('#fz4-root');if(detail)refresh(detail).catch(console.error);
+});
 window.addEventListener('hashchange',schedule);schedule();
 })();
