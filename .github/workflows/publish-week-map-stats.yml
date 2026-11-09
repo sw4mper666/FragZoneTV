@@ -8,6 +8,7 @@ on:
       - 'js/fztv-player-map-averages.js'
       - 'js/fztv-admin-coins.js'
       - 'js/universal-profiles.js'
+      - 'js/community-enhancements.js'
       - 'js/match-submissions.js'
       - 'js/match-detail.js'
       - 'js/fztv-admin-match-editor.js'
@@ -26,7 +27,7 @@ jobs:
           p=Path('index.html')
           s=p.read_text(encoding='utf-8')
           for filename in ['fztv-week-home-archive.js','fztv-player-map-averages.js','fztv-admin-coins.js','fztv-admin-match-editor.js']:
-              tag='<script defer src="./js/'+filename+'?v=20261109-match-demo-editor-v1"></script>'
+              tag='<script defer src="./js/'+filename+'?v=20261109-unified-profiles-contract-v2"></script>'
               pattern=r'<script[^>]+src=["\x27](?:\./)?js/'+re.escape(filename)+r'(?:\?[^"\x27]*)?["\x27][^>]*>\s*</script>'
               if re.search(pattern,s,re.I):s=re.sub(pattern,tag,s,count=1,flags=re.I)
               else:
@@ -34,13 +35,13 @@ jobs:
                   s=re.sub(r'</body\s*>',lambda m:tag+'\n'+m.group(0),s,count=1,flags=re.I)
           # Update the match renderer import so new per-map stats are not cached out.
           s=re.sub(r'(\./js/match-detail\.js)(?:\?v=[A-Za-z0-9._-]+)?',
-                   lambda m:m.group(1)+'?v=20261109-match-demo-editor-v1',s)
+                   lambda m:m.group(1)+'?v=20261109-unified-profiles-contract-v2',s)
           # Update the submission importer cache as well.
-          s=re.sub(r'(\./js/match-submissions\.js)(?:\?v=[A-Za-z0-9._-]+)?',lambda m:m.group(1)+'?v=20261109-match-demo-editor-v1',s)
+          s=re.sub(r'(\./js/match-submissions\.js)(?:\?v=[A-Za-z0-9._-]+)?',lambda m:m.group(1)+'?v=20261109-unified-profiles-contract-v2',s)
           # Bust browser caches for existing profile and match modules too.
-          for module in ['universal-profiles.js']:
+          for module in ['universal-profiles.js','community-enhancements.js']:
               s=re.sub(r'(\./js/'+re.escape(module)+r')(?:\?v=[A-Za-z0-9._-]+)?',
-                       lambda m:m.group(1)+'?v=20261109-match-demo-editor-v1',s)
+                       lambda m:m.group(1)+'?v=20261109-unified-profiles-contract-v2',s)
           p.write_text(s,encoding='utf-8')
           PY
       - name: Commit updated site
@@ -49,5 +50,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
-          git commit -m "Publish admin FZ Coins and per-match player averages"
+          git commit -m "Publish unified player profiles and corrected transfer feed"
           git push
