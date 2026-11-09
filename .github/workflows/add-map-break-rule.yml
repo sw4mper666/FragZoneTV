@@ -1,0 +1,35 @@
+name: Add required 5–15 minute map breaks to rules
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/add-map-break-rule.yml']
+permissions: {contents: write}
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Update FragZoneTV official tournament rules
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          anchor='<p>3.11. При технической неисправности игрок обязан сообщить администрации до начала матча.</p>'
+          insert=anchor+'<p><strong>3.12. Перед началом каждой карты (в том числе между картами одного матча) обязательна пауза продолжительностью от 5 до 15 минут.</strong></p><p>3.13. Пауза может быть пропущена только при взаимном согласии обеих команд. Если хотя бы одна команда не согласна играть без паузы, перерыв от 5 до 15 минут обязателен.</p>'
+          if insert in s:
+           print('Rule already added')
+          else:
+           count=s.count(anchor)
+           if count!=1:raise SystemExit('Expected one rule 3.11, found '+str(count))
+           s=s.replace(anchor,insert,1)
+           p.write_text(s,encoding='utf-8')
+          assert s.count('3.12. Перед началом каждой карты')==1
+          assert s.count('3.13. Пауза может быть пропущена')==1
+          PY
+      - name: Commit new rules
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git diff --cached --quiet || (git commit -m 'Require 5–15 minute breaks before each map unless both teams agree' && git push)
