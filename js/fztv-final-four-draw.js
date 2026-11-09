@@ -10,7 +10,7 @@ const client=()=>typeof sb!=='undefined'?sb:null;
 const route=()=>location.hash.split('/')[1];
 const id=()=>decodeURIComponent(location.hash.split('/')[2]||'');
 const style=make('style');
-style.textContent='.fz4-board{display:grid;grid-template-columns:1fr 1fr;gap:clamp(28px,5vw,85px);align-items:center;margin:18px 0}.fz4-round{display:grid;gap:23px;min-width:0}.fz4-round h3{text-align:center;color:#9cb1d1;margin:0 0 5px}.fz4-match{background:#111a2b;border:1px solid #3b5070;border-radius:9px;overflow:hidden}.fz4-match small{display:block;color:#aebfd7;background:#1d2c43;padding:8px 12px}.fz4-team{display:flex;align-items:center;gap:11px;padding:10px 13px;min-height:60px;border-top:1px solid #30445e}.fz4-team img{width:39px;height:39px;object-fit:contain;border-radius:5px}.fz4-team b{overflow-wrap:anywhere;font-size:14px}.fz4-icon{width:39px;text-align:center;font-size:23px;color:#8fa8c7}.fz4-admin{background:#18283e;padding:17px;margin:15px 0;border:1px solid #4a688b;border-radius:10px}.fz4-admin h3{margin:0 0 12px}.fz4-admin button{padding:11px 15px;border:0;border-radius:7px;background:#e73d58;color:#fff;font-weight:800;cursor:pointer}.fz4-admin button:disabled{opacity:.5;cursor:wait}.fz4-note{color:#b5c9e4;font-size:12px;margin:9px 0}.fzse-final-four-rounds{display:none!important}@media(max-width:650px){.fz4-board{grid-template-columns:1fr;gap:23px}}';
+style.textContent='.fz4-board{display:grid;grid-template-columns:1fr 1fr;gap:clamp(28px,5vw,85px);align-items:center;margin:18px 0}.fz4-round{display:grid;gap:23px;min-width:0}.fz4-round h3{text-align:center;color:#9cb1d1;margin:0 0 5px}.fz4-match{background:#111a2b;border:1px solid #3b5070;border-radius:9px;overflow:hidden}.fz4-match small{display:block;color:#aebfd7;background:#1d2c43;padding:8px 12px}.fz4-team{display:flex;align-items:center;gap:11px;padding:10px 13px;min-height:60px;border-top:1px solid #30445e}.fz4-team img{width:39px;height:39px;object-fit:contain;border-radius:5px}.fz4-team b{overflow-wrap:anywhere;font-size:14px}.fz4-icon{width:39px;text-align:center;font-size:23px;color:#8fa8c7}.fz4-admin{background:#18283e;padding:17px;margin:15px 0;border:1px solid #4a688b;border-radius:10px}.fz4-admin h3{margin:0 0 12px}.fz4-admin button{padding:11px 15px;border:0;border-radius:7px;background:#e73d58;color:#fff;font-weight:800;cursor:pointer}.fz4-admin button:disabled{opacity:.5;cursor:wait}.fz4-note{color:#b5c9e4;font-size:12px;margin:9px 0}.fz4-live-cup{margin:22px 0;padding:20px;background:#132035;border:1px solid #405779;border-radius:12px}.fz4-live-cup h2{font-size:20px;margin:0 0 14px;color:#ecf3ff}.fzse-final-four-rounds{display:none!important}@media(max-width:650px){.fz4-board{grid-template-columns:1fr;gap:23px}}';
 document.head.append(style);
 const signature=a=>!Array.isArray(a)||a.length!==4?'':[a.slice(0,2).sort().join(':'),a.slice(2,4).sort().join(':')].sort().join('|');
 function shuffle(ids,old){
@@ -59,9 +59,23 @@ async function refresh(root){
  display(root,ids,teams);
 }
 function mountPublic(){
- if(route()!=='season-tournament'||id()!==CUP)return;
- const parent=$('#app .fzse-final-four');if(!parent||$('#fz4-root',parent))return;
- const root=make('div');root.id='fz4-root';parent.append(root);
+ const r=route(),slug=id();
+ const isLegacy=r==='tournament'&&slug.trim().toLowerCase()==='fztv cup #1';
+ const isSeason=r==='season-tournament'&&slug===CUP;
+ if(!isLegacy&&!isSeason)return;
+ // The live navigation uses #/tournament/FZTV%20CUP%20%231/<date>, not season-tournament.
+ const parent=isLegacy?$('#app .detail-card'):$('#app .fzse-final-four');
+ if(!parent||$('#fz4-root',parent))return;
+ const section=isLegacy?make('section','fz4-live-cup'):parent;
+ if(isLegacy){
+  section.append(make('h2','','FZTV CUP #1 · СЕТКА FINAL FOUR'));
+  const slots=$('.fztv-slots',parent);
+  const info=slots?.closest('.fztv-tournament-registration')||null;
+  // Insert after the participant slots, preserving trophy and registration.
+  if(slots)slots.insertAdjacentElement('afterend',section);
+  else parent.append(section);
+ }
+ const root=make('div');root.id='fz4-root';section.append(root);
  refresh(root).catch(e=>{if(root.isConnected)root.textContent='Ошибка сетки: '+e.message;});
 }
 function mountHome(){
@@ -72,7 +86,7 @@ function mountHome(){
  panel.replaceChildren();
  const heading=make('div','fztv-move-heading');
  heading.append(make('h3','','FZTV CUP #1 · СЕТКА FINAL FOUR'));
- const link=make('a','','Открыть турнир');link.href='#/season-tournament/'+CUP;link.style.cssText='color:#c2d8f6;margin-left:auto';
+ const link=make('a','','Открыть турнир');link.href='#/tournament/'+encodeURIComponent('FZTV CUP #1')+'/13-16.11.2026';link.style.cssText='color:#c2d8f6;margin-left:auto';
  heading.append(link);
  const root=make('div');root.id='fz4-home';
  panel.append(heading,root);
