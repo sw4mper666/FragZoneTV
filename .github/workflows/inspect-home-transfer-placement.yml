@@ -1,0 +1,32 @@
+name: Trace home transfers component
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/inspect-home-transfer-placement.yml']
+permissions: {contents: write}
+jobs:
+  trace:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Extract transfer heading and sibling markup
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          out=[]
+          for path in [Path('index.html'),*Path('js').glob('*.js')]:
+           s=path.read_text(encoding='utf-8',errors='replace')
+           for term in ['Все трансферы','Свободные агенты (','Трансферы</','fztv-transfers','fztv-transfer-widget','МАТ ПУЛ','МАП ПУЛ']:
+            for m in list(re.finditer(re.escape(term),s,re.I))[:6]:
+             piece=s[max(0,m.start()-1700):m.start()+1900]
+             piece=re.sub(r'data:image/[a-z+]+;base64,[A-Za-z0-9+/=]+','[IMAGE]',piece)
+             out.append(str(path)+' '+term+' AT '+str(m.start())+'\n'+piece[:3600]+'\n')
+          Path('home-transfer-location.txt').write_text('\n'.join(out)[:52000],encoding='utf8')
+          PY
+      - name: Commit trace
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add home-transfer-location.txt
+          git diff --cached --quiet || (git commit -m 'Locate home transfer block for Final Four bracket replacement' && git push)
