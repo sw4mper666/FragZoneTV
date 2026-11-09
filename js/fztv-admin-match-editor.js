@@ -102,7 +102,7 @@ async function editor(root,client,match){
  }
  drawMapStats();
  parent.append(E('h3','Демозапись'));const file=E('input');file.type='file';file.accept='.dem,.zip,.gz,.bz2,.7z';parent.append(file);
- const fileNote=E('p','Можно заменить демку матча. Максимум 50 МБ.');fileNote.className='fzme-note';parent.append(fileNote);
+ const fileNote=E('p','Демка обязательна для завершённого матча с заполненной статистикой игроков. Без статистики — необязательна. Максимум 50 МБ.');fileNote.className='fzme-note';parent.append(fileNote);
  const save=B('Сохранить изменения',async()=>{
   save.disabled=true;status.textContent='Сохранение...';
   try{
@@ -113,6 +113,11 @@ async function editor(root,client,match){
    if(resultString&&!/^\d+\s*:\s*\d+$/.test(resultString))throw Error('Счёт матча должен быть в формате 1:2');
    const fieldsToSave={title:fields.title.value.trim(),team_a:fields.team_a.value.trim(),team_b:fields.team_b.value.trim(),result_overall:resultString||null,starts_at:new Date(fields.starts_at.value).toISOString(),status:statusSelect.value};
    if(!fieldsToSave.team_a||!fieldsToSave.team_b)throw Error('Укажи команды');
+   const mapStatsPresent=[...cache.values()].some(rows=>rows.length>0);
+   const hasPlayerStats=stats.length>0||mapStatsPresent;
+   if(fieldsToSave.status==='finished'&&hasPlayerStats&&!file.files.length&&!match.demo_path){
+    throw Error('Для завершённого матча с заполненной статистикой игроков обязательно прикрепить демку.');
+   }
    if(file.files.length){
     const f=file.files[0];
     if(f.size>50*1024*1024||!/\.(dem|zip|gz|bz2|7z)$/i.test(f.name))throw Error('Демка должна быть до 50 МБ в формате DEM или архива');
