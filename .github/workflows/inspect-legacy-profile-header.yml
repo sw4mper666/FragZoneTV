@@ -1,0 +1,33 @@
+name: Trace duplicate player summary
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/inspect-legacy-profile-header.yml']
+permissions: {contents: write}
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Extract original renderer fragments
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          s=Path('index.html').read_text(encoding='utf-8')
+          out=[]
+          for word in ['function playerDetail(', 'function playerPage(', 'Команда: ${','Рейтинг: ${', 'Команда: Team Woods', 'function render(', 'function renderRoute(', 'teamWoodsRoster']:
+           matches=list(re.finditer(re.escape(word),s,re.I))
+           for match in matches[-5:]:
+            a=max(0,match.start()-450);b=min(len(s),match.start()+2900)
+            snippet=s[a:b]
+            snippet=re.sub(r'data:image/[a-z+]+;base64,[A-Za-z0-9+/=]+','[EMBEDDED IMAGE]',snippet)
+            out.append(f'TERM: {word} POS: {match.start()}\n{snippet}\n')
+          Path('woods-header-inspect.txt').write_text('\n'.join(out)[-55000:],encoding='utf-8')
+          PY
+      - name: Commit
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add woods-header-inspect.txt
+          git diff --cached --quiet || (git commit -m 'Identify duplicate legacy player header markup' && git push)
