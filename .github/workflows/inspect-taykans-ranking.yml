@@ -1,0 +1,31 @@
+name: Inspect Taykans ranking source
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/inspect-taykans-ranking.yml']
+permissions: {contents: write}
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Identify Taykans rendering
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          out=[]
+          for p in [Path('index.html'),*Path('js').glob('*.js')]:
+           src=p.read_text(encoding='utf8',errors='replace')
+           for m in list(re.finditer('taykans',src,re.I))[:20]:
+            segment=src[max(0,m.start()-850):m.start()+1300]
+            segment=re.sub(r'data:image/[^\s"\x27<>]+','[IMAGE]',segment)
+            out.append(f'FILE {p} POSITION {m.start()}\n{segment}\n')
+          Path('taykans-source-inspection.txt').write_text('\n'.join(out)[:38000],encoding='utf8')
+          PY
+      - name: Commit
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add taykans-source-inspection.txt
+          git diff --cached --quiet || (git commit -m 'Inspect Taykans rank source' && git push)
