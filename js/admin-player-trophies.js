@@ -191,7 +191,10 @@
         // Remove obsolete legacy summary panels to avoid duplicate headers.
         root.querySelector('#fztv-roster-profile')?.remove();
         root.querySelector('#fztv-player-team-status')?.remove();
-      }else if(!hash.startsWith('#/tournament/')&&!hash.startsWith('#/season-tournament/')){
+      }else if(hash.startsWith('#/tournaments')||hash.startsWith('#/tournament/')||hash.startsWith('#/season-tournament/')){
+        // Tournament pages should never show the unrelated transfer preview.
+        root.querySelector('#fztv-transfer-preview')?.remove();
+      }else{
         if(hash==='#/home'||hash===''||hash==='#/home/'){
           // The requested Final Four bracket occupies the previous home transfers position.
           root.querySelector('#fztv-transfer-preview')?.remove();
