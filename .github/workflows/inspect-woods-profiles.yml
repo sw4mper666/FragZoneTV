@@ -1,0 +1,32 @@
+name: Inspect old Team Woods avatar and duplicate profile markup
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/inspect-woods-profiles.yml']
+permissions: {contents: write}
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Trace original player rendering
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          files=[Path('index.html')]+list(Path('js').glob('*.js'))
+          out=[]
+          for path in files:
+            s=path.read_text(encoding='utf-8',errors='replace')
+            for word in ['bosskpec','loytaber','skrizzi','fladar','sw4mper','Команда: ','Рейтинг: ','fztv-player-card','tw-player-profile']:
+              matches=list(re.finditer(re.escape(word),s,re.I))
+              for m in matches[:5]:
+                out.append(f'FILE={path} TERM={word} AT={m.start()}\n'+s[max(0,m.start()-600):min(len(s),m.start()+1100)][:1800]+'\n')
+          Path('woods-profile-inspect.txt').write_text('\n'.join(out)[:130000],encoding='utf8')
+          PY
+      - name: Commit investigation
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add woods-profile-inspect.txt
+          git diff --cached --quiet || (git commit -m 'Inspect old Woods avatar assets and duplicate player header' && git push)
