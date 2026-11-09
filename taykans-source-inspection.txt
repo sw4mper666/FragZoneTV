@@ -1,0 +1,228 @@
+FILE index.html POSITION 1185977
+(3,minmax(0,1fr));gap:12px;padding:20px}.fztv-stat{padding:18px 10px;text-align:center;border-bottom:2px solid #3b5673}.fztv-stat strong{display:block;font-size:32px;color:#eaf3ff}.fztv-stat small{color:#9eb0c4}.fztv-stat-empty{text-align:center;color:#aab8c8;padding:24px}.fztv-progress{padding:18px 22px;border-top:1px solid #2a3b4e}.fztv-progress h3{margin-bottom:15px}.fztv-progress-line{display:flex;justify-content:space-between;margin:12px 0 5px}.fztv-progress-bar{height:6px;background:#344357;border-radius:8px;overflow:hidden}.fztv-progress-bar i{display:block;height:100%;background:#589ce0}@media(max-width:700px){.fztv-player-hero{grid-template-columns:1fr}.fztv-player-photo{height:250px;min-height:0}.fztv-player-photo img{object-fit:contain}.fztv-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.tw-logo:has(svg[aria-label="Taykans"]){display:flex;align-items:center;justify-content:center;padding:0;overflow:hidden}.tw-logo svg[aria-label="Taykans"]{width:100%;height:100%;display:block}.rank-logo svg[aria-label="Taykans"]{width:100%;height:100%;display:block;object-fit:contain}
+.tw-roster a.tw-player{display:block;cursor:pointer;position:relative;z-index:1}.tw-roster a.tw-player:hover{transform:translateY(-3px);filter:brightness(1.12)}.tw-roster a.tw-player:focus-visible{outline:2px solid #6aafff;outline-offset:3px}
+ .fztv-players-table{width:100%;border-collapse:collapse;min-width:720px;font-size:13px}.fztv-players-table th{background:#192437;color:#90a7c5;letter-spacing:1px;font-size:11px;text-align:left;padding:12px}.fztv-players-table td{padding:9px 12px;border-bottom:1px solid #283449;color:#aab6c7}.fztv-players-table tbody tr:nth-child(even){background:rgba(255,255,255,.035)}.fztv-players-table td:nth-child(2),.fztv-players-table td:nth-child(5){color:#ff493d;font-weight:700}.fztv-players-table td a{color:#ff493d;text-decoration:none}.fztv-rating{color:#21f6a0!important;font-weight:800}.fztv-avatar{display:inline-flex;width:30px;height:30px;border-radius:50%;overflow:hidden;background:#233247;align-items:center;justify-content:center}.fztv-avatar img{width:100%;height:100%;object-fit:cover}.fzt
+
+FILE index.html POSITION 1186094
+3}.fztv-stat strong{display:block;font-size:32px;color:#eaf3ff}.fztv-stat small{color:#9eb0c4}.fztv-stat-empty{text-align:center;color:#aab8c8;padding:24px}.fztv-progress{padding:18px 22px;border-top:1px solid #2a3b4e}.fztv-progress h3{margin-bottom:15px}.fztv-progress-line{display:flex;justify-content:space-between;margin:12px 0 5px}.fztv-progress-bar{height:6px;background:#344357;border-radius:8px;overflow:hidden}.fztv-progress-bar i{display:block;height:100%;background:#589ce0}@media(max-width:700px){.fztv-player-hero{grid-template-columns:1fr}.fztv-player-photo{height:250px;min-height:0}.fztv-player-photo img{object-fit:contain}.fztv-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.tw-logo:has(svg[aria-label="Taykans"]){display:flex;align-items:center;justify-content:center;padding:0;overflow:hidden}.tw-logo svg[aria-label="Taykans"]{width:100%;height:100%;display:block}.rank-logo svg[aria-label="Taykans"]{width:100%;height:100%;display:block;object-fit:contain}
+.tw-roster a.tw-player{display:block;cursor:pointer;position:relative;z-index:1}.tw-roster a.tw-player:hover{transform:translateY(-3px);filter:brightness(1.12)}.tw-roster a.tw-player:focus-visible{outline:2px solid #6aafff;outline-offset:3px}
+ .fztv-players-table{width:100%;border-collapse:collapse;min-width:720px;font-size:13px}.fztv-players-table th{background:#192437;color:#90a7c5;letter-spacing:1px;font-size:11px;text-align:left;padding:12px}.fztv-players-table td{padding:9px 12px;border-bottom:1px solid #283449;color:#aab6c7}.fztv-players-table tbody tr:nth-child(even){background:rgba(255,255,255,.035)}.fztv-players-table td:nth-child(2),.fztv-players-table td:nth-child(5){color:#ff493d;font-weight:700}.fztv-players-table td a{color:#ff493d;text-decoration:none}.fztv-rating{color:#21f6a0!important;font-weight:800}.fztv-avatar{display:inline-flex;width:30px;height:30px;border-radius:50%;overflow:hidden;background:#233247;align-items:center;justify-content:center}.fztv-avatar img{width:100%;height:100%;object-fit:cover}.fztv-role{border:1px solid #7d6024;color:#e4b956;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:800} 
+/*
+
+FILE index.html POSITION 1186168
+small{color:#9eb0c4}.fztv-stat-empty{text-align:center;color:#aab8c8;padding:24px}.fztv-progress{padding:18px 22px;border-top:1px solid #2a3b4e}.fztv-progress h3{margin-bottom:15px}.fztv-progress-line{display:flex;justify-content:space-between;margin:12px 0 5px}.fztv-progress-bar{height:6px;background:#344357;border-radius:8px;overflow:hidden}.fztv-progress-bar i{display:block;height:100%;background:#589ce0}@media(max-width:700px){.fztv-player-hero{grid-template-columns:1fr}.fztv-player-photo{height:250px;min-height:0}.fztv-player-photo img{object-fit:contain}.fztv-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.tw-logo:has(svg[aria-label="Taykans"]){display:flex;align-items:center;justify-content:center;padding:0;overflow:hidden}.tw-logo svg[aria-label="Taykans"]{width:100%;height:100%;display:block}.rank-logo svg[aria-label="Taykans"]{width:100%;height:100%;display:block;object-fit:contain}
+.tw-roster a.tw-player{display:block;cursor:pointer;position:relative;z-index:1}.tw-roster a.tw-player:hover{transform:translateY(-3px);filter:brightness(1.12)}.tw-roster a.tw-player:focus-visible{outline:2px solid #6aafff;outline-offset:3px}
+ .fztv-players-table{width:100%;border-collapse:collapse;min-width:720px;font-size:13px}.fztv-players-table th{background:#192437;color:#90a7c5;letter-spacing:1px;font-size:11px;text-align:left;padding:12px}.fztv-players-table td{padding:9px 12px;border-bottom:1px solid #283449;color:#aab6c7}.fztv-players-table tbody tr:nth-child(even){background:rgba(255,255,255,.035)}.fztv-players-table td:nth-child(2),.fztv-players-table td:nth-child(5){color:#ff493d;font-weight:700}.fztv-players-table td a{color:#ff493d;text-decoration:none}.fztv-rating{color:#21f6a0!important;font-weight:800}.fztv-avatar{display:inline-flex;width:30px;height:30px;border-radius:50%;overflow:hidden;background:#233247;align-items:center;justify-content:center}.fztv-avatar img{width:100%;height:100%;object-fit:cover}.fztv-role{border:1px solid #7d6024;color:#e4b956;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:800} 
+/* Team ranking redesign */
+.fztv-ranking-header{display:flex;justify-conten
+
+FILE index.html POSITION 1616821
++(current?'Текущий рейтинг команд':'Выбранная неделя · исторические очки пока не сохранены')+'</p></div><div class="fztv-week-actions"><button type="button" id="fzPrevWeek" aria-label="Предыдущая неделя">‹</button><button type="button" id="fzNextWeek" aria-label="Следующая неделя" '+(current?'disabled':'')+'>›</button></div></div>';
+}
+function fzHomeRanking(){
+ const top=approvedTeamsCache.slice(0,5).map((t,i)=>'<a href="#/team-created/'+encodeURIComponent(t.id)+'"><b>#'+(i+3)+'</b><span>'+escapeAuth(t.name)+'</span><strong>0 FZ Points</strong></a>').join('');
+ return '<section class="fztv-home-ranking"><div class="fztv-home-rank-heading"><h2>РЕЙТИНГ КОМАНД</h2><a href="#/ranking">Весь рейтинг →</a></div><div class="fztv-home-rank-list"><a href="#/team/woods"><b>#1</b><span>Team Woods</span><strong>0 FZ Points</strong></a><a href="#/team/taykans"><b>#2</b><span>Taykans</span><strong>0 FZ Points</strong></a>'+top+'</div></section>';
+}
+function enhanceRankingLayout(route){
+ if(route==='home'||route==='ranking'){
+ const center=document.querySelector('.stack.center');
+ if(!center)return;
+ center.replaceChildren();
+ const section=document.createElement('section');section.className='panel fztv-center-ranking';
+ section.innerHTML='<div class="head"><h2>РЕЙТИНГ КОМАНД · COUNTER-STRIKE 2</h2><small>FZ POINTS</small></div>';
+ const banner=document.createElement('div');banner.innerHTML=fzRankingBanner();section.append(banner.firstElementChild);
+ const previous=section.querySelector('#fzPrevWeek'),next=section.querySelector('#fzNextWeek');
+ previous.onclick=()=>{rankingWeekOffset--;render()};next.onclick=()=>{rankingWeekOffset=Math.min(0,rankingWeekOffset+1);render()};
+ const list=document.createElement('div');list.className='fztv-unified-rank-list';
+ const staticTeams=[
+ {name:'Team Woods',logo:document.createElement('div'),players:woodsRosterNow().map(p=>({nickname:p[0],photo_url:p[1],slug:p[2],lineup_position:p[3]})),href:'#/team/woods'},
+ {name:'Taykans',logo:document.createElement('div'),players:[],href:'#/team/taykans'}
+ ];
+ const original=document.createElement('template');original.innerHTML=ranking();
+ const original
+
+FILE index.html POSITION 1616845
+нг команд':'Выбранная неделя · исторические очки пока не сохранены')+'</p></div><div class="fztv-week-actions"><button type="button" id="fzPrevWeek" aria-label="Предыдущая неделя">‹</button><button type="button" id="fzNextWeek" aria-label="Следующая неделя" '+(current?'disabled':'')+'>›</button></div></div>';
+}
+function fzHomeRanking(){
+ const top=approvedTeamsCache.slice(0,5).map((t,i)=>'<a href="#/team-created/'+encodeURIComponent(t.id)+'"><b>#'+(i+3)+'</b><span>'+escapeAuth(t.name)+'</span><strong>0 FZ Points</strong></a>').join('');
+ return '<section class="fztv-home-ranking"><div class="fztv-home-rank-heading"><h2>РЕЙТИНГ КОМАНД</h2><a href="#/ranking">Весь рейтинг →</a></div><div class="fztv-home-rank-list"><a href="#/team/woods"><b>#1</b><span>Team Woods</span><strong>0 FZ Points</strong></a><a href="#/team/taykans"><b>#2</b><span>Taykans</span><strong>0 FZ Points</strong></a>'+top+'</div></section>';
+}
+function enhanceRankingLayout(route){
+ if(route==='home'||route==='ranking'){
+ const center=document.querySelector('.stack.center');
+ if(!center)return;
+ center.replaceChildren();
+ const section=document.createElement('section');section.className='panel fztv-center-ranking';
+ section.innerHTML='<div class="head"><h2>РЕЙТИНГ КОМАНД · COUNTER-STRIKE 2</h2><small>FZ POINTS</small></div>';
+ const banner=document.createElement('div');banner.innerHTML=fzRankingBanner();section.append(banner.firstElementChild);
+ const previous=section.querySelector('#fzPrevWeek'),next=section.querySelector('#fzNextWeek');
+ previous.onclick=()=>{rankingWeekOffset--;render()};next.onclick=()=>{rankingWeekOffset=Math.min(0,rankingWeekOffset+1);render()};
+ const list=document.createElement('div');list.className='fztv-unified-rank-list';
+ const staticTeams=[
+ {name:'Team Woods',logo:document.createElement('div'),players:woodsRosterNow().map(p=>({nickname:p[0],photo_url:p[1],slug:p[2],lineup_position:p[3]})),href:'#/team/woods'},
+ {name:'Taykans',logo:document.createElement('div'),players:[],href:'#/team/taykans'}
+ ];
+ const original=document.createElement('template');original.innerHTML=ranking();
+ const originalRows=[...original.conten
+
+FILE index.html POSITION 1617943
+en();
+ const section=document.createElement('section');section.className='panel fztv-center-ranking';
+ section.innerHTML='<div class="head"><h2>РЕЙТИНГ КОМАНД · COUNTER-STRIKE 2</h2><small>FZ POINTS</small></div>';
+ const banner=document.createElement('div');banner.innerHTML=fzRankingBanner();section.append(banner.firstElementChild);
+ const previous=section.querySelector('#fzPrevWeek'),next=section.querySelector('#fzNextWeek');
+ previous.onclick=()=>{rankingWeekOffset--;render()};next.onclick=()=>{rankingWeekOffset=Math.min(0,rankingWeekOffset+1);render()};
+ const list=document.createElement('div');list.className='fztv-unified-rank-list';
+ const staticTeams=[
+ {name:'Team Woods',logo:document.createElement('div'),players:woodsRosterNow().map(p=>({nickname:p[0],photo_url:p[1],slug:p[2],lineup_position:p[3]})),href:'#/team/woods'},
+ {name:'Taykans',logo:document.createElement('div'),players:[],href:'#/team/taykans'}
+ ];
+ const original=document.createElement('template');original.innerHTML=ranking();
+ const originalRows=[...original.content.querySelectorAll('a.rank-team')];
+ staticTeams.forEach((t,i)=>{const source=originalRows.find(row=>row.querySelector('.rank-main strong')?.textContent.trim()===t.name);if(source){const img=source.querySelector('.rank-logo');if(img)t.logo=img.cloneNode(true);}});
+ const dynamic=approvedTeamsCache.filter(t=>!['team woods','taykans'].includes(t.name.trim().toLowerCase())).map(t=>({name:t.name,logo_url:t.logo_url,players:approvedRosterCache[t.id]||[],href:'#/team-created/'+encodeURIComponent(t.id),country:teamNationality(approvedRosterCache[t.id]||[]).flag}));
+ const entries=[...staticTeams,...dynamic].sort((a,b)=>getTeamRP(b.name)-getTeamRP(a.name));
+ entries.forEach((t,i)=>{
+ const orderedPlayers=[...t.players].sort((a,b)=>(a.lineup_position||99)-(b.lineup_position||99));
+ const starters=orderedPlayers.filter(p=>Number(p.lineup_position||99)<=5).slice(0,5);
+ const reserves=orderedPlayers.filter(p=>!starters.includes(p)).slice(0,5);
+ const card=document.createElement('details');card.className='fztv-unified-team';if(i===0){card.open=true;card.classList.add('fztv-first-place');}
+ cons
+
+FILE index.html POSITION 1618011
+Name='panel fztv-center-ranking';
+ section.innerHTML='<div class="head"><h2>РЕЙТИНГ КОМАНД · COUNTER-STRIKE 2</h2><small>FZ POINTS</small></div>';
+ const banner=document.createElement('div');banner.innerHTML=fzRankingBanner();section.append(banner.firstElementChild);
+ const previous=section.querySelector('#fzPrevWeek'),next=section.querySelector('#fzNextWeek');
+ previous.onclick=()=>{rankingWeekOffset--;render()};next.onclick=()=>{rankingWeekOffset=Math.min(0,rankingWeekOffset+1);render()};
+ const list=document.createElement('div');list.className='fztv-unified-rank-list';
+ const staticTeams=[
+ {name:'Team Woods',logo:document.createElement('div'),players:woodsRosterNow().map(p=>({nickname:p[0],photo_url:p[1],slug:p[2],lineup_position:p[3]})),href:'#/team/woods'},
+ {name:'Taykans',logo:document.createElement('div'),players:[],href:'#/team/taykans'}
+ ];
+ const original=document.createElement('template');original.innerHTML=ranking();
+ const originalRows=[...original.content.querySelectorAll('a.rank-team')];
+ staticTeams.forEach((t,i)=>{const source=originalRows.find(row=>row.querySelector('.rank-main strong')?.textContent.trim()===t.name);if(source){const img=source.querySelector('.rank-logo');if(img)t.logo=img.cloneNode(true);}});
+ const dynamic=approvedTeamsCache.filter(t=>!['team woods','taykans'].includes(t.name.trim().toLowerCase())).map(t=>({name:t.name,logo_url:t.logo_url,players:approvedRosterCache[t.id]||[],href:'#/team-created/'+encodeURIComponent(t.id),country:teamNationality(approvedRosterCache[t.id]||[]).flag}));
+ const entries=[...staticTeams,...dynamic].sort((a,b)=>getTeamRP(b.name)-getTeamRP(a.name));
+ entries.forEach((t,i)=>{
+ const orderedPlayers=[...t.players].sort((a,b)=>(a.lineup_position||99)-(b.lineup_position||99));
+ const starters=orderedPlayers.filter(p=>Number(p.lineup_position||99)<=5).slice(0,5);
+ const reserves=orderedPlayers.filter(p=>!starters.includes(p)).slice(0,5);
+ const card=document.createElement('details');card.className='fztv-unified-team';if(i===0){card.open=true;card.classList.add('fztv-first-place');}
+ const summary=document.createElement('summary');summary.className='fztv-
+
+FILE index.html POSITION 1618470
+in(0,rankingWeekOffset+1);render()};
+ const list=document.createElement('div');list.className='fztv-unified-rank-list';
+ const staticTeams=[
+ {name:'Team Woods',logo:document.createElement('div'),players:woodsRosterNow().map(p=>({nickname:p[0],photo_url:p[1],slug:p[2],lineup_position:p[3]})),href:'#/team/woods'},
+ {name:'Taykans',logo:document.createElement('div'),players:[],href:'#/team/taykans'}
+ ];
+ const original=document.createElement('template');original.innerHTML=ranking();
+ const originalRows=[...original.content.querySelectorAll('a.rank-team')];
+ staticTeams.forEach((t,i)=>{const source=originalRows.find(row=>row.querySelector('.rank-main strong')?.textContent.trim()===t.name);if(source){const img=source.querySelector('.rank-logo');if(img)t.logo=img.cloneNode(true);}});
+ const dynamic=approvedTeamsCache.filter(t=>!['team woods','taykans'].includes(t.name.trim().toLowerCase())).map(t=>({name:t.name,logo_url:t.logo_url,players:approvedRosterCache[t.id]||[],href:'#/team-created/'+encodeURIComponent(t.id),country:teamNationality(approvedRosterCache[t.id]||[]).flag}));
+ const entries=[...staticTeams,...dynamic].sort((a,b)=>getTeamRP(b.name)-getTeamRP(a.name));
+ entries.forEach((t,i)=>{
+ const orderedPlayers=[...t.players].sort((a,b)=>(a.lineup_position||99)-(b.lineup_position||99));
+ const starters=orderedPlayers.filter(p=>Number(p.lineup_position||99)<=5).slice(0,5);
+ const reserves=orderedPlayers.filter(p=>!starters.includes(p)).slice(0,5);
+ const card=document.createElement('details');card.className='fztv-unified-team';if(i===0){card.open=true;card.classList.add('fztv-first-place');}
+ const summary=document.createElement('summary');summary.className='fztv-unified-summary';// First-place team uses native details toggle, just like other teams.
+ const rank=document.createElement('b');rank.className='fztv-unified-place';rank.textContent='#'+(i+1);
+ const logo=document.createElement('span');logo.className='fztv-unified-logo';
+ if(t.logo_url){const img=document.createElement('img');img.src=t.logo_url;img.alt='';logo.append(img);}else if(t.logo)logo.append(t.logo);else logo.textContent='🏆';
+ const name=document.c
+
+FILE index.html POSITION 1630694
+xEIgWfy6C7igmCgGHDhmHMl77EX59dfs/fwnic3Oh9UtBEUcS/z5yJdDqN5uZmzJgxA8XFRVcEzDWXmZ/XKutq5s7r7zk3N1bMPR/+cXA1Y/jwkVSzuYZuv/122rBhA6XT8kfmaAAky/b1vDz//wTuvP6ec3NjJcTLrgPIPsn0UYWIIAgUDodp3LhxtHv3blIU5SOD5eNvh1hZdyIiO2juP35U0OiyE7E+/jFwq8dPfe7x750KfFwJ99yj/9+neQiupn1qpvn4x8NnmgfBmeZGz2db1wdnGq/9fbZ1efia5kH4muZBXKFpPro+rtA0H10fvqZ5EL6meRBXaJrPtq6PKzTNZ5s34GuaB+Frmsfga5oH4WuaR+Frmgfha5rH4GuaB+FrmkeRxzQf3kAe03x0ffia5kH4muZR+JrmQfia5jH4muZB+JrmUfhM8yB8pnkQPtM8CJ9pHoRAAv0f4d7hFOCG7j4AAAAASUVORK5CYII=" alt="Team Woods"></div><div class="rank-main"><strong>Team Woods</strong><small>CS2 · Состав: ${teamWoodsPlayers.length} игроков</small></div><div class="rank-players">${teamWoodsPlayers.join(' · ')}</div><div class="rank-arrow" style="display:flex;align-items:center;gap:8px"><span>FZ</span><strong>0</strong></div></a><a class="rank-team" href="#/team/taykans"><div class="rank-place">—</div><div class="rank-logo"><svg viewBox="0 0 106 105" width="100%" height="100%" style="display:block;max-width:none;max-height:none" aria-label="Taykans" role="img"><rect width="106" height="105" rx="4" fill="#b1c5d3"/><path fill="#080b0f" d="M22 32H84L69 42L72 39H61L59 40L55 63L47 81L48 71L51 54L53 39L50 38L47 39L42 45L45 52L48 55V59L44 57L41 59L39 49L39 43L42 37L39 35L34 35L39 38L37 41L29 37Z"/></svg></div><div class="rank-main"><strong>Taykans</strong><small>CS2 · Состав пока не объявлен</small></div><div class="rank-players">Игроки будут добавлены позже</div><div class="rank-arrow"><span>FZ</span><strong>0</strong></div></a>${approvedTeamRows()}</section>`}
+function taykansDetail(){return `<div class="crumb"><a href="#/home">Главная</a>　/　<a href="#/ranking">Рейтинг</a>　/　Taykans</div><section class="tw-profile"><div class="tw-top"><div class="tw-logo"><svg viewBox="0 0 106 105" width="100%" height="100%" style="display:block;max-width:none;max-height:none" aria-label="Taykans" role="img"><rect width="106" height="105" rx="4" fill="#b1c5d3"/><path fill="#080b0f" d="M22 32H84L69 42L72 39H61L59 40L55 63L47 81L48 71L51 54L53 39L50 38L47 39L42 45L45 52L48 55V59L44 57L41 59L39 49L39 43L42 37L39 35L34 35L39 38L37 41L29 37Z"/></svg></div><div cla
+
+FILE index.html POSITION 1630876
+3LhxtHv3blIU5SOD5eNvh1hZdyIiO2juP35U0OiyE7E+/jFwq8dPfe7x750KfFwJ99yj/9+neQiupn1qpvn4x8NnmgfBmeZGz2db1wdnGq/9fbZ1efia5kH4muZBXKFpPro+rtA0H10fvqZ5EL6meRBXaJrPtq6PKzTNZ5s34GuaB+Frmsfga5oH4WuaR+Frmgfha5rH4GuaB+FrmkeRxzQf3kAe03x0ffia5kH4muZR+JrmQfia5jH4muZB+JrmUfhM8yB8pnkQPtM8CJ9pHoRAAv0f4d7hFOCG7j4AAAAASUVORK5CYII=" alt="Team Woods"></div><div class="rank-main"><strong>Team Woods</strong><small>CS2 · Состав: ${teamWoodsPlayers.length} игроков</small></div><div class="rank-players">${teamWoodsPlayers.join(' · ')}</div><div class="rank-arrow" style="display:flex;align-items:center;gap:8px"><span>FZ</span><strong>0</strong></div></a><a class="rank-team" href="#/team/taykans"><div class="rank-place">—</div><div class="rank-logo"><svg viewBox="0 0 106 105" width="100%" height="100%" style="display:block;max-width:none;max-height:none" aria-label="Taykans" role="img"><rect width="106" height="105" rx="4" fill="#b1c5d3"/><path fill="#080b0f" d="M22 32H84L69 42L72 39H61L59 40L55 63L47 81L48 71L51 54L53 39L50 38L47 39L42 45L45 52L48 55V59L44 57L41 59L39 49L39 43L42 37L39 35L34 35L39 38L37 41L29 37Z"/></svg></div><div class="rank-main"><strong>Taykans</strong><small>CS2 · Состав пока не объявлен</small></div><div class="rank-players">Игроки будут добавлены позже</div><div class="rank-arrow"><span>FZ</span><strong>0</strong></div></a>${approvedTeamRows()}</section>`}
+function taykansDetail(){return `<div class="crumb"><a href="#/home">Главная</a>　/　<a href="#/ranking">Рейтинг</a>　/　Taykans</div><section class="tw-profile"><div class="tw-top"><div class="tw-logo"><svg viewBox="0 0 106 105" width="100%" height="100%" style="display:block;max-width:none;max-height:none" aria-label="Taykans" role="img"><rect width="106" height="105" rx="4" fill="#b1c5d3"/><path fill="#080b0f" d="M22 32H84L69 42L72 39H61L59 40L55 63L47 81L48 71L51 54L53 39L50 38L47 39L42 45L45 52L48 55V59L44 57L41 59L39 49L39 43L42 37L39 35L34 35L39 38L37 41L29 37Z"/></svg></div><div class="tw-identity"><div class="tw-meta">COUNTER-STRIKE 2 · КОМАНДА</div><h1>Taykans</h1><span class="tw-tag">НОВАЯ КОМАНДА</span></div></div><div class="detail-empty"><strong>Состав ко
+
+FILE index.html POSITION 1631174
+AASUVORK5CYII=" alt="Team Woods"></div><div class="rank-main"><strong>Team Woods</strong><small>CS2 · Состав: ${teamWoodsPlayers.length} игроков</small></div><div class="rank-players">${teamWoodsPlayers.join(' · ')}</div><div class="rank-arrow" style="display:flex;align-items:center;gap:8px"><span>FZ</span><strong>0</strong></div></a><a class="rank-team" href="#/team/taykans"><div class="rank-place">—</div><div class="rank-logo"><svg viewBox="0 0 106 105" width="100%" height="100%" style="display:block;max-width:none;max-height:none" aria-label="Taykans" role="img"><rect width="106" height="105" rx="4" fill="#b1c5d3"/><path fill="#080b0f" d="M22 32H84L69 42L72 39H61L59 40L55 63L47 81L48 71L51 54L53 39L50 38L47 39L42 45L45 52L48 55V59L44 57L41 59L39 49L39 43L42 37L39 35L34 35L39 38L37 41L29 37Z"/></svg></div><div class="rank-main"><strong>Taykans</strong><small>CS2 · Состав пока не объявлен</small></div><div class="rank-players">Игроки будут добавлены позже</div><div class="rank-arrow"><span>FZ</span><strong>0</strong></div></a>${approvedTeamRows()}</section>`}
+function taykansDetail(){return `<div class="crumb"><a href="#/home">Главная</a>　/　<a href="#/ranking">Рейтинг</a>　/　Taykans</div><section class="tw-profile"><div class="tw-top"><div class="tw-logo"><svg viewBox="0 0 106 105" width="100%" height="100%" style="display:block;max-width:none;max-height:none" aria-label="Taykans" role="img"><rect width="106" height="105" rx="4" fill="#b1c5d3"/><path fill="#080b0f" d="M22 32H84L69 42L72 39H61L59 40L55 63L47 81L48 71L51 54L53 39L50 38L47 39L42 45L45 52L48 55V59L44 57L41 59L39 49L39 43L42 37L39 35L34 35L39 38L37 41L29 37Z"/></svg></div><div class="tw-identity"><div class="tw-meta">COUNTER-STRIKE 2 · КОМАНДА</div><h1>Taykans</h1><span class="tw-tag">НОВАЯ КОМАНДА</span></div></div><div class="detail-empty"><strong>Состав команды Taykans пока не объявлен</strong>Игроки будут добавлены позже.</div></section>`}
+function teamDetail(){
+ const order=['sw4mper','loytaber','skrizzi','fladar','bosskpec'];
+ const roster=order.map(key=>woodsRosterNow().find(([, ,slug])=>slug===key)).filter(Boolean);
+ const trophy='[IMAGE]
+
+FILE index.html POSITION 1631410
+k-arrow" style="display:flex;align-items:center;gap:8px"><span>FZ</span><strong>0</strong></div></a><a class="rank-team" href="#/team/taykans"><div class="rank-place">—</div><div class="rank-logo"><svg viewBox="0 0 106 105" width="100%" height="100%" style="display:block;max-width:none;max-height:none" aria-label="Taykans" role="img"><rect width="106" height="105" rx="4" fill="#b1c5d3"/><path fill="#080b0f" d="M22 32H84L69 42L72 39H61L59 40L55 63L47 81L48 71L51 54L53 39L50 38L47 39L42 45L45 52L48 55V59L44 57L41 59L39 49L39 43L42 37L39 35L34 35L39 38L37 41L29 37Z"/></svg></div><div class="rank-main"><strong>Taykans</strong><small>CS2 · Состав пока не объявлен</small></div><div class="rank-players">Игроки будут добавлены позже</div><div class="rank-arrow"><span>FZ</span><strong>0</strong></div></a>${approvedTeamRows()}</section>`}
+function taykansDetail(){return `<div class="crumb"><a href="#/home">Главная</a>　/　<a href="#/ranking">Рейтинг</a>　/　Taykans</div><section class="tw-profile"><div class="tw-top"><div class="tw-logo"><svg viewBox="0 0 106 105" width="100%" height="100%" style="display:block;max-width:none;max-height:none" aria-label="Taykans" role="img"><rect width="106" height="105" rx="4" fill="#b1c5d3"/><path fill="#080b0f" d="M22 32H84L69 42L72 39H61L59 40L55 63L47 81L48 71L51 54L53 39L50 38L47 39L42 45L45 52L48 55V59L44 57L41 59L39 49L39 43L42 37L39 35L34 35L39 38L37 41L29 37Z"/></svg></div><div class="tw-identity"><div class="tw-meta">COUNTER-STRIKE 2 · КОМАНДА</div><h1>Taykans</h1><span class="tw-tag">НОВАЯ КОМАНДА</span></div></div><div class="detail-empty"><strong>Состав команды Taykans пока не объявлен</strong>Игроки будут добавлены позже.</div></section>`}
+function teamDetail(){
+ const order=['sw4mper','loytaber','skrizzi','fladar','bosskpec'];
+ const roster=order.map(key=>woodsRosterNow().find(([, ,slug])=>slug===key)).filter(Boolean);
+ const trophy='[IMAGE]
+
+FILE index.html POSITION 1631518
+="rank-team" href="#/team/taykans"><div class="rank-place">—</div><div class="rank-logo"><svg viewBox="0 0 106 105" width="100%" height="100%" style="display:block;max-width:none;max-height:none" aria-label="Taykans" role="img"><rect width="106" height="105" rx="4" fill="#b1c5d3"/><path fill="#080b0f" d="M22 32H84L69 42L72 39H61L59 40L55 63L47 81L48 71L51 54L53 39L50 38L47 39L42 45L45 52L48 55V59L44 57L41 59L39 49L39 43L42 37L39 35L34 35L39 38L37 41L29 37Z"/></svg></div><div class="rank-main"><strong>Taykans</strong><small>CS2 · Состав пока не объявлен</small></div><div class="rank-players">Игроки будут добавлены позже</div><div class="rank-arrow"><span>FZ</span><strong>0</strong></div></a>${approvedTeamRows()}</section>`}
+function taykansDetail(){return `<div class="crumb"><a href="#/home">Главная</a>　/　<a href="#/ranking">Рейтинг</a>　/　Taykans</div><section class="tw-profile"><div class="tw-top"><div class="tw-logo"><svg viewBox="0 0 106 105" width="100%" height="100%" style="display:block;max-width:none;max-height:none" aria-label="Taykans" role="img"><rect width="106" height="105" rx="4" fill="#b1c5d3"/><path fill="#080b0f" d="M22 32H84L69 42L72 39H61L59 40L55 63L47 81L48 71L51 54L53 39L50 38L47 39L42 45L45 52L48 55V59L44 57L41 59L39 49L39 43L42 37L39 35L34 35L39 38L37 41L29 37Z"/></svg></div><div class="tw-identity"><div class="tw-meta">COUNTER-STRIKE 2 · КОМАНДА</div><h1>Taykans</h1><span class="tw-tag">НОВАЯ КОМАНДА</span></div></div><div class="detail-empty"><strong>Состав команды Taykans пока не объявлен</strong>Игроки будут добавлены позже.</div></section>`}
+function teamDetail(){
+ const order=['sw4mper','loytaber','skrizzi','fladar','bosskpec'];
+ const roster=order.map(key=>woodsRosterNow().find(([, ,slug])=>slug===key)).filter(Boolean);
+ const trophy='[IMAGE]
+
+FILE index.html POSITION 1631719
+label="Taykans" role="img"><rect width="106" height="105" rx="4" fill="#b1c5d3"/><path fill="#080b0f" d="M22 32H84L69 42L72 39H61L59 40L55 63L47 81L48 71L51 54L53 39L50 38L47 39L42 45L45 52L48 55V59L44 57L41 59L39 49L39 43L42 37L39 35L34 35L39 38L37 41L29 37Z"/></svg></div><div class="rank-main"><strong>Taykans</strong><small>CS2 · Состав пока не объявлен</small></div><div class="rank-players">Игроки будут добавлены позже</div><div class="rank-arrow"><span>FZ</span><strong>0</strong></div></a>${approvedTeamRows()}</section>`}
+function taykansDetail(){return `<div class="crumb"><a href="#/home">Главная</a>　/　<a href="#/ranking">Рейтинг</a>　/　Taykans</div><section class="tw-profile"><div class="tw-top"><div class="tw-logo"><svg viewBox="0 0 106 105" width="100%" height="100%" style="display:block;max-width:none;max-height:none" aria-label="Taykans" role="img"><rect width="106" height="105" rx="4" fill="#b1c5d3"/><path fill="#080b0f" d="M22 32H84L69 42L72 39H61L59 40L55 63L47 81L48 71L51 54L53 39L50 38L47 39L42 45L45 52L48 55V59L44 57L41 59L39 49L39 43L42 37L39 35L34 35L39 38L37 41L29 37Z"/></svg></div><div class="tw-identity"><div class="tw-meta">COUNTER-STRIKE 2 · КОМАНДА</div><h1>Taykans</h1><span class="tw-tag">НОВАЯ КОМАНДА</span></div></div><div class="detail-empty"><strong>Состав команды Taykans пока не объявлен</strong>Игроки будут добавлены позже.</div></section>`}
+function teamDetail(){
+ const order=['sw4mper','loytaber','skrizzi','fladar','bosskpec'];
+ const roster=order.map(key=>woodsRosterNow().find(([, ,slug])=>slug===key)).filter(Boolean);
+ const trophy='[IMAGE]
+
+FILE index.html POSITION 1632068
+объявлен</small></div><div class="rank-players">Игроки будут добавлены позже</div><div class="rank-arrow"><span>FZ</span><strong>0</strong></div></a>${approvedTeamRows()}</section>`}
+function taykansDetail(){return `<div class="crumb"><a href="#/home">Главная</a>　/　<a href="#/ranking">Рейтинг</a>　/　Taykans</div><section class="tw-profile"><div class="tw-top"><div class="tw-logo"><svg viewBox="0 0 106 105" width="100%" height="100%" style="display:block;max-width:none;max-height:none" aria-label="Taykans" role="img"><rect width="106" height="105" rx="4" fill="#b1c5d3"/><path fill="#080b0f" d="M22 32H84L69 42L72 39H61L59 40L55 63L47 81L48 71L51 54L53 39L50 38L47 39L42 45L45 52L48 55V59L44 57L41 59L39 49L39 43L42 37L39 35L34 35L39 38L37 41L29 37Z"/></svg></div><div class="tw-identity"><div class="tw-meta">COUNTER-STRIKE 2 · КОМАНДА</div><h1>Taykans</h1><span class="tw-tag">НОВАЯ КОМАНДА</span></div></div><div class="detail-empty"><strong>Состав команды Taykans пока не объявлен</strong>Игроки будут добавлены позже.</div></section>`}
+function teamDetail(){
+ const order=['sw4mper','loytaber','skrizzi','fladar','bosskpec'];
+ const roster=order.map(key=>woodsRosterNow().find(([, ,slug])=>slug===key)).filter(Boolean);
+ const trophy='[IMAGE] tNiAxMi0xNiAxMyIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjY2JkMmQ4IiBzdHJva2Utd2lkdGg9IjMiLz48dGV4dCB4PSIzMiIgeT0iMzUiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSI5MDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiMyYjMxM2IiPjI8L3RleHQ+PC9zdmc+';
+ return `<div class="crumb"><a h
+
+FILE index.html POSITION 1632182
+</span><strong>0</strong></div></a>${approvedTeamRows()}</section>`}
+function taykansDetail(){return `<div class="crumb"><a href="#/home">Главная</a>　/　<a href="#/ranking">Рейтинг</a>　/　Taykans</div><section class="tw-profile"><div class="tw-top"><div class="tw-logo"><svg viewBox="0 0 106 105" width="100%" height="100%" style="display:block;max-width:none;max-height:none" aria-label="Taykans" role="img"><rect width="106" height="105" rx="4" fill="#b1c5d3"/><path fill="#080b0f" d="M22 32H84L69 42L72 39H61L59 40L55 63L47 81L48 71L51 54L53 39L50 38L47 39L42 45L45 52L48 55V59L44 57L41 59L39 49L39 43L42 37L39 35L34 35L39 38L37 41L29 37Z"/></svg></div><div class="tw-identity"><div class="tw-meta">COUNTER-STRIKE 2 · КОМАНДА</div><h1>Taykans</h1><span class="tw-tag">НОВАЯ КОМАНДА</span></div></div><div class="detail-empty"><strong>Состав команды Taykans пока не объявлен</strong>Игроки будут добавлены позже.</div></section>`}
+function teamDetail(){
+ const order=['sw4mper','loytaber','skrizzi','fladar','bosskpec'];
+ const roster=order.map(key=>woodsRosterNow().find(([, ,slug])=>slug===key)).filter(Boolean);
+ const trophy='[IMAGE] tNiAxMi0xNiAxMyIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjY2JkMmQ4IiBzdHJva2Utd2lkdGg9IjMiLz48dGV4dCB4PSIzMiIgeT0iMzUiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSI5MDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiMyYjMxM2IiPjI8L3RleHQ+PC9zdmc+';
+ return `<div class="crumb"><a href="#/home">Главная</a>　/　<a href="#/ranking">Рейтинг</a>　/　Team Woods</div>
+ <section class="tw-profile">
+  <div
+
+FILE index.html POSITION 1677915
+}
+function render(){const route=(location.hash||'#/home').replace(/^#\/?/,'').split('/')[0];let html;if(route==='home')html=home()+`<div class="page-title"><h2>Последние матчи</h2></div>${matchesCache.slice(0,3).map(matchCard).join('')}`;else if(route==='auth')html=authPage();else if(route==='admin')html=adminPage();else if(route==='matches')html=matches();else if(route==='match')html='<div class="page-title"><h1>Матч</h1></div>';else if(route==='news')html=newsPage();else if(route==='member')html='<div id="fztv-member-view" style="min-height:220px">Загрузка профиля…</div>';else if(route==='bank'||route==='market')html='<div id="fztv-finance-root" style="min-height:360px"></div>';else if(route==='ranking')html=home();else if(route==='team-created')html=createdTeamDetail();else if(route==='team')html=location.hash.toLowerCase().includes('/taykans')?taykansDetail():teamDetail();else if(route==='tournaments')html=tournamentCalendar();else if(route==='tournament'){const parts=location.hash.split('/');html=tournamentDetail(decodeURIComponent(parts[2]||'Турнир'),decodeURIComponent(parts[3]||'Дата уточняется'))}else if(route==='teams')html='<div class="page-title"><h1>Команды и турниры</h1></div><section class="panel" style="padding:20px" id="teams-workflow">Загрузка…</section>';else if(route==='players')html=playersPage();else if(route==='player')html=fztvPlayerProfile();else if(route==='rules')html=rulesPage();else if(route==='stats')html=home();else html=home();app.innerHTML=html;enhanceRankingLayout(route);if(route==='bank'||route==='market'){import('./js/fztv-finance.js?v=20261107-fz-market-v1').then(m=>m.mountFinance({client:sb,root:document.getElementById('fztv-finance-root'),route})).catch(e=>{const node=document.getElementById('fztv-finance-root');if(node)node.textContent='Ошибка загрузки банка: '+e.message;console.error(e)});}if(['players','player','admin'].includes(route)){import('./js/contracts.js').then(m=>m.mount({client:sb,root:app,route})).catch(err=>console.warn('Contracts:',err));}if(route==='auth'&&currentUser()){import('./js/account-community.js?v=founder-premium-20261107-v2').then(m=>m.mountAccount(
+
+FILE index.html POSITION 1677925
+ render(){const route=(location.hash||'#/home').replace(/^#\/?/,'').split('/')[0];let html;if(route==='home')html=home()+`<div class="page-title"><h2>Последние матчи</h2></div>${matchesCache.slice(0,3).map(matchCard).join('')}`;else if(route==='auth')html=authPage();else if(route==='admin')html=adminPage();else if(route==='matches')html=matches();else if(route==='match')html='<div class="page-title"><h1>Матч</h1></div>';else if(route==='news')html=newsPage();else if(route==='member')html='<div id="fztv-member-view" style="min-height:220px">Загрузка профиля…</div>';else if(route==='bank'||route==='market')html='<div id="fztv-finance-root" style="min-height:360px"></div>';else if(route==='ranking')html=home();else if(route==='team-created')html=createdTeamDetail();else if(route==='team')html=location.hash.toLowerCase().includes('/taykans')?taykansDetail():teamDetail();else if(route==='tournaments')html=tournamentCalendar();else if(route==='tournament'){const parts=location.hash.split('/');html=tournamentDetail(decodeURIComponent(parts[2]||'Турнир'),decodeURIComponent(parts[3]||'Дата уточняется'))}else if(route==='teams')html='<div class="page-title"><h1>Команды и турниры</h1></div><section class="panel" style="padding:20px" id="teams-workflow">Загрузка…</section>';else if(route==='players')html=playersPage();else if(route==='player')html=fztvPlayerProfile();else if(route==='rules')html=rulesPage();else if(route==='stats')html=home();else html=home();app.innerHTML=html;enhanceRankingLayout(route);if(route==='bank'||route==='market'){import('./js/fztv-finance.js?v=20261107-fz-market-v1').then(m=>m.mountFinance({client:sb,root:document.getElementById('fztv-finance-root'),route})).catch(e=>{const node=document.getElementById('fztv-finance-root');if(node)node.textContent='Ошибка загрузки банка: '+e.message;console.error(e)});}if(['players','player','admin'].includes(route)){import('./js/contracts.js').then(m=>m.mount({client:sb,root:app,route})).catch(err=>console.warn('Contracts:',err));}if(route==='auth'&&currentUser()){import('./js/account-community.js?v=founder-premium-20261107-v2').then(m=>m.mountAccount({client:sb
+
+FILE js/site-presence.js POSITION 1109
+teElement('style');
+  style.id='fztv-ranking-2026-css';
+  style.textContent='.fztv-home-podium-1{border:2px solid #e8bb45!important;box-shadow:0 0 20px #e8bb452b!important}.fztv-home-podium-2{border:2px solid #aebdcc!important;box-shadow:0 0 18px #aebdcc25!important}.fztv-home-podium-3{border:2px solid #bb7953!important;box-shadow:0 0 18px #bb795325!important}.fztv-igl-crown{margin-left:5px;font-size:14px;vertical-align:middle}';
+  document.head.append(style);
+  let igls=new Set(),pending=false;
+  const findCard=(node,rank)=>{
+    let p=node.parentElement;
+    for(let n=0;p&&n<7;n++,p=p.parentElement){
+      const t=p.innerText||'';
+      if(t.length>9000)break;
+      if(t.includes('Team Woods')&&rank===1&&t.includes('Профиль команды')&&!t.includes('#2'))return p;
+      if(rank>1&&t.length<1600&&t.includes('#'+rank)&&t.includes(rank===2?'Taykans':'Woods Academy')&&!t.includes('#'+(rank+1)))return p;
+    }
+    return null;
+  };
+  const decorate=()=>{
+    pending=false;
+    if(!location.hash||location.hash==='#/'||location.hash==='#/home'){
+      const r
