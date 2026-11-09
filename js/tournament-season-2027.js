@@ -91,6 +91,65 @@ for(const [label,key,kind,val] of [['Название','name','text',t.name],['�
 form.append(field('Формат','format','select',t.format,[['single_elimination','Плей-офф'],['swiss_playoff','Швейцарка + плей-офф'],['round_robin','Круговая'],['final_four','Final Four']]));
 form.append(field('Статус','status','select',t.status,[['scheduled','Запланирован'],['registration','Регистрация'],['closed','Регистрация закрыта'],['in_progress','Идёт'],['finished','Завершён'],['cancelled','Отменён']]));
 form.append(field('Серия','series','select',t.series,[['cup','FZTV CUP'],['major','MAJOR'],['open','OPEN'],['seasonal','Сезонный'],['masters','MASTERS']]));
+if(t.id==='be494a78-0d63-4ebd-8d29-f7ea9cb48a1b'&&t.format==='final_four'){
+ const controls=node('section','fzse-final-four-admin');
+ controls.style.cssText='grid-column:1/-1;padding:18px;background:#1b2d45;border:1px solid #567294;border-radius:10px';
+ controls.append(node('h3','','FZTV CUP #1 · ЖЕРЕБЬЁВКА FINAL FOUR'));
+ const launch=node('button','fzse-btn',t.stage_config?.bracket?.team_ids?.length===4?'ПЕРЕМЕШАТЬ ПАРЫ ЗАНОВО':'ЗАПУСТИТЬ СЕТКУ ТУРНИРА');
+ launch.type='button';
+ const msg=node('p','fzse-message','Четыре одобренные команды. Жеребьёвку можно запускать повторно сколько угодно раз.');
+ const display=node('div','fzse-draw-preview');
+ display.style.cssText='display:grid;gap:8px;margin-top:12px';
+ const showPairs=async()=>{
+  display.replaceChildren();
+  const ids=t.stage_config?.bracket?.team_ids;
+  if(!Array.isArray(ids)||ids.length!==4)return;
+  const teams=await db().from('fztv_teams').select('id,name,logo_url').in('id',ids);
+  if(teams.error){msg.textContent=teams.error.message;return;}
+  const map=new Map((teams.data||[]).map(x=>[x.id,x]));
+  for(let i=0;i<4;i+=2){
+   const a=map.get(ids[i]),b=map.get(ids[i+1]);
+   const row=node('div','fzse-draw-pair');row.style.cssText='display:flex;align-items:center;gap:10px;padding:10px;background:#101e31;border:1px solid #3d5572;border-radius:7px;flex-wrap:wrap';
+   row.append(node('small','','Полуфинал '+(i/2+1)));
+   for(const team of [a,b]){
+    if(team?.logo_url){const img=node('img');img.src=team.logo_url;img.alt='';img.style.cssText='width:35px;height:35px;object-fit:contain';row.append(img);}
+    row.append(node('strong','',team?.name||'Команда'));
+    if(team===a)row.append(node('span','','—'));
+   }
+   display.append(row);
+  }
+ };
+ showPairs().catch(e=>{msg.textContent=e.message;});
+ launch.onclick=async()=>{
+  launch.disabled=true;msg.textContent='Проверяем участников и формируем пары…';
+  try{
+   const c=db();
+   const r=await c.from('fztv_tournament_applications').select('team_id').eq('tournament_id',t.id).eq('status','approved');
+   if(r.error)throw r.error;
+   const ids=[...new Set((r.data||[]).map(x=>x.team_id))];
+   if(ids.length!==4)throw Error('Для запуска нужно ровно 4 одобренные команды. Сейчас: '+ids.length);
+   const old=t.stage_config?.bracket?.team_ids;
+   const sig=x=>!Array.isArray(x)||x.length!==4?'':[x.slice(0,2).sort().join(':'),x.slice(2,4).sort().join(':')].sort().join('|');
+   let order;
+   for(let attempt=0;attempt<36;attempt++){
+    order=ids.slice();
+    for(let i=3;i>0;i--){const n=new Uint32Array(1);crypto.getRandomValues(n);const j=n[0]%(i+1);[order[i],order[j]]=[order[j],order[i]];}
+    if(sig(order)!==sig(old))break;
+   }
+   const config={...(t.stage_config||{}),type:'single_elimination',format:'Final Four',team_count:4,rounds:[{name:'Полуфиналы',matches:2},{name:'Финал',matches:1}],bracket:{team_ids:order,drawn_at:new Date().toISOString()}};
+   const update=await c.from('tournaments').update({stage_config:config,status:'in_progress'}).eq('id',t.id).select('id,stage_config,status').single();
+   if(update.error)throw update.error;
+   t.stage_config=update.data.stage_config;t.status=update.data.status;
+   launch.textContent='ПЕРЕМЕШАТЬ ПАРЫ ЗАНОВО';
+   msg.textContent='Сетка сохранена. Новые пары опубликованы на главной странице.';
+   await showPairs();
+   window.dispatchEvent(new Event('fz-final-four-updated'));
+  }catch(error){msg.textContent='Ошибка: '+error.message;}
+  finally{launch.disabled=false;}
+ };
+ controls.append(launch,msg,display);content.append(controls);
+}
+
 const actions=node('div');actions.style.gridColumn='1/-1';const save=node('button','fzse-btn','Сохранить изменения');save.type='submit';actions.append(save);const link=node('a','fzse-link','Открыть турнир');link.href='#/season-tournament/'+t.id;link.style.marginLeft='16px';actions.append(link);form.append(actions);content.append(form);
 form.onsubmit=async event=>{event.preventDefault();save.disabled=true;message.textContent='Сохранение…';try{const f=new FormData(form),name=String(f.get('name')||'').trim(),max=Number(f.get('max_teams')),start=iso(f.get('starts_at')),end=iso(f.get('ends_at')),banner=String(f.get('banner_url')||'').trim();if(!name||name.length>150)throw Error('Название: 1–150 символов');if(!Number.isInteger(max)||max<2||max>128)throw Error('Количество команд: 2–128');if(!start||!end||new Date(start)>new Date(end))throw Error('Проверь даты');if(banner&&!/^https:\/\//.test(banner))throw Error('Укажи HTTPS-адрес баннера');
 const format=String(f.get('format'));const payload={name,starts_at:start,ends_at:end,registration_opens_at:iso(f.get('registration_opens_at')),max_teams:max,banner_url:banner||null,description:String(f.get('description')||''),status:String(f.get('status')),format,series:String(f.get('series')),stage_config:format==='final_four'?(t.stage_config&&t.format==='final_four'?t.stage_config:{type:'single_elimination',format:'Final Four',team_count:4,rounds:[{name:'Полуфиналы',matches:2},{name:'Финал',matches:1}]}):format==='swiss_playoff'?(t.stage_config&&t.format==='swiss_playoff'?t.stage_config:{swiss_rounds:5,swiss_teams:16,playoff_teams:8,playoff_format:'single_elimination',best_of:'BO3',grand_final:'BO5'}):{}};
