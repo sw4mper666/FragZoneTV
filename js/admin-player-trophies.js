@@ -187,21 +187,10 @@
       else if(hash.startsWith('#/transfers')){
         if(!document.getElementById('fztv-all-transfers')){const p=transferPanel(true);p.id='fztv-all-transfers';root.prepend(p);}
       }else if(hash.startsWith('#/player/')){
-        const slug=decodeURIComponent(location.hash.split('/')[2]||'').toLowerCase();
-        const p=state.rows.find(x=>x.player_slug===slug||x.nickname.toLowerCase()===slug);
-        if(p&&!document.getElementById('fztv-roster-profile')){
-          const profile=el('section');profile.id='fztv-roster-profile';profile.className='fztv-move-panel';
-          const heading=el('h2',p.nickname);profile.append(heading);
-          profile.append(el('p',p.team_name?'Команда: '+p.team_name:'Статус: свободный агент'));
-          if(p.age)profile.append(el('p','Возраст: '+p.age+' лет'));
-          profile.append(el('p','Рейтинг: '+(p.rating||0)));
-          if(p.photo_url){const img=el('img');img.src=p.photo_url;img.alt='Фото '+p.nickname;img.style.cssText='max-width:120px;max-height:120px;object-fit:cover;border-radius:12px';profile.prepend(img);}
-          root.prepend(profile);
-        }
-        if(p&&!document.getElementById('fztv-player-team-status')){
-          const badge=el('div',p.team_name?'Команда: '+p.team_name:'Свободный агент · NO TEAM');
-          badge.id='fztv-player-team-status';badge.className='fztv-free-banner';root.prepend(badge);
-        }
+        // Unified player profiles provide team and rating information already.
+        // Remove obsolete legacy summary panels to avoid duplicate headers.
+        root.querySelector('#fztv-roster-profile')?.remove();
+        root.querySelector('#fztv-player-team-status')?.remove();
       }else{
         if(!document.getElementById('fztv-transfer-preview')){
           const panel=transferPanel(false);panel.id='fztv-transfer-preview';
