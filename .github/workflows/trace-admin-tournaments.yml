@@ -1,0 +1,35 @@
+name: Trace actual admin tournaments panel
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/trace-admin-tournaments.yml']
+permissions: {contents: write}
+jobs:
+  trace:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Locate the actual Admin sidebar and tournament form
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          out=[]
+          paths=[Path('index.html')]+list(Path('js').rglob('*.js'))+list(Path('assets').rglob('*.js'))
+          for p in paths:
+           s=p.read_text(encoding='utf-8',errors='replace')
+           for term in ['FZTV ADMIN','УПРАВЛЕНИЕ ТУРНИРАМИ','Турниры</','fzse-admin','fzse-admin-select','admin-section-tournaments','admin-tournaments','admin-tournament','renderTournamentAdmin','adminNav','Турниры']:
+            matches=list(re.finditer(re.escape(term),s,re.I))
+            for m in matches[:7]:
+             a=max(0,m.start()-1200);b=min(len(s),m.start()+2200)
+             segment=s[a:b]
+             segment=re.sub(r'data:image/[a-z+]+;base64,[A-Za-z0-9+/=]+','[IMAGE]',segment)
+             out.append(f'PATH {p} TERM {term} INDEX {m.start()}\n'+segment[:3200]+'\n')
+          Path('trace-admin-tournaments.txt').write_text('\n'.join(out)[-130000:],encoding='utf-8')
+          PY
+      - name: Commit
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add trace-admin-tournaments.txt
+          git diff --cached --quiet || (git commit -m 'Locate actual admin tournament selector and form' && git push)
