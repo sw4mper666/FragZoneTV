@@ -1,0 +1,27 @@
+name: Inspect old player header exact function
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/inspect-player-header-function.yml']
+permissions: {contents: write}
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Save precise legacy player renderer
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          s=Path('index.html').read_text(encoding='utf-8')
+          key='function fztvPlayerProfile('
+          i=s.find(key)
+          if i<0:raise SystemExit('Missing old renderer')
+          Path('old-player-header-function.txt').write_text(s[i:i+11000],encoding='utf-8')
+          PY
+      - name: Commit
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add old-player-header-function.txt
+          git diff --cached --quiet || (git commit -m 'Inspect old player renderer responsible for header duplication' && git push)
