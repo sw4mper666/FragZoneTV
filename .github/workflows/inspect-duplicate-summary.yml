@@ -1,0 +1,33 @@
+name: Locate duplicate player summary source
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/inspect-duplicate-summary.yml']
+permissions: {contents: write}
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Find injected player header widgets
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          out=[]
+          for path in list(Path('js').glob('*.js'))+[Path('index.html')]:
+           s=path.read_text(encoding='utf8',errors='replace')
+           for term in ['Команда:', 'Рейтинг:', 'Команда: Team Woods','fztvWoodsPhoto']:
+            hits=list(re.finditer(re.escape(term),s,re.I))
+            for m in hits[:7]:
+             excerpt=s[max(0,m.start()-300):m.start()+540]
+             excerpt=re.sub(r'data:image/[^\s"\x27<>]+','[BASE64]',excerpt)
+             out.append(f'{path} {term} at {m.start()}\n{excerpt[:800]}\n')
+          Path('duplicate-summary-inspect.txt').write_text('\n'.join(out)[:43000],encoding='utf8')
+          PY
+      - name: Commit
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add duplicate-summary-inspect.txt
+          git diff --cached --quiet || (git commit -m 'Locate duplicate rating and team header source' && git push)
