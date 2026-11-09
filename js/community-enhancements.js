@@ -67,7 +67,7 @@ async function refresh(force=false){
  loading=(async()=>{
    const results=await Promise.allSettled([
     client.from('fztv_site_matches').select('id,title,team_a,team_b,starts_at,status,result_overall,created_at').order('starts_at',{ascending:false}).limit(300),
-    client.from('fztv_transfers').select('id,player_slug,from_team,to_team,occurred_at').order('occurred_at',{ascending:false}).limit(60),
+    client.from('fztv_transfers').select('id,player_slug,dynamic_player_id,from_team,to_team,occurred_at').order('occurred_at',{ascending:false}).limit(60),
     client.from('fztv_teams').select('id,name,status').eq('status','approved').limit(200),
     client.from('fztv_roster_players').select('player_slug,nickname,team_name').limit(300),
     client.from('fztv_team_players').select('id,nickname,team_id').limit(300),
@@ -198,7 +198,7 @@ function makeTransferNews(){
  if(!items.length)section.append(el('p','fzex-empty','Подтверждённых переходов пока нет.'));
  for(const t of items){
   const item=el('div','fzex-news-item');
-  const nick=roster.find(x=>x.player_slug===t.player_slug)?.nickname||t.player_slug||'Игрок';
+  const nick=t.dynamic_player_id?(players.find(x=>x.id===t.dynamic_player_id)?.nickname||'Игрок'):(roster.find(x=>x.player_slug===t.player_slug)?.nickname||t.player_slug||'Игрок');
   item.append(el('strong','',nick+' · '+(t.from_team||'Свободный агент')+' → '+(t.to_team||'Свободный агент')));
   item.append(el('small','',format(t.occurred_at)));
   section.append(item);
