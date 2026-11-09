@@ -65,7 +65,7 @@ if(true){
 }
 page.append(reg);root.replaceChildren(page);
 if(true) {
- import('./tournament-registration.js?v=20261108-general-registration-v4').then(m=>m.mountTournamentRegistration({client:db(),root:reg,tournamentId:t.id})).catch(err=>{console.error('FZTV CUP registration restore',err);reg.append(node('p','fzse-message','Ошибка загрузки регистрации: '+err.message));});
+ import('./tournament-registration.js?v=20261109-final-four-v1').then(m=>m.mountTournamentRegistration({client:db(),root:reg,tournamentId:t.id})).catch(err=>{console.error('FZTV CUP registration restore',err);reg.append(node('p','fzse-message','Ошибка загрузки регистрации: '+err.message));});
 }
 }
 function field(title,name,kind,value,values){const wrapper=node('label','',title),x=node(kind==='select'?'select':kind==='textarea'?'textarea':'input');x.name=name;if(kind==='select'){for(const [key,label] of values){const op=node('option','',label);op.value=key;x.append(op);}x.value=value||'';}else{x.type=kind;x.value=value??'';}wrapper.append(x);return wrapper;}
