@@ -80,44 +80,55 @@ function mountHome(){
 }
 
 function mountAdmin(){
- if(route()!=='admin'||typeof isAdmin!=='function'||!isAdmin())return;
- const parent=$('#fzse-admin'),select=$('.fzse-admin-select',parent||document);
- if(!parent||!select)return;
- if(select.value!==CUP){$('#fz4-admin',parent)?.remove();return;}
- if($('#fz4-admin',parent))return;
- const panel=make('div','fz4-admin');panel.id='fz4-admin';
- const button=make('button','','Запуск турнира · случайная жеребьёвка');button.type='button';
- const msg=make('p','fz4-note','Нужны 4 одобренные команды. Можно перемешивать пары неограниченное количество раз.');
+ if(route()!=='admin')return;
+ // Attach to the real sidebar-based FZTV ADMIN -> Турниры tab,
+ // not an old form that is moved or recreated by the admin shell.
+ const bucket=$('#app .fzac-section[data-fzac-section="tournaments"]');
+ if(!bucket||$('#fz4-admin',bucket))return;
+ const panel=make('section','fz4-admin');panel.id='fz4-admin';
+ const heading=make('h3','','FZTV CUP #1 · FINAL FOUR');
+ const button=make('button','','ЗАПУСТИТЬ СЕТКУ ТУРНИРА');button.type='button';
+ const msg=make('p','fz4-note','4 участника. Нажми для случайного распределения по двум полуфиналам. Повторная жеребьёвка без ограничений.');
  const preview=make('div');
- panel.append(make('h3','','FZTV CUP #1 · FINAL FOUR'),button,msg,preview);parent.append(panel);
- refresh(preview).then(()=>{if($('.fz4-board',preview))button.textContent='Перемешать пары ещё раз';}).catch(e=>{msg.textContent=e.message;});
+ panel.append(heading,button,msg,preview);
+ // Place it immediately below the existing tournament selector whenever present.
+ const selector=$('.fzse-admin-select',bucket);
+ if(selector)selector.insertAdjacentElement('afterend',panel);else bucket.prepend(panel);
+ refresh(preview).then(()=>{
+  if($('.fz4-board',preview))button.textContent='ПЕРЕМЕШАТЬ ПАРЫ ЗАНОВО';
+ }).catch(e=>{msg.textContent='Не удалось загрузить сетку: '+e.message;});
  button.addEventListener('click',async()=>{
-  button.disabled=true;msg.textContent='Создаём случайные пары…';
+  button.disabled=true;msg.textContent='Проверяем четыре команды и сохраняем жеребьёвку…';
   try{
-   const c=client(),apps=await c.from('fztv_tournament_applications').select('team_id').eq('tournament_id',CUP).eq('status','approved');
+   const c=client();
+   if(!c)throw Error('Подключение к базе данных не готово');
+   const apps=await c.from('fztv_tournament_applications').select('team_id').eq('tournament_id',CUP).eq('status','approved');
    if(apps.error)throw apps.error;
    const ids=[...new Set((apps.data||[]).map(t=>t.team_id))];
-   if(ids.length!==4)throw Error('Нужно ровно 4 одобренные команды. Сейчас: '+ids.length);
+   if(ids.length!==4)throw Error('Нужно ровно четыре одобренные команды, сейчас: '+ids.length);
    const found=await c.from('tournaments').select('stage_config,format').eq('id',CUP).single();
    if(found.error)throw found.error;
-   if(found.data.format!=='final_four')throw Error('Неверный формат турнира');
+   if(found.data.format!=='final_four')throw Error('Неверный формат турнира — ожидался Final Four');
    const next=shuffle(ids,found.data.stage_config?.bracket?.team_ids);
    const config={...(found.data.stage_config||{}),type:'single_elimination',format:'Final Four',team_count:4,rounds:[{name:'Полуфиналы',matches:2},{name:'Финал',matches:1}],bracket:{team_ids:next,drawn_at:new Date().toISOString()}};
-   const saved=await c.from('tournaments').update({stage_config:config,status:'in_progress'}).eq('id',CUP).select('id').single();
+   const saved=await c.from('tournaments').update({stage_config:config,status:'in_progress'}).eq('id',CUP).select('id,stage_config').single();
    if(saved.error)throw saved.error;
+   if(!saved.data?.stage_config?.bracket?.team_ids)throw Error('Сетка не сохранилась');
    const teams=await c.from('fztv_teams').select('id,name,logo_url').in('id',next);
    if(teams.error)throw teams.error;
    display(preview,next,teams.data||[]);
-   button.textContent='Перемешать пары ещё раз';
-   msg.textContent='Новые пары сохранены и опубликованы. Жеребьёвку можно повторять.';
+   button.textContent='ПЕРЕМЕШАТЬ ПАРЫ ЗАНОВО';
+   msg.textContent='Сетка сохранена и опубликована. Можно проводить жеребьёвку повторно.';
+   window.dispatchEvent(new Event('fz-final-four-updated'));
   }catch(e){msg.textContent='Ошибка: '+e.message;}
   finally{button.disabled=false;}
  });
 }
+
 let scheduled=false;
 function schedule(){
  if(scheduled)return;scheduled=true;
- setTimeout(()=>{scheduled=false;mountHome();mountPublic();},80);
+ setTimeout(()=>{scheduled=false;mountHome();mountPublic();mountAdmin();},80);
 }
 const app=$('#app');
 if(app)new MutationObserver(schedule).observe(app,{childList:true,subtree:true});
