@@ -1,0 +1,35 @@
+name: Inspect login and rank runtime
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/inspect-login-runtime.yml']
+permissions: {contents: write}
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Extract key code without private keys
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          s=Path('index.html').read_text(encoding='utf8')
+          keys=['function authPage(', 'function refreshAuth(', 'function loadLegacyRoster(', 'function loadApprovedTeams(', 'function loadTeamRP(', 'function woodsRosterNow(', 'function enhanceRankingLayout(', 'function render(', "if(route==='auth')", 'af.onsubmit=async']
+          out=[]
+          for key in keys:
+           p=s.find(key)
+           if p<0:
+            out.append(key+' NOT FOUND')
+            continue
+           clip=s[p:p+6000]
+           clip=re.sub(r'eyJ[A-Za-z0-9._-]{30,}','[JWT_REDACTED]',clip)
+           out.append('### '+key+' at '+str(p)+'\n'+clip)
+          Path('login-ranking-runtime.txt').write_text('\n\n'.join(out)[:60000],encoding='utf8')
+          PY
+      - name: Commit
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add login-ranking-runtime.txt
+          git diff --cached --quiet || (git commit -m 'Inspect login rank runtime excerpts' && git push)
