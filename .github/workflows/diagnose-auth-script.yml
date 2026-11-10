@@ -1,0 +1,33 @@
+name: Diagnose missing script and authentication
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/diagnose-auth-script.yml']
+permissions: {contents: write}
+jobs:
+  diagnosis:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inspect index references without secrets
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          s=Path('index.html').read_text(encoding='utf8')
+          out=[]
+          for key in ['player-social-links.js','supabase-js','createClient','signInWithPassword','signInWithOtp','auth.signIn','AUTH ERROR']:
+           out.append('\n### '+key)
+           for m in list(re.finditer(re.escape(key),s,re.I))[:8]:
+            p=s[max(0,m.start()-600):m.end()+650]
+            p=re.sub(r'eyJ[A-Za-z0-9._-]{30,}','[JWT_REDACTED]',p)
+            p=re.sub(r'(sb_publishable_|sb_secret_)[A-Za-z0-9_-]+','[REDACTED]',p)
+            out.append('position '+str(m.start())+'\n'+p)
+          Path('auth-diagnostic-excerpts.txt').write_text('\n'.join(out)[:46000],encoding='utf8')
+          PY
+      - name: Commit
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add auth-diagnostic-excerpts.txt
+          git diff --cached --quiet || (git commit -m 'Inspect missing scripts and auth integration' && git push)
