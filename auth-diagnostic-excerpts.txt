@@ -1,0 +1,81 @@
+
+### player-social-links.js
+position 1681962
+oView({behavior:'smooth',block:'start'})}
+window.addEventListener('hashchange',()=>{render();if(location.hash.startsWith('#/ranking'))loadApprovedTeams();});
+window.addEventListener('fztv-lineup-changed',()=>{loadApprovedTeams();loadLegacyRoster();});
+sb.auth.onAuthStateChange(()=>{setTimeout(refreshAuth,0)});
+render();refreshAuth();loadContent();loadApprovedTeams();loadPublicPlayers();loadLegacyRoster();loadTeamRP();
+</script>
+<script src="./js/admin-player-trophies.js?v=20261109-conditional-demo-v10"></script>
+<script src="assets/player-profile.js?v=20261106fix2"></script>
+<script src="./js/player-social-links.js?v=20261106"></script>
+<script src="./js/fztv-match-overview.js?v=20261106-v2"></script>
+<script src="./js/team-owner-edit.js?v=country-20261106"></script>
+<script src="./js/admin-delete-players.js?v=20261106-1"></script>
+<script defer src="./js/home-ranking-polish.js?v=20261107-live-3"></script>
+<script defer src="./js/community-enhancements.js?v=20261109-conditional-demo-v10"></script>
+<script defer src="./js/fztv-profile-cosmetics.js?v=20261107-fz-market-v1"></script>
+<script defer src="assets/overpass-addon.js?v=20261108-pool-bottom-v2"></script>
+<script defer src="./js/fztv-cup-registration-fix.js?v=20261108-cup-single-v4"></script>
+<scr
+
+### supabase-js
+position 1205783
+nts" href="#/tournaments">Турниры</a><a data-route="news" href="#/news">Новости</a><a data-route="rules" href="#/rules">Правила</a><a data-route="bank" href="#/bank">🏦 Банк</a><a data-route="market" href="#/market">🛒 FZ Market</a></nav>
+ <a class="top-right admin-top-link" id="adminTopLink" href="#/admin">АДМИН-ПАНЕЛЬ</a><a class="top-right auth-top-link" href="#/auth">Войти / Регистрация</a>
+</header>
+<main class="wrap" id="app"></main>
+<footer><span>© 2026 FragZoneTV · FZTV</span><span>Независимый киберспортивный портал CS2</span></footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+const months=[
+ {name:'Ноябрь',year:'',events:[]},
+ {name:'Декабрь',year:'',events:[]},
+ {name:'Январь',year:'2027',events:[]},
+ {name:'Февраль',year:'2027',events:[]},
+ {name:'Март',year:'2027',events:[]},
+ {name:'Апрель',year:'2027',events:[]},
+ {name:'Май',year:'2027',events:[]},
+ {name:'Июнь',year:'2027',events:[]},
+ {name:'Июль',year:'2027',events:[]},
+ {name:'Август',year:'2027',events:[]},
+ {name:'Сентябрь',year:'2027',events:[]},
+ {name:'Октябрь',year:'2027',events:[]}
+];
+const app=document.getElementById('app');let currentFilter='all',collapsed=false,showNovMore=false;
+const empty=(icon
+
+### createClient
+position 1658356
+ss="fztv-players-table"><thead><tr><th></th><th>НИК</th><th>FZTVR</th><th>ИМЯ</th><th>КОМАНДА</th><th>РОЛЬ</th><th>СТРАНА</th></tr></thead><tbody>'+rows+'</tbody></table></section><p style="color:var(--muted);margin-top:12px">FZTVR появится после расчёта рейтинга по статистике матчей. Игроки без рейтинга показываются с прочерком.</p>';
+}
+
+let authMode='register';
+const SUPABASE_URL='https://svcbxbovsjslfduogjyt.supabase.co';
+const SUPABASE_KEY='[REDACTED]';
+const ADMIN_EMAILS=['bogdanbudnikov737@gmail.com','vanausakov15@gmail.com'];
+const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+import('./js/site-presence.js?v=20261107-live-3').then(m=>m.startSitePresence({client:sb})).catch(e=>console.warn('Site online:',e));
+let playerMatchStats=[];
+let sessionUser=null, profile=null, adminVerified=false, ownerVerified=false, staffRoles={}, usersCache=[], matchesCache=[], newsCache=[], contentLoaded=false;
+function currentUser(){return sessionUser&&profile?{...profile,id:sessionUser.id,email:sessionUser.email,login:profile.login||sessionUser.user_metadata?.login||sessionUser.email?.split('@')[0]}:null}
+function isAdmin(){return adminVerified}
+function isFztvAdmin(){return adminVerified}
+function escapeA
+
+### signInWithPassword
+position 1671828
+af)af.onsubmit=async e=>{e.preventDefault();const fd=new FormData(af),msg=document.getElementById('authMessage'),btn=af.querySelector('[type=submit]');btn.disabled=true;try{const email=String(fd.get('email')).trim(),password=String(fd.get('password'));if(authMode==='register'){const login=String(fd.get('login')).trim();const {data,error}=await sb.auth.signUp({email,password,options:{data:{login}}});if(error)throw error;msg.textContent=data.session?'Регистрация выполнена.':'Проверь почту и подтверди регистрацию, затем войди.';if(data.session)await refreshAuth()}else{const {error}=await sb.auth.signInWithPassword({email,password});if(error)throw error;const {data:ban}=await sb.rpc('fztv_my_ban');if(ban){await sb.auth.signOut();throw Error('Аккаунт заблокирован: '+ban.reason)}await refreshAuth()}}catch(err){msg.textContent=err.message}finally{btn.disabled=false}};
+ document.getElementById('refreshUsers')?.addEventListener('click',()=>loadUsers().catch(e=>alert(e.message)));
+ document.querySelectorAll('[data-user-admin]').forEach(b=>b.onclick=async()=>{const u=usersCache.find(x=>x.id===b.dataset.userAdmin);if(!u)return;const grant=staffRoles[u.id]!=='admin';if(!confirm((grant?'Выдать админ-панель':'Забрать админ-панель')+' пользователю '+(u.login||u.em
+
+### signInWithOtp
+
+### auth.signIn
+position 1671823
+);if(af)af.onsubmit=async e=>{e.preventDefault();const fd=new FormData(af),msg=document.getElementById('authMessage'),btn=af.querySelector('[type=submit]');btn.disabled=true;try{const email=String(fd.get('email')).trim(),password=String(fd.get('password'));if(authMode==='register'){const login=String(fd.get('login')).trim();const {data,error}=await sb.auth.signUp({email,password,options:{data:{login}}});if(error)throw error;msg.textContent=data.session?'Регистрация выполнена.':'Проверь почту и подтверди регистрацию, затем войди.';if(data.session)await refreshAuth()}else{const {error}=await sb.auth.signInWithPassword({email,password});if(error)throw error;const {data:ban}=await sb.rpc('fztv_my_ban');if(ban){await sb.auth.signOut();throw Error('Аккаунт заблокирован: '+ban.reason)}await refreshAuth()}}catch(err){msg.textContent=err.message}finally{btn.disabled=false}};
+ document.getElementById('refreshUsers')?.addEventListener('click',()=>loadUsers().catch(e=>alert(e.message)));
+ document.querySelectorAll('[data-user-admin]').forEach(b=>b.onclick=async()=>{const u=usersCache.find(x=>x.id===b.dataset.userAdmin);if(!u)return;const grant=staffRoles[u.id]!=='admin';if(!confirm((grant?'Выдать админ-панель':'Забрать админ-панель')+' пользователю '+(u
+
+### AUTH ERROR
