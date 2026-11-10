@@ -1,0 +1,30 @@
+name: Publish Team Woods ranking recovery v2
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/publish-team-woods-resync-v2.yml']
+permissions: {contents: write}
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Refresh ranking script browser cache
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf8')
+          old='./js/fztv-ranking-resync.js?v=20261111-restore-team-rp'
+          new='./js/fztv-ranking-resync.js?v=20261111-team-woods-v2'
+          assert s.count(old)==1,f'Expected one resync script reference; got {s.count(old)}'
+          s=s.replace(old,new)
+          p.write_text(s,encoding='utf8')
+          print('Updated Team Woods roster/points script cache key')
+          PY
+      - name: Commit
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add index.html
+          git diff --cached --quiet || (git commit -m 'Publish Team Woods independent resync v2' && git push)
