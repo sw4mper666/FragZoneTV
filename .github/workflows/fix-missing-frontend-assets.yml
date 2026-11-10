@@ -1,0 +1,33 @@
+name: Fix missing frontend assets
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/fix-missing-frontend-assets.yml']
+permissions: {contents: write}
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Remove broken script import and define favicon
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          old='<script src="./js/player-social-links.js?v=20261106"></script>'
+          if s.count(old)!=1:
+           raise SystemExit('Missing script import not found exactly once')
+          s=s.replace(old,'<!-- Removed missing player-social-links.js import; restore only with working implementation -->',1)
+          if not Path('favicon.ico').exists() and not Path('favicon.svg').exists():
+           Path('favicon.svg').write_text('<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#0b101b"/><path d="M12 16h40v9H23v7h23v9H23v12H12V16Z" fill="#ed304c"/><path d="M28 28h24v9H28z" fill="#f4f7ff"/></svg>',encoding='utf-8')
+          if 'rel="icon"' not in s[:s.index('</head>')]:
+           s=s.replace('</head>','<link rel="icon" href="./favicon.svg" type="image/svg+xml">\n</head>',1)
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit and push
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add index.html favicon.svg
+          git diff --cached --quiet || (git commit -m 'Fix missing script reference and favicon 404s' && git push)
