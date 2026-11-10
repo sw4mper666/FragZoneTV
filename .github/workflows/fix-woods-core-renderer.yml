@@ -1,0 +1,35 @@
+name: Fix Team Woods starter positions in core renderer
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/fix-woods-core-renderer.yml']
+permissions: {contents: write}
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Correct invalid starter fallback and force fresh roster render
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf8')
+          old="function woodsRosterNow(){return teamWoodsRoster.filter(([name])=>{if(window.fztvRemovedPlayers?.has(name.toLowerCase()))return false;const p=legacyRosterCache.find(x=>x.player_slug===name.toLowerCase());return !p||p.team_name?.toLowerCase()==='team woods';}).map(([name,photo])=>{const p=legacyRosterCache.find(x=>x.player_slug===name.toLowerCase());return [p?.nickname||name,p?.photo_url||photo,name.toLowerCase(),p?.lineup_position||10];}).sort((a,b)=>a[3]-b[3]);}"
+          new="function woodsRosterNow(){return teamWoodsRoster.filter(([name])=>{if(window.fztvRemovedPlayers?.has(name.toLowerCase()))return false;const p=legacyRosterCache.find(x=>x.player_slug===name.toLowerCase());return !p||p.team_name?.toLowerCase()==='team woods';}).map(([name,photo],index)=>{const p=legacyRosterCache.find(x=>x.player_slug===name.toLowerCase());return [p?.nickname||name,p?.photo_url||photo,name.toLowerCase(),p?.lineup_position??(index+1)];}).sort((a,b)=>a[3]-b[3]);}"
+          assert s.count(old)==1, f'Unexpected woodsRosterNow occurrences: {s.count(old)}'
+          s=s.replace(old,new,1)
+          # Prevent the stale ranking from claiming a zero score before the backend has responded.
+          oldpoints="points.textContent=getTeamRP(t.name)+' FZ';"
+          newpoints="points.textContent=Object.hasOwn(teamRpCache,String(t.name||'').toLowerCase())?getTeamRP(t.name)+' FZ':'— FZ';"
+          assert s.count(oldpoints)==1, f'Unexpected team points count: {s.count(oldpoints)}'
+          s=s.replace(oldpoints,newpoints,1)
+          p.write_text(s,encoding='utf8')
+          print('Fixed Team Woods lineup fallback and loading points state')
+          PY
+      - name: Commit
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add index.html
+          git diff --cached --quiet || (git commit -m 'Fix Team Woods five starters shown as substitutes' && git push)
