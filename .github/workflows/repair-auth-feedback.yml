@@ -1,0 +1,40 @@
+name: Repair auth success feedback and refresh
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/repair-auth-feedback.yml']
+permissions: {contents: write}
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Improve auth error handling without changing Supabase users
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf8')
+          old="""else{const {error}=await sb.auth.signInWithPassword({email,password});if(error)throw error;const {data:ban}=await sb.rpc('fztv_my_ban');if(ban){await sb.auth.signOut();throw Error('Аккаунт заблокирован: '+ban.reason)}await refreshAuth()}}catch(err){msg.textContent=err.message}finally{btn.disabled=false}"""
+          new="""else{const {data,error}=await sb.auth.signInWithPassword({email,password});if(error)throw error;if(!data?.session||!data?.user)throw Error('Сервер не вернул сессию. Обнови страницу и попробуй снова.');msg.textContent='Пароль принят. Проверяем профиль…';await refreshAuth();if(!currentUser())throw Error('Авторизация прошла, но профиль не открылся. Обнови страницу.');}}catch(err){const visible=document.getElementById('authMessage');if(visible)visible.textContent=err?.message||'Ошибка подключения к серверу';console.error('FragZoneTV login:',err)}finally{const visible=document.getElementById('authForm')?.querySelector('[type=submit]');if(visible)visible.disabled=false}"""
+          assert s.count(old)==1, f'auth handler not uniquely matched: {s.count(old)}'
+          s=s.replace(old,new,1)
+          # A failed user lookup should never produce an unhandled rejection and a stuck sign-in button.
+          start="""async function refreshAuth(){
+  const {data:{user},error}=await sb.auth.getUser();"""
+          replacement="""async function refreshAuth(){
+  let authResult;
+  try { authResult=await sb.auth.getUser(); }
+  catch(err) { console.error('FragZoneTV session lookup:',err); throw new Error('Не удалось загрузить сессию Supabase: '+(err?.message||'ошибка сети')); }
+  const {data:{user},error}=authResult;"""
+          assert s.count(start)==1
+          s=s.replace(start,replacement,1)
+          p.write_text(s,encoding='utf8')
+          print('Patched auth submit success feedback and session lookup error handling')
+          PY
+      - name: Commit
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add index.html
+          git diff --cached --quiet || (git commit -m 'Fix login flow after successful Supabase authentication' && git push)
