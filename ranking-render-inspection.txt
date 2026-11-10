@@ -1,0 +1,290 @@
+### function ranking(){
+function ranking(){return `<div class="crumb"><a href="#/home">Главная</a>　/　Рейтинг</div><div class="page-title"><div><h1>Counter-Strike World Ranking</h1><p>Мировой рейтинг команд по Counter-Strike</p></div><a class="back" href="#/home">← На главную</a></div><section class="panel"><div class="fztv-ranking-header"><div><small>FRAGZONETV · CS2</small><h2>РЕЙТИНГ КОМАНД COUNTER-STRIKE</h2><p>Мировой рейтинг · Одобренные команды</p></div><span>🌐 Мировой рейтинг</span></div><a class="rank-team" href="#/team/woods"><div class="rank-place">#1</div><div class="rank-logo"><img src="data:image/png;base64,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" alt="Team Woods"></div><div class="rank-main"><strong>Team Woods</strong><small>CS2 · Состав: ${teamWoodsPlayers.length} игроков</small></div><div class="rank-players">${teamWoodsPlayers.join(' · ')}</div><div class="rank-arrow" style="display:flex;align-items:center;gap:8px"><span>FZ</span><strong>0</strong></div></a>${approvedTeamRows()}</section>`}
+function taykansDetail(){return `<div class="cru
+
+### function enhanceRankingLayout(route)
+function enhanceRankingLayout(route){
+ if(route==='home'||route==='ranking'){
+ const center=document.querySelector('.stack.center');
+ if(!center)return;
+ center.replaceChildren();
+ const section=document.createElement('section');section.className='panel fztv-center-ranking';
+ section.innerHTML='<div class="head"><h2>РЕЙТИНГ КОМАНД · COUNTER-STRIKE 2</h2><small>FZ POINTS</small></div>';
+ const banner=document.createElement('div');banner.innerHTML=fzRankingBanner();section.append(banner.firstElementChild);
+ const previous=section.querySelector('#fzPrevWeek'),next=section.querySelector('#fzNextWeek');
+ previous.onclick=()=>{rankingWeekOffset--;render()};next.onclick=()=>{rankingWeekOffset=Math.min(0,rankingWeekOffset+1);render()};
+ const list=document.createElement('div');list.className='fztv-unified-rank-list';
+ const staticTeams=[
+ {name:'Team Woods',logo:document.createElement('div'),players:woodsRosterNow().map(p=>({nickname:p[0],photo_url:p[1],slug:p[2],lineup_position:p[3]})),href:'#/team/woods'},
+ 
+ ];
+ const original=document.createElement('template');original.innerHTML=ranking();
+ const originalRows=[...original.content.querySelectorAll('a.rank-team')];
+ staticTeams.forEach((t,i)=>{const source=originalRows.find(row=>row.querySelector('.rank-main strong')?.textContent.trim()===t.name);if(source){const img=source.querySelector('.rank-logo');if(img)t.logo=img.cloneNode(true);}});
+ const dynamic=approvedTeamsCache.filter(t=>t.name.trim().toLowerCase()!=='team woods').map(t=>({name:t.name,logo_url:t.logo_url,players:approvedRosterCache[t.id]||[],href:'#/team-created/'+encodeURIComponent(t.id),country:teamNationality(approvedRosterCache[t.id]||[]).flag}));
+ const entries=[...staticTeams,...dynamic].sort((a,b)=>getTeamRP(b.name)-getTeamRP(a.name));
+ entries.forEach((t,i)=>{
+ const orderedPlayers=[...t.players].sort((a,b)=>(a.lineup_position||99)-(b.lineup_position||99));
+ const starters=orderedPlayers.filter(p=>Number(p.lineup_position||99)<=5).slice(0,5);
+ const reserves=orderedPlayers.filter(p=>!starters.includes(p)).slice(0,5);
+ const card=document.createElement('details');card.className='fztv-unified-team';if(i===0){card.open=true;card.classList.add('fztv-first-place');}
+ const summary=document.createElement('summary');summary.className='fztv-unified-summary';// First-place team uses native details toggle, just like other teams.
+ const rank=document.createElement('b');rank.className='fztv-unified-place';rank.textContent='#'+(i+1);
+ const logo=document.createElement('span');logo.className='fztv-unified-logo';
+ if(t.logo_url){const img=document.createElement('img');img.src=t.logo_url;img.alt='';logo.append(img);}else if(t.logo)logo.append(t.logo);else logo.textContent='🏆';
+ const name=document.createElement('span');name.className='fztv-unified-name';const title=document.createElement('strong');title.textContent=t.name;const sub=document.createElement('small');sub.textContent=starters.length?starters.map(p=>p.nickname).join(' · ')+(reserves.length?' · Запас: '+reserves.length:''):'Состав пока не добавлен';name.append(title,sub);const tierBadge=document.createElement('span');tierBadge.className='fztv-rank-tier-red';tierBadge.textContent='TIER '+(i+1<=10?1:i+1<=20?2:3);name.append(tierBadge);
+ const points=document.createElement('b');points.className='fztv-unified-points';points.textContent=getTeamRP(t.name)+' FZ';
+ const arrow=document.createElement('span');arrow.className='fztv-unified-arrow';arrow.textContent='⌄';
+ summary.append(rank,logo,name,points,arrow);card.append(summary);
+ const detail=document.createElement('div');detail.className='fztv-unified-detail';
+ const roster=document.createElement('div');roster.className='fztv-unified-roster';
+ if(!starters.length){const p=document.createElement('p');p.textContent='Состав команды пока не добавлен';roster.append(p);}
+ Array.from({length:5},(_,slot)=>starters[slot]||null).forEach(p=>{const player=document.createElement('div');player.className='fztv-unified-player';if(p?.photo_url){const img=document.createElement('img');img.src=p.photo_url;img.alt='';player.append(img);}else{const empty=document.createElement('span');empty.className='fztv-empty-player';empty.textContent=p?'👤':'?';player.append(empty);}const nick=document.createElement('b');nick.textContent=p?(p.nickname||'Игрок'):'Свободно';player.append(nick);if(!p)player.classList.add('fztv-unified-player-free');roster.append(player);});
+ const link=document.createElement('a');link.href=t.href;link.textContent='Профиль команды →';link.className='fztv-unified-profile';
+ detail.append(roster);
+ if(reserves.length){
+  const panel=document.createElement('div');panel.className='fztv-bench-panel';
+  const header=document.createElement('div');header.className='fztv-bench-heading';header.textContent='ЗАМЕНА · '+reserves.length+'/5';
+  const list=document.createElement('div');list.className='fztv-bench-list';
+  reserves.forEach(p=>{
+   const item=document.createElement('a');item.className='fztv-bench-player';
+   item.href=p.id?'#/player/team_'+p.id.replace(/-/g,''):'#/player/'+encodeURIComponent(p.slug||'');
+   if(p.photo_url){const avatar=document.createElement('img');avatar.src=p.photo_url;avatar.alt='';item.append(avatar);}
+   const name=document.createElement('span');name.textContent=p.nickname||'Игрок';item.append(name);
+   list.append(item);
+  });
+  panel.append(header,list);detail.append(panel);
+ }
+ detail.append(link);card.append(detail);list.append(card);
+ });
+ section.append(list);center.append(section);
+ document.querySelectorAll('a[data-route="ranking"],a[href="#/ranking"]').forEach(link=>{if(!link.closest('.fztv-center-ranking'))link.remove();});
+ const left=document.querySelector('.stack.left');if(left)[...left.children].filter(x=>x.textContent.includes('РЕЙТИНГ КОМАНД')).forEach(x=>x.remove());
+ }
+}
+function ranking(){return `<div class="crumb"><a href="#/home">Главная</a>　/　Рейтинг</div><div class="page-title"><div><h1>Counter-Strike World Ranking</h1><p>Мировой рейтинг команд по Counter-Strike</p></div><a class="back" href="#/home">← На главную</a></div><section class="panel"><div class="fztv-ranking-header"><div><small>FRAGZONETV · CS2</small><h2>РЕЙТИНГ КОМАНД COUNTER-STRIKE</h2><p>Мировой рейтинг · Одобренные команды</p></div><span>🌐 Мировой рейтинг</span></div><a class="rank-team" href="#/team/woods"><div class="rank-place">#1</div><div class="rank-logo"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAG0AAABkCAYAAACM976eAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAABPFSURBVHhe7Vx7lBTVmf/qVvVjumemex4MMqAwwJJBEDw8jwlIAicIC8KukqwPVkFQWUWWPcFk4yYSCDGYmAgGydFz8LiB5KCJCSTCYBIgwKA4gyADygDC8BoywzQw3V3VVV2P/u0fVXVnGnwhJpnaUz/Od5ih6ta99/vu7/t9t+qqEC/rDnLQfqHV/dFHF0SstIIEQSB2+QUfXReCIBAR+UHzEgA7KfpB8xB8pnkYftA8CD9oHoKvaR6Er2kehM80D8JnmgfhM82DsJnmv8byFHymeRC+pnkQ7ucYP2gegkA+0zwHOFzzg+Yh+EzzIHymeRA+0zwIn2keRB7T3Aj66NqA84dRpwj66NoQnD9+evQQfE3zIPzq0YPwmeZB+EzzIHymeRD+Ps2D8PdpHoS/T/MgfE3zIHxN8yB8TfMgPkTT/MB1dfia5kFcpmk+vABX0wT7f0lhR7D9Qsvl930iRFGk66+/nsrLyoics+ZEIMuyqLm5mdra2oiIKBAI0IB/GkDhghABApmmQY2NjZTNZokxRuFwmKqrB5IoMhIEgXK5HLW0tNC5c+cIAImiSH2rqigWjxMTBCJB4MekXQCg06dPU1tbG+VyOf7vjDEqLS2lqqoqEkWRAPDTugCIMUa5XI5UVaXDhw+TYRi8bUVFBVVWVpIkSrbLnLZCp/4BUDqVpqaTTWRZVt64AoEAVVcPpGg0QrlcjvfbuX/3WRcvXqSmpiYyTZO374x42XX8B7jmkO6qTBRFfP3rX0drSytkWYGSyUCWZVxMXMS0adMgCAICgQDGjBmDlpYWyLKMdCqN06dOo6ysDAIRgoEAZtx5J5LtSWQyGSiKgkQigXvuuQeiKCIYCGDkiBE4evQoFFmBmlGhqrZlMir/XVEUrF+/HkVFRXx8jDEUFxdj48aNkGUZqqpC0zRoqsafoWka1IyKRCKBkSNGgDHG2z755GIk25NQZAWyLDumQOlk6XQax44dw4ABAyBJEogIgiBAkiTcfdfdOH++jfelqmpe3+7viqLgsfmPIRAIXOFj12Jl3e04XWvQBEFAYWEh/vznP8M0TeSsHPSsjrPNZxGPx8EYQ8+ePXH27FmYpoVczr6+b98+SKIIQRBQWVmJtvNtvH02m8WePW8jEokgEAhg8uTJkGUZlmXBMi2Yptnxt2UhZ+WQs3KwLAuyLGPSpNv4+CorK1FbWwvTsO+1LAumYfK2bnvLsp+3du1ahMNhCIKASEEYDQ0NHfeajlkWLMseq+XMyTRNvPfeeygpKYEgCAgGg5g9ezYuXboEwzDy2rvjd8dtmibOnD6N8vJyiKJ4hY9dc+P0uezTysvLqbq6mgQSCASycha99pvXKJ1KUS
+
+### function woodsRosterNow(){
+function woodsRosterNow(){return teamWoodsRoster.filter(([name])=>{if(window.fztvRemovedPlayers?.has(name.toLowerCase()))return false;const p=legacyRosterCache.find(x=>x.player_slug===name.toLowerCase());return !p||p.team_name?.toLowerCase()==='team woods';}).map(([name,photo])=>{const p=legacyRosterCache.find(x=>x.player_slug===name.toLowerCase());return [p?.nickname||name,p?.photo_url||photo,name.toLowerCase(),p?.lineup_position||10];}).sort((a,b)=>a[3]-b[3]);}
+async function loadLegacyRoster(){const {data,error}=await sb.from('fztv_roster_players').select('player_slug,nickname,photo_url,age,team_name,lineup_position');if(error){console.warn('Woods roster:',error.message);return;}legacyRosterCache=data||[];if(['home','ranking','team','players','player'].includes((location.hash||'#/home').split('/')[1]))render();}
+async function loadTeamRP(){const {data,error}=await sb.from('fztv_team_rp').select('name,rp');if(error){console.warn('FZ RP:',error.message);return;}teamRpCache=Object.fromEntries((data||[]).map(x=>[x.name.toLowerCase(),Number(x.rp)||0]));if(['home','ranking','team','team-created'].includes((location.hash||'#/home').split('/')[1]))render();}
+
+let approvedRosterCache={};
+const countryFlags={'россия':'🇷🇺','russia':'🇷🇺','ru':'🇷🇺','украина':'🇺🇦','ukraine':'🇺🇦','ua':'🇺🇦','беларусь':'🇧🇾','belarus':'🇧🇾','by':'🇧🇾','казахстан':'🇰🇿','kazakhstan':'🇰🇿','kz':'🇰🇿','швеция':'🇸🇪','sweden':'🇸🇪','se':'🇸🇪','сша':'🇺🇸','usa':'🇺🇸','us':'🇺🇸','польша':'🇵🇱','poland':'🇵🇱','pl':'🇵🇱','германия':'🇩🇪','germany':'🇩🇪','de':'🇩🇪','франция':'🇫🇷','france':'🇫🇷','fr':'🇫🇷','бразилия':'🇧🇷','brazil':'🇧🇷','br':'🇧🇷','дания':'🇩🇰','denmark':'🇩🇰','dk':'🇩🇰','финляндия':'🇫🇮','finland':'🇫🇮','fi':'🇫🇮'};
+function teamNationality(players){
+ const counts=new Map();
+ for(const p of players||[]){const c=String(p.country||'').trim().toLocaleLowerCase('ru');if(c)counts.set(c,(counts.get(c)||0)+1);}
+ const winner=[...counts].sort((a,b)=>b[1]-a[1])[0];
+ return winner&&winner[1]>=4?{country:winner[0],flag:countryFlags[winner[0]]||'🌐',count:winner[1]}:{country:'Международная',flag:'🌐',count:0};
+}
+async function loadApprovedTeams(){
+ const {data,error}=await sb.from('fztv_teams').select('id,name,tag,country,logo_url').eq('status','approved').order('created_at',{ascending:true});
+ if(error){console.warn('Approved teams:',error.message);return;}
+ approvedTeamsCache=data||[];
+ const {data:players, error:playersError}=await sb.from('fztv_team_players').select('id,team_id,nickname,country,photo_url,lineup_position').in('team_id',approvedTeamsCache.map(t=>t.id).length?approvedTeamsCache.map(t=>t.id):['00000000-0000-0000-0000-000000000000']);
+ approvedRosterCache={};
+ if(!playersError){for(const p of players||[])(approvedRosterCache[p.team_id]??=[]).push(p);for(const rows of Object.values(approvedRosterCache))rows.sort((a,b)=>(a.lineup_position||99)-(b.lineup_position||99));}
+ if(['home','ranking'].includes((location.hash||'#/home').replace(/^#\/?/,'').split('/')[0]))render();
+}
+function approvedTeamRows(){
+ return approvedTeamsCache.filter(t=>t.name.toLowerCase()!=='team woods').map((t,i)=>{
+ const players=approvedRosterCache[t.id]||[],nationality=teamNationality(players);
+ const roster=players.map(p=>'<div class="fztv-rank-player">'+(p.photo_url?'<img src="'+escapeAuth(p.photo_url)+'" alt="">':'<span class="fztv-player-placeholder">👤</span>')+'<b>'+escapeAuth(p.nickname||'Игрок')+'</b></div>').join('');
+ return '<article class="fztv-rank-entry"><div class="fztv-rank-summary"><span class="fztv-rank-position">#'+(i+3)+'</span><div class="fztv-rank-logo">'+(t.logo_url?'<img src="'+escapeAuth(t.logo_url)+'" alt="">':'🏆')+'</div><span class="fztv-rank-country" title="'+escapeAuth(nationality.country)+'">'+nationality.flag+'</span><div class="fztv-rank-name"><strong>'+escapeAuth(t.name)+'</strong><small>'+escapeAuth(t.tag||'CS2')+' · '+(players.length?players.length+' игроков':'Состав не заполнен')+'</small></div><span class="fztv-rank-points">0 <small>FZ Points</small></span><span class="fztv-rank-tier">TIER '+(i+3<=10?1:i+3<=20?2:3)+'</span></div><div class="fztv-rank-expanded"><div class="fztv-rank-roster">'+(roster||'<p>Состав команды пока не добавлен</p>')+'</div><a href="#/team-created/'+encodeURIComponent(t.id)+'">Профиль команды →</a><span>'+nationality.flag+' '+escapeAuth(nationality.country)+(nationality.count?' · '+nationality.count+' игрока одной страны':'')+'</span></div></article>';
+ }).join('');
+}
+function createdTeamDetail(){
+ const id=(location.hash.split('/')[2]||'');
+ const t=approvedTeamsCache.find(x=>x.id===id);
+ if(!t)return '<section class="panel detail-empty">Команда не найдена. <a href="#/ranking">Рейтинг</a></section>';
+ return '<div class="crumb"><a href="#/ranking">Рейтинг</a> / '+escapeAuth(t.name)+'</div><section class="panel" style="padding:24px"><h1>'+escapeAuth(t.name)+'</h1>'+(t.logo_url?'<img src="'+escapeAuth(t.logo_url)+'" alt="" width="110" height="110" style="object-fit:cover;border-radius:14px">':'')+'<p>Тег: '+escapeAuth(t.tag||'')+'</p><p>Статус: Одобрена</p><p>Рейтинг: 0</p></section>';
+}
+let rankingWeekOffset=0;
+function fzWeekStart(offset=0){const d=new Date();d.setHours(12,0,0,0);const day=(d.getDay()+6)%7;d.setDate(d.getDate()-day+offset*7);return d;}
+function fzRankingBanner(){
+ const current=rankingWeekOffset===0;
+ const date=fzWeekStart(rankingWeekOffset);
+ const dateLabel=date.toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'});
+ return '<div class="fztv-week-banner"><div class="fztv-week-copy"><small>FRAGZONETV · МИРОВОЙ РЕЙТИНГ</small><h2>РЕЙТИНГ КОМАНД COUNTER-STRIKE — '+(current?'СЕЙЧАС':'НЕДЕЛЯ С '+dateLabel.toUpperCase())+'</h2><p>'+(current?'Текущий рейтинг команд':'Выбранная неделя · исторические очки пока не сохранены')+'</p></div><div class="fztv-week-actions"><button type="button" id="fzPrevWeek" aria-label="Предыдущая неделя">‹</button><button type="button" id="fzNextWeek" aria-label="Следующая неделя" '+(current?'disabled':'')+'>›</button></div></div>';
+}
+function fzHomeRanking(){
+ const top=approvedTeamsCache.slice(0,5).map((t,i)=>'<a href="#/team-created/'+encodeURIComponent(t.id)+'"><b>#'+(i+2)+'</b><span>'+escapeAuth(t.name)+'</span><strong>0 FZ Points</strong></a>').join('');
+ return '<section class="fztv-home-ranking"><div class="fztv-home-rank-heading"><h2>РЕЙТИНГ КОМАНД</h2><a href="#/ranking">Весь рейтинг →</a></div><div class="fztv-home-rank-list"><a href="#/team/woods"><b>#1</b><span>Team Woods</span><strong>0 FZ Points</strong></a>'+top+'</div></section>';
+}
+function enhanceRankingLayout(route){
+ if(route==='home'||route==='ranking'){
+ const center=document.querySelector('.stack.center');
+ if(!center)return;
+ center.replaceChildren();
+ const section=document.createElement('section');section.className='panel fztv-center-ranking';
+ section.innerHTML='<div class="head"><h2>РЕЙТИНГ КОМАНД · COUNTER-STRIKE 2</h2><small>FZ POINTS</small></div>';
+ const banner=document.createElement('div');banner.innerHTML=fzRankingBanner();section.append(banner.firstElementChild);
+ const previous=section.querySelector('#fzPrevWeek'),next=section.querySelector('#fzNextWeek');
+ previous.onclick=()=>{rankingWeekOffset--;render()};next.onclick=()=>{rankingWeekOffset=Math.min(0,rankingWeekOffset+1);render()};
+ const list=document.createElement('div');list.className='fztv-unified-rank-list';
+ const staticTeams=[
+ {name:'Team Woods',logo:document.createElement('div'),players:woodsRosterNow().map(p=>({nickname:p[0],photo_url:p[1],slug:p[2],lineup_position:p[3]})),href:'#/team/woods'},
+ 
+ ];
+ const original=document.createElement('template');original.innerHTML=ranking();
+ const originalRows=[...original.content.querySelectorAll('a.rank-team')];
+ staticTeams.forEach((t,i)=>{const source=originalRows.find(row=>row.querySelector('.rank-main strong')?.textContent.trim()===t.name);if(source){const img=source.querySelector('.rank-logo');if(img)t.logo=im
+
+### function getTeamRP(
+function getTeamRP(name){return teamRpCache[String(name||'').toLowerCase()]||0;}
+function woodsRosterNow(){return teamWoodsRoster.filter(([name])=>{if(window.fztvRemovedPlayers?.has(name.toLowerCase()))return false;const p=legacyRosterCache.find(x=>x.player_slug===name.toLowerCase());return !p||p.team_name?.toLowerCase()==='team woods';}).map(([name,photo])=>{const p=legacyRosterCache.find(x=>x.player_slug===name.toLowerCase());return [p?.nickname||name,p?.photo_url||photo,name.toLowerCase(),p?.lineup_position||10];}).sort((a,b)=>a[3]-b[3]);}
+async function loadLegacyRoster(){const {data,error}=await sb.from('fztv_roster_players').select('player_slug,nickname,photo_url,age,team_name,lineup_position');if(error){console.warn('Woods roster:',error.message);return;}legacyRosterCache=data||[];if(['home','ranking','team','players','player'].includes((location.hash||'#/home').split('/')[1]))render();}
+async function loadTeamRP(){const {data,error}=await sb.from('fztv_team_rp').select('name,rp');if(error){console.warn('FZ RP:',error.message);return;}teamRpCache=Object.fromEntries((data||[]).map(x=>[x.name.toLowerCase(),Number(x.rp)||0]));if(['home','ranking','team','team-created'].includes((location.hash||'#/home').split('/')[1]))render();}
+
+let approvedRosterCache={};
+const countryFlags={'россия':'🇷🇺','russia':'🇷🇺','ru':'🇷🇺','украина':'🇺🇦','ukraine':'🇺🇦','ua':'🇺🇦','беларусь':'🇧🇾','belarus':'🇧🇾','by':'🇧🇾','казахстан':'🇰🇿','kazakhstan':'🇰🇿','kz':'🇰🇿','швеция':'🇸🇪','sweden':'🇸🇪','se':'🇸🇪','сша':'🇺🇸','usa':'🇺🇸','us':'🇺🇸','польша':'🇵🇱','poland':'🇵🇱','pl':'🇵🇱','германия':'🇩🇪','germany':'🇩🇪','de':'🇩🇪','франция':'🇫🇷','france':'🇫🇷','fr':'🇫🇷','бразилия':'🇧🇷','brazil':'🇧🇷','br':'🇧🇷','дания':'🇩🇰','denmark':'🇩🇰','dk':'🇩🇰','финляндия':'🇫🇮','finland':'🇫🇮','fi':'🇫🇮'};
+function teamNationality(players){
+ const counts=new Map();
+ for(const p of players||[]){const c=String(p.country||'').trim().toLocaleLowerCase('ru');if(c)counts.set(c,(counts.get(c)||0)+1);}
+ const winner=[...counts].sort((a,b)=>b[1]-a[1])[0];
+ return winner&&winner[1]>=4?{country:winner[0],flag:countryFlags[winner[0]]||'🌐',count:winner[1]}:{country:'Международная',flag:'🌐',count:0};
+}
+async function loadApprovedTeams(){
+ const {data,error}=await sb.from('fztv_teams').select('id,name,tag,country,logo_url').eq('status','approved').order('created_at',{ascending:true});
+ if(error){console.warn('Approved teams:',error.message);return;}
+ approvedTeamsCache=data||[];
+ const {data:players, error:playersError}=await sb.from('fztv_team_players').select('id,team_id,nickname,country,photo_url,lineup_position').in('team_id',approvedTeamsCache.map(t=>t.id).length?approvedTeamsCache.map(t=>t.id):['00000000-0000-0000-0000-000000000000']);
+ approvedRosterCache={};
+ if(!playersError){for(const p of players||[])(approvedRosterCache[p.team_id]??=[]).push(p);for(const rows of Object.values(approvedRosterCache))rows.sort((a,b)=>(a.lineup_position||99)-(b.lineup_position||99));}
+ if(['home','ranking'].includes((location.hash||'#/home').replace(/^#\/?/,'').split('/')[0]))render();
+}
+function approvedTeamRows(){
+ return approvedTeamsCache.filter(t=>t.name.toLowerCase()!=='team woods').map((t,i)=>{
+ const players=approvedRosterCache[t.id]||[],nationality=teamNationality(players);
+ const roster=players.map(p=>'<div class="fztv-rank-player">'+(p.photo_url?'<img src="'+escapeAuth(p.photo_url)+'" alt="">':'<span class="fztv-player-placeholder">👤</span>')+'<b>'+escapeAuth(p.nickname||'Игрок')+'</b></div>').join('');
+ return '<article class="fztv-rank-entry"><div class="fztv-rank-summary"><span class="fztv-rank-position">#'+(i+3)+'</span><div class="fztv-rank-logo">'+(t.logo_url?'<img src="'+escapeAuth(t.logo_url)+'" alt="">':'🏆')+'</div><span class="fztv-rank-country" title="'+escapeAuth(nationality.country)+'">'+nationality.flag+'</span><div class="fztv-rank-name"><strong>'+escapeAuth(t.name)+'</strong><small>'+escapeAuth(t.tag||'CS2')+' · '+(players.length?players.length+' игроков':'Состав не заполнен')+'</small></div><span class="fztv-rank-points">0 <small>FZ Points</small></span><span class="fztv-rank-tier">TIER '+(i+3<=10?1:i+3<=20?2:3)+'</span></div><div class="fztv-rank-expanded"><div class="fztv-rank-roster">'+(roster||'<p>Состав команды пока не добавлен</p>')+'</div><a href="#/team-created/'+encodeURIComponent(t.id)+'">Профиль команды →</a><span>'+nationality.flag+' '+escapeAuth(nationality.country)+(nationality.count?' · '+nationality.count+' игрока одной страны':'')+'</span></div></article>';
+ }).join('');
+}
+function createdTeamDetail(){
+ const id=(location.hash.split('/')[2]||'');
+ const t=approvedTeamsCache.find(x=>x.id===id);
+ if(!t)return '<section class="panel detail-empty">Команда не найдена. <a href="#/ranking">Рейтинг</a></section>';
+ return '<div class="crumb"><a href="#/ranking">Рейтинг</a> / '+escapeAuth(t.name)+'</div><section class="panel" style="padding:24px"><h1>'+escapeAuth(t.name)+'</h1>'+(t.logo_url?'<img src="'+escapeAuth(t.logo_url)+'" alt="" width="110" height="110" style="object-fit:cover;border-radius:14px">':'')+'<p>Тег: '+escapeAuth(t.tag||'')+'</p><p>Статус: Одобрена</p><p>Рейтинг: 0</p></section>';
+}
+let rankingWeekOffset=0;
+function fzWeekStart(offset=0){const d=new Date();d.setHours(12,0,0,0);const day=(d.getDay()+6)%7;d.setDate(d.getDate()-day+offset*7);return d;}
+function fzRankingBanner(){
+ const current=rankingWeekOffset===0;
+ const date=fzWeekStart(rankingWeekOffset);
+ const dateLabel=date.toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'});
+ return '<div class="fztv-week-banner"><div class="fztv-week-copy"><small>FRAGZONETV · МИРОВОЙ РЕЙТИНГ</small><h2>РЕЙТИНГ КОМАНД COUNTER-STRIKE — '+(current?'СЕЙЧАС':'НЕДЕЛЯ С '+dateLabel.toUpperCase())+'</h2><p>'+(current?'Текущий рейтинг команд':'Выбранная неделя · исторические очки пока не сохранены')+'</p></div><div class="fztv-week-actions"><button type="button" id="fzPrevWeek" aria-label="Предыдущая неделя">‹</button><button type="button" id="fzNextWeek" aria-label="Следующая неделя" '+(current?'disabled':'')+'>›</button></div></div>';
+}
+function fzHomeRanking(){
+ const top=approvedTeamsCache.slice(0,5).map((t,i)=>'<a href="#/team-created/'+encodeURIComponent(t.id)+'"><b>#'+(i+2)+'</b><span>'+escapeAuth(t.name)+'</span><strong>0 FZ Points</strong></a>').join('');
+ return '<section class="fztv-home-ranking"><div class="fztv-home-rank-heading"><h2>РЕЙТИНГ КОМАНД</h2><a href="#/ranking">Весь рейтинг →</a></div><div class="fztv-home-rank-list"><a href="#/team/woods"><b>#1</b><span>Team Woods</span><strong>0 FZ Points</strong></a>'+top+'</div></section>';
+}
+function enhanceRankingLayout(route){
+ if(route==='home'||route==='ranking'){
+ const center=document.querySelector('.stack.center');
+ if(!center)return;
+ center.replaceChildren();
+ const section=document.createElement('section');section.className='panel fztv-center-ranking';
+ section.innerHTML='<div class="head"><h2>РЕЙТИНГ КОМАНД · COUNTER-STRIKE 2</h2><small>FZ POINTS</small></div>';
+ const banner=document.createElement('div');banner.innerHTML=fzRankingBanner();section.append(banner.firstElementChild);
+ const previous=section.querySelector('#fzPrevWeek'),next=section.querySelector('#fzNextWeek');
+ previous.onclick=()=>{rankingWeekOffset--;render()};next.onclick=()=>{rankingWeekOffset=Math.min(0,rankingWeekOffset+1);render()};
+ const list=document.createElement('div');list.className='fztv-unified-rank-list';
+ const staticTeams=[
+ {name:'Team Woods',logo:document.createElement('div'),players:woodsRosterNow().map(p=>({nickname:p[0],photo_url:p[1],slug:p[2],lineup_position:p[3]})),href:'#/team/woods'},
+ 
+ ];
+ const original=document.createElement('template');original.innerHTML=ranking();
+ const originalRows=[...original.content.querySelectorAll('a.rank-team')];
+ staticTeams.forEach((t,i)=>{const source=originalRows.find(row=>row.querySelector('.rank-main strong')?.textContent.trim()==
+
+### function home(){
+function home(){return `<section class="hero"><div class="hero-content"><div class="eyebrow">FRAGZONE TV · COUNTER-STRIKE</div><h1>ТВОЯ ЗОНА<br><span>КИБЕРСПОРТА</span></h1><p>Матчи, команды, игроки и турниры Counter-Strike — всё в одном месте. Следи за сценой вместе с FZTV.</p><a class="hero-btn" href="#/matches">СМОТРЕТЬ МАТЧИ&nbsp; →</a></div><div class="hero-side"><b>FZTV</b><span>THE HOME OF CS2</span></div></section>
+<section class="grid"><aside class="stack left"><a class="panel panel-link" href="#/matches"><div class="head"><h2>МАТЧИ</h2><small>LIVE / UPCOMING ↗</small></div>${empty('◉','Матчей пока что нету','Открой страницу матчей, чтобы посмотреть расписание.')}</a><a class="panel panel-link" href="#/ranking"><div class="head"><h2>РЕЙТИНГ КОМАНД</h2><small>RANKING ↗</small></div><div style="padding:12px;display:flex;align-items:center;gap:10px"><div style="width:30px;height:30px;display:grid;place-items:center;background:#202b3a;border-radius:6px;font-weight:900;color:#f3c969">#1</div><div style="flex:1;min-width:0"><b style="font-size:13px">Woods Team</b><small style="display:block;color:var(--muted);font-size:10px;margin-top:3px">Counter-Strike 2</small></div><div style="display:flex;align-items:center;gap:7px;font-size:11px;font-weight:900"><span>0</span><span style="color:#aebbd0">FZ</span></div></div></a><a class="panel panel-link" href="#/players"><div class="head"><h2>ИГРОКИ МЕСЯЦА И НЕДЕЛИ</h2><small>TOP PLAYERS ↗</small></div><div style="padding:12px;display:grid;gap:10px"><div style="padding:12px;background:linear-gradient(120deg,#321720,#192332);border:1px solid #71303b;border-radius:7px"><div style="font-size:9px;color:#ff7785;font-weight:900;letter-spacing:1.3px;margin-bottom:9px">🏆 ИГРОК МЕСЯЦА</div><div style="display:flex;align-items:center;gap:9px"><div style="width:38px;height:38px;display:grid;place-items:center;border-radius:6px;background:linear-gradient(145deg,#b91f32,#48131d);font-size:17px;font-weight:1000">?</div><div><b style="font-size:14px">Пока не выбран</b><small style="display:block;color:#aab6c5;font-size:10px;margin-top:4px">🇷🇺 Россия</small></div></div><div style="margin-top:10px;padding-top:8px;border-top:1px solid #ffffff18;font-size:11px;color:#c4ccd7">K/D: <b style="color:#fff">—</b></div></div><div style="padding:12px;background:#141d29;border:1px solid #2b3c53;border-radius:7px"><div style="font-size:9px;color:#aebbd0;font-weight:900;letter-spacing:1.3px;margin-bottom:9px">⭐ ИГРОК НЕДЕЛИ</div><div style="display:flex;align-items:center;gap:9px"><div style="width:38px;height:38px;display:grid;place-items:center;border-radius:6px;background:#26364a;font-size:17px">?</div><div><b style="font-size:13px">Пока не выбран</b><small style="display:block;color:#aab6c5;font-size:10px;margin-top:4px">Игрок недели</small></div></div><div style="margin-top:10px;padding-top:8px;border-top:1px solid #ffffff18;font-size:11px;color:#c4ccd7">K/D: <b style="color:#fff">—</b></div></div><div style="font-size:9px;color:#8492a3;text-align:center">Статистика K/D будет указана после добавления результатов матчей</div></div></a>
+<section class="panel fztv-ac-promo">
+<div class="head"><h2>🛡 FZTV ANTI-CHEAT</h2><small>WINDOWS 10 / 11</small></div>
+<div class="fztv-ac-promo-body">
+<div class="fztv-ac-promo-logo"><span>FZTV</span> <b>ANTI-CHEAT</b><em>2.0</em></div>
+<p>Честные матчи начинаются с проверки. Подключи FZTV Anti-Cheat перед игрой в Counter-Strike 2.</p>
+<div class="fztv-ac-promo-features"><span>✓ Вход через FZTV</span><span>✓ Проверки процессов</span><span>✓ Контроль файла CS2</span></div>
+<a class="fztv-ac-download" href="https://github.com/sw4mper666/FragZoneTV/releases/download/ac-v2.0/FZTV-AntiCheat-2.0.exe" target="_blank" rel="noopener noreferrer" aria-label="Скачать FZTV Anti-Cheat 2.0 для Windows">⬇ СКАЧАТЬ АНТИЧИТ 2.0</a>
+
+</div></section></aside>
+<section class="stack center"><div class="panel"><div class="head"><h2>НОВОСТИ FZTV</h2><small>ПОСЛЕДНИЕ ПУБЛИКАЦИИ</small></div><div class="news-feature"><div class="news-art"><b>FRAG<span>ZONE</span>TV</b></div><h3>Добро пожаловать на FragZoneTV</h3><p>Твой новый портал о Counter-Strike. Скоро здесь появятся свежие новости, обзоры и материалы киберспортивной сцены.</p></div><div class="news-list"><div class="news-row"><i>✦</i><div><b>Новости скоро появятся</b><small>Следи за обновлениями FZTV</small></div></div></div></div><section class="panel panel-link"><div class="head"><h2>АКТУАЛЬНЫЕ ТУРНИРЫ</h2><small>TOURNAMENTS ↗</small></div><a class="event featured" href="#/tournament/FZTV%20CUP%20%231/13%E2%80%9316%20%D0%BD%D0%BE%D1%8F%D0%B1%D1%80%D1%8F%202026"><span class="event-icon">🏆</span><span class="event-name">FZTV CUP #1</span><span class="event-date">13–16 НОЯ</span></a><div class="more-note" style="display:block">Ежемесячный турнир FragZoneTV · регистрация с 7 ноября</div></section></section>
+<aside class="stack right"><a class="panel panel-link" href="#/matches"><div class="head"><h2>БЛИЖАЙШИЕ МАТЧИ</h2><small>SCHEDULE ↗</small></div>${empty('◷','Матчей пока что нету','Расписание появится после добавления матчей.')}</a><div class="panel promo"><b>FZ<span>TV</span></b><p>FRAGZONE TV<br>ТВОЙ ИСТОЧНИК НОВОСТЕЙ И СТАТИСТИКИ CS2.</p></div></aside></section>`}
+const teamWoodsPlayers=['sw4mper','Skrizzi','Loytaber','bosskpec','fladar'];
+const teamWoodsRoster=[["sw4mper","data:image/png;base64,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
+
+### function loadLegacyRoster(){
+function loadLegacyRoster(){const {data,error}=await sb.from('fztv_roster_players').select('player_slug,nickname,photo_url,age,team_name,lineup_position');if(error){console.warn('Woods roster:',error.message);return;}legacyRosterCache=data||[];if(['home','ranking','team','players','player'].includes((location.hash||'#/home').split('/')[1]))render();}
+async function loadTeamRP(){const {data,error}=await sb.from('fztv_team_rp').select('name,rp');if(error){console.warn('FZ RP:',error.message);return;}teamRpCache=Object.fromEntries((data||[]).map(x=>[x.name.toLowerCase(),Number(x.rp)||0]));if(['home','ranking','team','team-created'].includes((location.hash||'#/home').split('/')[1]))render();}
+
+let approvedRosterCache={};
+const countryFlags={'россия':'🇷🇺','russia':'🇷🇺','ru':'🇷🇺','украина':'🇺🇦','ukraine':'🇺🇦','ua':'🇺🇦','беларусь':'🇧🇾','belarus':'🇧🇾','by':'🇧🇾','казахстан':'🇰🇿','kazakhstan':'🇰🇿','kz':'🇰🇿','швеция':'🇸🇪','sweden':'🇸🇪','se':'🇸🇪','сша':'🇺🇸','usa':'🇺🇸','us':'🇺🇸','польша':'🇵🇱','poland':'🇵🇱','pl':'🇵🇱','германия':'🇩🇪','germany':'🇩🇪','de':'🇩🇪','франция':'🇫🇷','france':'🇫🇷','fr':'🇫🇷','бразилия':'🇧🇷','brazil':'🇧🇷','br':'🇧🇷','дания':'🇩🇰','denmark':'🇩🇰','dk':'🇩🇰','финляндия':'🇫🇮','finland':'🇫🇮','fi':'🇫🇮'};
+function teamNationality(players){
+ const counts=new Map();
+ for(const p of players||[]){const c=String(p.country||'').trim().toLocaleLowerCase('ru');if(c)counts.set(c,(counts.get(c)||0)+1);}
+ const winner=[...counts].sort((a,b)=>b[1]-a[1])[0];
+ return winner&&winner[1]>=4?{country:winner[0],flag:countryFlags[winner[0]]||'🌐',count:winner[1]}:{country:'Международная',flag:'🌐',count:0};
+}
+async function loadApprovedTeams(){
+ const {data,error}=await sb.from('fztv_teams').select('id,name,tag,country,logo_url').eq('status','approved').order('created_at',{ascending:true});
+ if(error){console.warn('Approved teams:',error.message);return;}
+ approvedTeamsCache=data||[];
+ const {data:players, error:playersError}=await sb.from('fztv_team_players').select('id,team_id,nickname,country,photo_url,lineup_position').in('team_id',approvedTeamsCache.map(t=>t.id).length?approvedTeamsCache.map(t=>t.id):['00000000-0000-0000-0000-000000000000']);
+ approvedRosterCache={};
+ if(!playersError){for(const p of players||[])(approvedRosterCache[p.team_id]??=[]).push(p);for(const rows of Object.values(approvedRosterCache))rows.sort((a,b)=>(a.lineup_position||99)-(b.lineup_position||99));}
+ if(['home','ranking'].includes((location.hash||'#/home').replace(/^#\/?/,'').split('/')[0]))render();
+}
+function approvedTeamRows(){
+ return approvedTeamsCache.filter(t=>t.name.toLowerCase()!=='team woods').map((t,i)=>{
+ const players=approvedRosterCache[t.id]||[],nationality=teamNationality(players);
+ const roster=players.map(p=>'<div class="fztv-rank-player">'+(p.photo_url?'<img src="'+escapeAuth(p.photo_url)+'" alt="">':'<span class="fztv-player-placeholder">👤</span>')+'<b>'+escapeAuth(p.nickname||'Игрок')+'</b></div>').join('');
+ return '<article class="fztv-rank-entry"><div class="fztv-rank-summary"><span class="fztv-rank-position">#'+(i+3)+'</span><div class="fztv-rank-logo">'+(t.logo_url?'<img src="'+escapeAuth(t.logo_url)+'" alt="">':'🏆')+'</div><span class="fztv-rank-country" title="'+escapeAuth(nationality.country)+'">'+nationality.flag+'</span><div class="fztv-rank-name"><strong>'+escapeAuth(t.name)+'</strong><small>'+escapeAuth(t.tag||'CS2')+' · '+(players.length?players.length+' игроков':'Состав не заполнен')+'</small></div><span class="fztv-rank-points">0 <small>FZ Points</small></span><span class="fztv-rank-tier">TIER '+(i+3<=10?1:i+3<=20?2:3)+'</span></div><div class="fztv-rank-expanded"><div class="fztv-rank-roster">'+(roster||'<p>Состав команды пока не добавлен</p>')+'</div><a href="#/team-created/'+encodeURIComponent(t.id)+'">Профиль команды →</a><span>'+nationality.flag+' '+escapeAuth(nationality.country)+(nationality.count?' · '+nationality.count+' игрока одной страны':'')+'</span></div></article>';
+ }).join('');
+}
+function createdTeamDetail(){
+ const id=(location.hash.split('/')[2]||'');
+ const t=approvedTeamsCache.find(x=>x.id===id);
+ if(!t)return '<section class="panel detail-empty">Команда не найдена. <a href="#/ranking">Рейтинг</a></section>';
+ return '<div class="crumb"><a href="#/ranking">Рейтинг</a> / '+escapeAuth(t.name)+'</div><section class="panel" style="padding:24px"><h1>'+escapeAuth(t.name)+'</h1>'+(t.logo_url?'<img src="'+escapeAuth(t.logo_url)+'" alt="" width="110" height="110" style="object-fit:cover;border-radius:14px">':'')+'<p>Тег: '+escapeAuth(t.tag||'')+'</p><p>Статус: Одобрена</p><p>Рейтинг: 0</p></section>';
+}
+let rankingWeekOffset=0;
+function fzWeekStart(offset=0){const d=new Date();d.setHours(12,0,0,0);const day=(d.getDay()+6)%7;d.setDate(d.getDate()-day+offset*7);return d;}
+function fzRankingBanner(){
+ const current=rankingWeekOffset===0;
+ const date=fzWeekStart(rankingWeekOffset);
+ const dateLabel=date.toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'});
+ return '<div class="fztv-week-banner"><div class="fztv-week-copy"><small>FRAGZONETV · МИРОВОЙ РЕЙТИНГ</small><h2>РЕЙТИНГ КОМАНД COUNTER-STRIKE — '+(current?'СЕЙЧАС':'НЕДЕЛЯ С '+dateLabel.toUpperCase())+'</h2><p>'+(current?'Текущий рейтинг команд':'Выбранная неделя · исторические очки пока не сохранены')+'</p></div><div class="fztv-week-actions"><button type="button" id="fzPrevWeek" aria-label="Предыдущая неделя">‹</button><button type="button" id="fzNextWeek" aria-label="Следующая неделя" '+(current?'disabled':'')+'>›</button></div></div>';
+}
+function fzHomeRanking(){
+ const top=approvedTeamsCache.slice(0,5).map((t,i)=>'<a href="#/team-created/'+encodeURIComponent(t.id)+'"><b>#'+(i+2)+'</b><span>'+escapeAuth(t.name)+'</span><strong>0 FZ Points</strong></a>').join('');
+ return '<section class="fztv-home-ranking"><div class="fztv-home-rank-heading"><h2>РЕЙТИНГ КОМАНД</h2><a href="#/ranking">Весь рейтинг →</a></div><div class="fztv-home-rank-list"><a href="#/team/woods"><b>#1</b><span>Team Woods</span><strong>0 FZ Points</strong></a>'+top+'</div></section>';
+}
+function enhanceRankingLayout(route){
+ if(route==='home'||route==='ranking'){
+ const center=document.querySelector('.stack.center');
+ if(!center)return;
+ center.replaceChildren();
+ const section=document.createElement('section');section.className='panel fztv-center-ranking';
+ section.innerHTML='<div class="head"><h2>РЕЙТИНГ КОМАНД · COUNTER-STRIKE 2</h2><small>FZ POINTS</small></div>';
+ const banner=document.createElement('div');banner.innerHTML=fzRankingBanner();section.append(banner.firstElementChild);
+ const previous=section.querySelector('#fzPrevWeek'),next=section.querySelector('#fzNextWeek');
+ previous.onclick=()=>{rankingWeekOffset--;render()};next.onclick=()=>{rankingWeekOffset=Math.min(0,rankingWeekOffset+1);render()};
+ const list=document.createElement('div');list.className='fztv-unified-rank-list';
+ const staticTeams=[
+ {name:'Team Woods',logo:document.createElement('div'),players:woodsRosterNow().map(p=>({nickname:p[0],photo_url:p[1],slug:p[2],lineup_position:p[3]})),href:'#/team/woods'},
+ 
+ ];
+ const original=document.createElement('template');original.innerHTML=ranking();
+ const originalRows=[...original.content.querySelectorAll('a.rank-team')];
+ staticTeams.forEach((t,i)=>{const source=originalRows.find(row=>row.querySelector('.rank-main strong')?.textContent.trim()===t.name);if(source){const img=source.querySelector('.rank-logo');if(img)t.logo=img.cloneNode(true);}});
+ const dynamic=approvedTeamsCache.filter(t=>t.name.trim().toLowerCase()!=='team woods').map(t=>({name:t.name,logo_url:t.logo_url,players:approvedRosterCache[t.id]||[],href:'#/team-created/'+encodeURIComponent(t.id),country:teamNationality(approvedRosterCache[t.id]||[]).flag}));
+ const entries=[...staticTeams,...dynamic].sort((a,b)=>getTeamRP(b.name)-getTeamRP(a.name));
+ entries.forEach((t,i)=>{
+ const orderedPlayers=[...t.players].sort((a,b)=>(a.l
+
+### async function loadTeamRP(){
+async function loadTeamRP(){const {data,error}=await sb.from('fztv_team_rp').select('name,rp');if(error){console.warn('FZ RP:',error.message);return;}teamRpCache=Object.fromEntries((data||[]).map(x=>[x.name.toLowerCase(),Number(x.rp)||0]));if(['home','ranking','team','team-created'].includes((location.hash||'#/home').split('/')[1]))render();}
+
+let approvedRosterCache={};
+const c
