@@ -1,0 +1,29 @@
+name: Inspect login binding lifecycle
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/inspect-login-binding.yml']
+permissions: {contents: write}
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Export code fragments
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          s=Path('index.html').read_text(encoding='utf8')
+          q=['function render(){','const af=document.getElementById(\'authForm\')',"window.addEventListener('hashchange'",'function loadContent(){']
+          out=[]
+          for x in q:
+           i=s.find(x)
+           out.append('## '+x+' '+str(i)+'\n'+s[i:i+11000] if i!=-1 else 'NONE')
+          Path('login-binding-inspection.txt').write_text('\n'.join(out)[:42000],encoding='utf8')
+          PY
+      - name: Commit
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add login-binding-inspection.txt
+          git diff --cached --quiet || (git commit -m 'Inspect auth routing and form event lifecycle' && git push)
