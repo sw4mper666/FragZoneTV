@@ -1,0 +1,34 @@
+name: Inspect core loading flow for public data
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/inspect-core-data-flow.yml']
+permissions: {contents: write}
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Extract data render behavior
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          s=Path('index.html').read_text(encoding='utf8')
+          terms=['function home(){','function render(){','async function loadContent(){','async function loadApprovedTeams(){','async function loadPublicPlayers(){','async function loadLegacyRoster(){','async function loadTeamRP(){','function playersPage(){','function ranking(){']
+          out=[]
+          for term in terms:
+           pos=s.find(term)
+           if pos==-1:
+            out.append('MISSING '+term);continue
+           chunk=s[pos:pos+5000]
+           chunk=re.sub(r'data:image/[^"\\x27\s<>]{500,}','[EMBEDDED IMAGE]',chunk)
+           out.append('### '+term+'\n'+chunk)
+          Path('core-data-flow-inspection.txt').write_text('\n'.join(out)[:40000],encoding='utf8')
+          PY
+      - name: Commit
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add core-data-flow-inspection.txt
+          git diff --cached --quiet || (git commit -m 'Inspect public data render behavior' && git push)
