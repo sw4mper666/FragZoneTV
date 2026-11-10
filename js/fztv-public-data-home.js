@@ -65,8 +65,8 @@
     if(state.matches)makePanel('fzdb-matches','МАТЧИ И РАСПИСАНИЕ','ИЗ SUPABASE',rowsForMatches());
     if(state.players && state.teams){
       const players=livePlayers();
-      const ranked=players.filter(p=>p.rating!=null).slice(0,5);
-      const rows=ranked.length?ranked.map(p=>linkRow('#/player/'+p.slug,p.nickname,p.team_name,String(Number(p.rating.toFixed(3))))).join(''):'<div class="fzdb-empty">Зарегистрировано '+players.length+' игроков. Рейтинг FZTVR появится после матчей со статистикой.</div>';
+      const ranked=players.slice(0,5);
+      const rows=ranked.length?ranked.map(p=>linkRow('#/player/'+p.slug,p.nickname,p.team_name,p.rating==null?'— FZTVR':String(Number(p.rating.toFixed(3)))+' FZTVR')).join(''):'<div class="fzdb-empty">Одобренных игроков пока нет.</div>';
       makePanel('fzdb-players','ИГРОКИ И РЕЙТИНГ FZTVR','<a href="#/players">ВСЕ ИГРОКИ</a>',rows);
     }
     const sidebar=document.querySelector('#app .stack.left a.panel-link[href="#/ranking"]');
