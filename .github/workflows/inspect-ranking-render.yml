@@ -1,0 +1,28 @@
+name: Inspect ranking data render
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/inspect-ranking-render.yml']
+permissions: {contents: write}
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Collect relevant code
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          s=Path('index.html').read_text(encoding='utf8')
+          chunks=[]
+          for key in ['function ranking(){','function enhanceRankingLayout(route)','function woodsRosterNow(){','function getTeamRP(','function home(){','function loadLegacyRoster(){','async function loadTeamRP(){']:
+           i=s.find(key)
+           if i>=0:chunks.append('### '+key+'\n'+s[i:i+7900])
+          Path('ranking-render-inspection.txt').write_text('\n\n'.join(chunks)[:48000],encoding='utf8')
+          PY
+      - name: Commit
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add ranking-render-inspection.txt
+          git diff --cached --quiet || (git commit -m 'Inspect ranking render and cache updates' && git push)
